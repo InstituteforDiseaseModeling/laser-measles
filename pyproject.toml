@@ -8,8 +8,9 @@ version = "0.5.0"
 
 dependencies = [
   "click",
-  "laser-core @ git+https://github.com/InstituteforDiseaseModeling/laser.git@v0.0.3",
-  "numpy",
+  "laser-core @ git+https://github.com/InstituteforDiseaseModeling/laser.git@v0.1.0",
+  "numpy>=1.26.4,<2.0.0",
+  "numba>=0.59.1",
   "tqdm",
   "geopandas",
   "pandas",
@@ -111,3 +112,55 @@ force-single-line = true
 
 [tool.ruff.format]
 quote-style = "double"
+
+[tool.bumpversion]
+current_version = "0.5.0"
+parse = "(?P<major>\\d+)\\.(?P<minor>\\d+)\\.(?P<patch>\\d+)"
+serialize = ["{major}.{minor}.{patch}"]
+search = "{current_version}"
+replace = "{new_version}"
+regex = false
+ignore_missing_version = false
+tag = true
+sign_tags = false
+tag_name = "v{new_version}"
+tag_message = "Bump version: {current_version} → {new_version}"
+allow_dirty = false
+commit = true
+message = "Bump version: {current_version} → {new_version}"
+commit_args = ""
+
+[[tool.bumpversion.files]]
+filename = "setup.py"
+search = 'version="{current_version}"'
+replace = 'version="{new_version}"'
+
+[[tool.bumpversion.files]]
+ filename = "README.rst"
+search = "/v{current_version}.svg"
+replace = "/v{new_version}.svg"
+
+[[tool.bumpversion.files]]
+filename = "README.rst"
+search = "/v{current_version}...main"
+replace = "/v{new_version}...main"
+
+[[tool.bumpversion.files]]
+filename = "docs/conf.py"
+search = 'version = release = "{current_version}"'
+replace = 'version = release = "{new_version}"'
+
+[[tool.bumpversion.files]]
+filename = "src/laser_measles/__init__.py"
+search = '__version__ = "{current_version}"'
+replace = '__version__ = "{new_version}"'
+
+[[tool.bumpversion.files]]
+filename = ".cookiecutterrc"
+search = 'version: "{current_version}"'
+replace = 'version: "{new_version}"'
+
+[[tool.bumpversion.files]]
+filename = "pyproject.toml"
+search = 'version = "{current_version}"'
+replace = 'version = "{new_version}"'
