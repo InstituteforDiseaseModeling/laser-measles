@@ -18,7 +18,7 @@ Functions:
             - nticks (int): Number of ticks to run the simulation. Default is 365.
             - seed (int): Random seed for the simulation. Default is 20241107.
             - verbose (bool): If True, print verbose output. Default is False.
-            - viz (bool): If True, display visualizations to help validate the model. Default is True.
+            - no-viz (bool): If True, suppress visualizations to help validate the model. Default is False.
             - pdf (bool): If True, output visualization results as a PDF. Default is False.
             - output (str): Output file for results. Default is None.
             - params (str): JSON file with parameters. Default is None.
@@ -55,7 +55,7 @@ from laser_measles.utils import seed_infections_in_patch
 @click.option("--nticks", default=365, help="Number of ticks to run the simulation")
 @click.option("--seed", default=20241107, help="Random seed")
 @click.option("--verbose", is_flag=True, help="Print verbose output")
-@click.option("--viz", is_flag=True, default=True, help="Display visualizations  to help validate the model")
+@click.option("--no-viz", is_flag=True, help="Suppress validation visualizations")
 @click.option("--pdf", is_flag=True, help="Output visualization results as a PDF")
 @click.option("--output", default=None, help="Output file for results")
 @click.option("--params", default=None, help="JSON file with parameters")
@@ -75,7 +75,7 @@ def run(**kwargs):
             Expected keys include:
 
                 - "verbose": (bool) Whether to print verbose output.
-                - "viz": (bool) Whether to visualize the results.
+                - "no-viz": (bool) Whether to suppress visualizations.
                 - "pdf": (str) The file path to save the visualization as a PDF.
 
     Returns:
@@ -107,7 +107,7 @@ def run(**kwargs):
 
     model.run()
 
-    if parameters["viz"]:
+    if not parameters["no_viz"]:
         model.visualize(pdf=parameters["pdf"])
 
     return
@@ -115,4 +115,4 @@ def run(**kwargs):
 
 if __name__ == "__main__":
     ctx = click.Context(run)
-    ctx.invoke(run, nticks=365, seed=20241107, verbose=True, viz=True, pdf=False)
+    ctx.invoke(run, nticks=365, seed=20241107, verbose=True, pdf=False)

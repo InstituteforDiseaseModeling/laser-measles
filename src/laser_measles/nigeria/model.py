@@ -16,14 +16,14 @@ Functions:
 
 Command-line Options:
 
-    --nticks: Number of ticks to run the simulation (default: 365).
-    --seed: Random seed for reproducibility (default: 20241107).
-    --verbose: Print verbose output if set.
-    --viz: Display visualizations to help validate the model if set.
-    --pdf: Output visualization results as a PDF if set.
+    --nticks (int): Number of ticks to run the simulation (default: 365).
+    --seed (int): Random seed for reproducibility (default: 20241107).
+    --verbose (bool): Print verbose output if set.
+    --no-viz (bool): If True, suppress visualizations to help validate the model. Default is False.
+    --pdf (bool): Output visualization results as a PDF if set.
     --output: Output file for results (default: None).
-    --params: JSON file with parameters (default: None).
-    --param: Additional parameter overrides (param:value or param=value).
+    --params (filename): JSON file with parameters (default: None).
+    --param (key:value pairs): Additional parameter overrides (param:value or param=value).
 
 Usage:
 
@@ -52,7 +52,7 @@ from laser_measles.utils import seed_infections_in_patch
 @click.option("--nticks", default=365, help="Number of ticks to run the simulation")
 @click.option("--seed", default=20241107, help="Random seed")
 @click.option("--verbose", is_flag=True, help="Print verbose output")
-@click.option("--viz", is_flag=True, help="Display visualizations  to help validate the model")
+@click.option("--no-viz", is_flag=True, help="Suppress validation visualizations")
 @click.option("--pdf", is_flag=True, help="Output visualization results as a PDF")
 @click.option("--output", default=None, help="Output file for results")
 @click.option("--params", default=None, help="JSON file with parameters")
@@ -71,7 +71,7 @@ def run(**kwargs):
         Expected keys include:
 
             - "verbose": bool, whether to print detailed information during the simulation.
-            - "viz": bool, whether to visualize the results after the simulation.
+            - "no-viz": (bool) Whether to suppress visualizations.
             - "pdf": bool, whether to save the visualization as a PDF.
 
     Returns:
@@ -103,7 +103,7 @@ def run(**kwargs):
 
     model.run()
 
-    if parameters["viz"]:
+    if not parameters["no_viz"]:
         model.visualize(pdf=parameters["pdf"])
 
     return
@@ -111,4 +111,4 @@ def run(**kwargs):
 
 if __name__ == "__main__":
     ctx = click.Context(run)
-    ctx.invoke(run, nticks=365, seed=20241107, verbose=True, viz=True, pdf=False)
+    ctx.invoke(run, nticks=365, seed=20241107, verbose=True, pdf=False)
