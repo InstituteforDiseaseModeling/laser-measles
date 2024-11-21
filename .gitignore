@@ -75,3 +75,12 @@ docs/_build
 
 # tmp directory
 tmp/
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
