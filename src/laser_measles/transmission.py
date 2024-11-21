@@ -103,6 +103,8 @@ class Transmission:
         )
         np.multiply(contagion, beta_effective, out=forces)
         np.divide(forces, model.patches.populations[tick, :], out=forces)  # per agent force of infection
+        np.expm1(-forces, out=forces)
+        np.negative(forces, out=forces)
 
         Transmission.nb_transmission_update(
             population.susceptibility,
@@ -131,7 +133,7 @@ class Transmission:
             if susceptibility > 0:
                 nodeid = nodeids[i]
                 force = susceptibility * forces[nodeid]  # force of infection attenuated by personal susceptibility
-                if (force > 0) and (np.random.random_sample() < force):  # draw random number < force means infection
+                if (force > 0) and (np.random.random_sample() < force): # draw random number < force means infection
                     susceptibilities[i] = 0.0  # no longer susceptible
                     # set exposure timer for newly infected individuals to a draw from a gamma distribution, must be at least 1 day
                     etimers[i] = np.maximum(np.uint8(1), np.uint8(np.round(np.random.gamma(exp_shape, exp_scale))))
