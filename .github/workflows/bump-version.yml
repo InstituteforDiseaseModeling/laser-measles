@@ -12,6 +12,9 @@ on:
         - major
         - minor
         - patch
+  push:
+    branches:
+      - bump-my-version        
 jobs:
   build:
     runs-on: ubuntu-latest
