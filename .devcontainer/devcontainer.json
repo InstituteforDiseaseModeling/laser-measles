@@ -1,5 +1,5 @@
 {
-    "image": "ghcr.io/astral-sh/uv:latest",
+    "image": "mcr.microsoft.com/devcontainers/python:3",
     "customizations": {
       // Configure properties specific to VS Code.
       "vscode": {
