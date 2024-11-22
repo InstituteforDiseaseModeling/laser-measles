@@ -20,3 +20,5 @@ include LICENSE
 include README.rst
 
 global-exclude *.py[cod] __pycache__/* *.so *.dylib *.DS_Store
+
+recursive-exclude .devcontainer *
