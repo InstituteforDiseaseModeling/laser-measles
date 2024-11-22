@@ -1,13 +1,13 @@
 {
-    "image": "mcr.microsoft.com/devcontainers/python:3",
-    "customizations": {
-      // Configure properties specific to VS Code.
-      "vscode": {
-        // Add the IDs of extensions you want installed when the container is created.
-        "extensions": [
-          "ms-python.python",
-          "ms-toolsai.jupyter"
-        ]
-      }
-    }  
+  "image": "mcr.microsoft.com/devcontainers/python:3",
+  "customizations": {
+    // Configure properties specific to VS Code.
+    "vscode": {
+      // Add the IDs of extensions you want installed when the container is created.
+      "extensions": [
+        "ms-python.python",
+        "ms-toolsai.jupyter"
+      ]
+    }
+  }
 }
