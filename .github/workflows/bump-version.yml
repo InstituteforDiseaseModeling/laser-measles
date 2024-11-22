@@ -11,7 +11,7 @@ on:
         options:
         - major
         - minor
-        - patch   
+        - patch
 jobs:
   build:
     runs-on: ubuntu-latest
