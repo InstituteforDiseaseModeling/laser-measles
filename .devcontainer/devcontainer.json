@@ -18,8 +18,5 @@
           ]
       }
   },
-  "postCreateCommand": {
-      // Run commands after the container is created.
-      "command": "./.devcontainer/postCreateCommands.sh"
-  }
+"postCreateCommand": "source ./.devcontainer/postCreateCommands.sh"
 }
