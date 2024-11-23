@@ -43,7 +43,7 @@ Overview
 
 .. |commits-since| image:: https://img.shields.io/github/commits-since/InstituteforDiseaseModeling/laser-measles/v0.6.0.svg
     :alt: Commits since latest release
-    :target: https://github.com/InstituteforDiseaseModeling/laser-measles/compare/v0.6.0...main
+    :target: https://github.com/krosenfeld-IDM/laser-measles/compare/v0.6.0...main
 
 
 
