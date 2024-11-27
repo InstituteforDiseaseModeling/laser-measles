@@ -6,16 +6,16 @@ Spatial measles models implemented with the LASER toolkit.
 Example using [uv](https://github.com/astral-sh/uv):
 
 0. Create and activate virtual environment
-```
+```bash
 uv venv
 source .venv/bin/activate
 ```
 1. Install
-``` 
+```bash
 uv pip install -e . 
 ```
 2. Test that the model runs (`measles --help` for options)
-```
+```bash
 measles
 ```
 
