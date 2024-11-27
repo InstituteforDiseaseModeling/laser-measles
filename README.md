@@ -12,7 +12,7 @@ source .venv/bin/activate
 ```
 1. Install
 ```bash
-uv pip install -e . 
+uv pip install -e .
 ```
 2. Test that the model runs (`measles --help` for options)
 ```bash
