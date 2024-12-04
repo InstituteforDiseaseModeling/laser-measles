@@ -10,7 +10,7 @@
                 "ms-toolsai.jupyter",
                 "ms-toolsai.jupyter-renderers",
                 "charliermarsh.ruff",
-                "github.codespace",
+                "github.codespaces",
                 "github.copilot",
                 "github.copilot-chat",
                 "mechatroner.raincsv",
