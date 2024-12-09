@@ -167,25 +167,14 @@ class Transmission:
         """
 
         fig = plt.figure(figsize=(12, 9), dpi=128) if fig is None else fig
-        fig.suptitle("Cases and Incidence for Two Largest Patches")
+        fig.suptitle("Cases for Largest Patches")
 
-        itwo, ione = np.argsort(self.model.patches.populations[-1, :])[-2:]
+        ipatches = np.argsort(self.model.patches.populations[-1, :])[-1:-5:-1]
 
-        fig.add_subplot(2, 2, 1)
-        plt.title(f"Cases - Node {ione}")  # ({self.names[ione]})")
-        plt.plot(self.model.patches.cases[:, ione])
-
-        fig.add_subplot(2, 2, 2)
-        plt.title(f"Incidence - Node {ione}")  # ({self.names[ione]})")
-        plt.plot(self.model.patches.incidence[:, ione])
-
-        fig.add_subplot(2, 2, 3)
-        plt.title(f"Cases - Node {itwo}")  # ({self.names[itwo]})")
-        plt.plot(self.model.patches.cases[:, itwo])
-
-        fig.add_subplot(2, 2, 4)
-        plt.title(f"Incidence - Node {itwo}")  # ({self.names[itwo]})")
-        plt.plot(self.model.patches.incidence[:, itwo])
+        for ipatch in range(len(ipatches)):
+            fig.add_subplot(2, 2, ipatch + 1)
+            plt.title(f"Cases - Patch {ipatches[ipatch]}")
+            plt.plot(self.model.patches.cases[:, ipatches[ipatch]])
 
         yield
         return
