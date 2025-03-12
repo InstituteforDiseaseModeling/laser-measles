@@ -81,7 +81,7 @@ def run(**kwargs):
 
     parameters = get_parameters(kwargs)
     scenario = get_scenario(parameters, parameters["verbose"])
-    model = Model(scenario, parameters, name="northen nigeria measles")
+    model = Model(scenario, parameters, name="northern nigeria measles")
 
     # infection dynamics come _before_ incubation dynamics so newly set itimers
     # don't immediately expire
