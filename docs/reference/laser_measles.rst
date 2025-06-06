@@ -12,6 +12,8 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
+   laser_measles.biweekly
+   laser_measles.demographics
    laser_measles.generic
    laser_measles.nigeria
 

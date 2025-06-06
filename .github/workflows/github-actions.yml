@@ -1,5 +1,12 @@
 name: build
-on: [push, pull_request, workflow_dispatch]
+on:
+  pull_request:
+    types: [ready_for_review, review_requested]
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+    branches:
+      - '*'
 jobs:
   test:
     name: ${{ matrix.name }}
@@ -10,87 +17,15 @@ jobs:
       matrix:
         include:
           - name: 'check'
-            python: '3.11'
-            toxpython: 'python3.11'
+            python: '3.12'
+            toxpython: 'python3.12'
             tox_env: 'check'
             os: 'ubuntu-latest'
           - name: 'docs'
-            python: '3.11'
-            toxpython: 'python3.11'
+            python: '3.12'
+            toxpython: 'python3.12'
             tox_env: 'docs'
             os: 'ubuntu-latest'
-          - name: 'py39 (ubuntu/x86_64)'
-            python: '3.9'
-            toxpython: 'python3.9'
-            python_arch: 'x64'
-            tox_env: 'py39'
-            cibw_arch: 'x86_64'
-            cibw_build: false
-            os: 'ubuntu-latest'
-          - name: 'py39 (windows/AMD64)'
-            python: '3.9'
-            toxpython: 'python3.9'
-            python_arch: 'x64'
-            tox_env: 'py39'
-            cibw_arch: 'AMD64'
-            cibw_build: false
-            os: 'windows-latest'
-          - name: 'py39 (macos/x86_64)'
-            python: '3.9'
-            toxpython: 'python3.9'
-            python_arch: 'x64'
-            tox_env: 'py39'
-            cibw_arch: 'x86_64'
-            cibw_build: false
-            os: 'macos-13'
-          - name: 'py310 (ubuntu/x86_64)'
-            python: '3.10'
-            toxpython: 'python3.10'
-            python_arch: 'x64'
-            tox_env: 'py310'
-            cibw_arch: 'x86_64'
-            cibw_build: false
-            os: 'ubuntu-latest'
-          - name: 'py310 (windows/AMD64)'
-            python: '3.10'
-            toxpython: 'python3.10'
-            python_arch: 'x64'
-            tox_env: 'py310'
-            cibw_arch: 'AMD64'
-            cibw_build: false
-            os: 'windows-latest'
-          - name: 'py310 (macos/x86_64)'
-            python: '3.10'
-            toxpython: 'python3.10'
-            python_arch: 'x64'
-            tox_env: 'py310'
-            cibw_arch: 'x86_64'
-            cibw_build: false
-            os: 'macos-13'
-          - name: 'py311 (ubuntu/x86_64)'
-            python: '3.11'
-            toxpython: 'python3.11'
-            python_arch: 'x64'
-            tox_env: 'py311'
-            cibw_arch: 'x86_64'
-            cibw_build: false
-            os: 'ubuntu-latest'
-          - name: 'py311 (windows/AMD64)'
-            python: '3.11'
-            toxpython: 'python3.11'
-            python_arch: 'x64'
-            tox_env: 'py311'
-            cibw_arch: 'AMD64'
-            cibw_build: false
-            os: 'windows-latest'
-          - name: 'py311 (macos/x86_64)'
-            python: '3.11'
-            toxpython: 'python3.11'
-            python_arch: 'x64'
-            tox_env: 'py311'
-            cibw_arch: 'x86_64'
-            cibw_build: false
-            os: 'macos-latest'
           - name: 'py312 (ubuntu/x86_64)'
             python: '3.12'
             toxpython: 'python3.12'
@@ -113,6 +48,14 @@ jobs:
             python_arch: 'x64'
             tox_env: 'py312'
             cibw_arch: 'x86_64'
+            cibw_build: false
+            os: 'macos-13'
+          - name: 'py312 (macos/arm64)'
+            python: '3.12'
+            toxpython: 'python3.12'
+            python_arch: 'arm64'
+            tox_env: 'py312'
+            cibw_arch: 'arm64'
             cibw_build: false
             os: 'macos-latest'
     steps:
@@ -167,7 +110,7 @@ jobs:
       if: matrix.cibw_build
       run: twine check wheelhouse/*.whl
     - name: upload wheel
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       if: matrix.cibw_build
       with:
         path: wheelhouse/*.whl

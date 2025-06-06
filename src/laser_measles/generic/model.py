@@ -100,7 +100,6 @@ def run(**kwargs):
         Transmission,
     ]
 
-    # seed_infections_randomly(model, ninfections=100)
     # Seed initial infections in Node 13 (King County) at the start of the simulation
     # Pierce County is Node 18, Snohomish County is Node 14, Yakima County is 19
     seed_infections_in_patch(model, ipatch=13, ninfections=100)

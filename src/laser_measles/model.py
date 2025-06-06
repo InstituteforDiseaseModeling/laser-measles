@@ -121,9 +121,7 @@ class Model:
         # We need some patches with population data ...
         npatches = len(scenario)
         self.patches = LaserFrame(npatches)
-
-        # "activate" all the patches (count == capacity)
-        self.patches.add(npatches)
+        # keep track of population per patch
         self.patches.add_vector_property("populations", length=parameters.nticks + 1)
         # set patch populations at t = 0 to initial populations
         self.patches.populations[0, :] = scenario.population
@@ -143,17 +141,16 @@ class Model:
         self.patches.network[:, :] = network
 
         # Initialize the model population
-
         capacity = calc_capacity(self.patches.populations[0, :].sum(), parameters.nticks, parameters.cbr, parameters.verbose)
-        self.population = LaserFrame(capacity)
-
+        self.population = LaserFrame(capacity, initial_count=0)
         self.population.add_scalar_property("nodeid", dtype=np.uint16)
+        first = 0
         for nodeid, count in enumerate(self.patches.populations[0, :]):
             first, last = self.population.add(count)
             self.population.nodeid[first:last] = nodeid
 
         # Initialize population ages
-
+        self.population.add_scalar_property("dob", dtype=np.int32)
         pyramid_file = parameters.pyramid_file
         age_distribution = load_pyramid_csv(pyramid_file)
         both = age_distribution[:, 2] + age_distribution[:, 3]  # males + females
@@ -162,7 +159,6 @@ class Model:
         bin_max_age_days = (age_distribution[:, 1] + 1) * 365  # maximum age for bin, in days (exclude this value)
         initial_pop = self.population.count
         samples = sampler.sample(initial_pop)  # sample for bins from pyramid
-        self.population.add_scalar_property("dob", dtype=np.int32)
         mask = np.zeros(initial_pop, dtype=bool)
         dobs = self.population.dob[0:initial_pop]
         click.echo("Assigning day of year of birth to agents…")

@@ -7,11 +7,20 @@ name = "laser-measles"
 version = "0.6.0"
 
 dependencies = [
-  "laser-core @ git+https://github.com/InstituteforDiseaseModeling/laser.git@v0.1.0",
-  "geopandas"
-  ]
+  "laser-core @ git+https://github.com/InstituteforDiseaseModeling/laser.git@v0.5.1",
+  "rastertoolkit @ git+https://github.com/InstituteforDiseaseModeling/RasterToolkit.git",
+  "diskcache>=5.6.3",
+  "appdirs>=1.4.4",
+  "pydantic>=2.11.5",
+  "pycountry>=24.6.1",
+  "requests>=2.32.3",
+  "alive-progress>=3.2.0",
+  "sciris>=3.2.1",
+  "polars>=1.30.0",
+  "pyarrow>=20.0.0",
+]
 
-requires-python = ">= 3.9"
+requires-python = ">= 3.10"
 
 authors = [
   {name = "Christopher Lorton", email = "christopher.lorton@gatesfoundation.org"},
@@ -66,7 +75,7 @@ measles = "laser_measles.generic.model:run"
 extend-exclude = ["static", "ci/templates"]
 line-length = 140
 src = ["src", "tests"]
-target-version = "py39"
+target-version = "py310"
 
 [tool.ruff.lint.per-file-ignores]
 "ci/*" = ["S"]
@@ -163,3 +172,16 @@ replace = 'version: "{new_version}"'
 filename = "pyproject.toml"
 search = 'version = "{current_version}"'
 replace = 'version = "{new_version}"'
+
+[dependency-groups]
+dev = [
+    "pytest-order>=1.1.1",
+]
+docs = [
+    "sphinx-autodoc-typehints>=3.0.1",
+    "sphinxcontrib-napoleon>=0.7",
+]
+examples = [
+    "notebook>=7.4.3",
+    "seaborn>=0.13.2",
+]

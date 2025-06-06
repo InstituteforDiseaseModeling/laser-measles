@@ -52,7 +52,7 @@ def calc_distances(latitudes: np.ndarray, longitudes: np.ndarray, verbose: bool 
     return distances
 
 
-def calc_capacity(population: np.uint32, nticks: np.uint32, cbr: np.float32, verbose: bool = False) -> np.uint32:
+def calc_capacity(population: np.uint32, nticks: np.uint32, cbr: np.float32, verbose: bool = False) -> int:
     """
     Calculate the population capacity after a given number of ticks based on a constant birth rate (CBR).
 
@@ -82,7 +82,7 @@ def calc_capacity(population: np.uint32, nticks: np.uint32, cbr: np.float32, ver
         alternate = np.uint32(population * (1 + cbr / 1000) ** (nticks / 365))
         click.echo(f"Alternate growth:  {population:,} … {alternate:,}")
 
-    return capacity
+    return int(capacity)
 
 
 def seed_infections_randomly(model, ninfections: int = 100) -> None:
@@ -132,11 +132,8 @@ def seed_infections_in_patch(model, ipatch: int, ninfections: int = 100) -> None
     """
 
     # Seed initial infections in a specific location at the start of the simulation
-    cinfections = 0
-    while cinfections < ninfections:
-        index = model.prng.integers(0, model.population.count)
-        if model.population.susceptibility[index] > 0 and model.population.nodeid[index] == ipatch:
-            model.population.itimer[index] = model.params.inf_mean
-            cinfections += 1
+    ids = np.nonzero(np.logical_and(model.population.nodeid == ipatch, model.population.susceptibility > 0))[0]
+    np.random.shuffle(ids)
+    model.population.itimer[ids[:min(ninfections, len(ids))]] = model.params.inf_mean
 
     return
