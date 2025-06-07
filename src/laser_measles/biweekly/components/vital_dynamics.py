@@ -1,7 +1,6 @@
 import numpy as np
 
 from laser_measles.biweekly.base import BaseComponent
-from laser_measles.biweekly.components.routine_immunization import RoutineImmunization
 
 
 def cast_type(a, dtype):
@@ -15,13 +14,6 @@ class VitalDynamics(BaseComponent):
 
     def __init__(self, model, verbose: bool = False) -> None:
         super().__init__(model, verbose)
-        # Check to see if there is a routine immunization component
-        for component in model.components:
-            if isinstance(component, RoutineImmunization):
-                    self.routine_immunization = component
-                    break
-            else:
-                self.routine_immunization = None
 
     def __call__(self, model, tick: int) -> None:
         # state counts
