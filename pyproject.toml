@@ -7,8 +7,7 @@ name = "laser-measles"
 version = "0.6.0"
 
 dependencies = [
-  "laser-core @ git+https://github.com/InstituteforDiseaseModeling/laser.git@v0.5.1",
-  "rastertoolkit @ git+https://github.com/InstituteforDiseaseModeling/RasterToolkit.git",
+  "laser-core==0.5.1",
   "diskcache>=5.6.3",
   "appdirs>=1.4.4",
   "pydantic>=2.11.5",
