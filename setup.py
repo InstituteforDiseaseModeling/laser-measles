@@ -1,44 +1,37 @@
 #!/usr/bin/env python
+import os
+import platform
+import re
+from pathlib import Path
 
-import setuptools
+from setuptools import Extension
+from setuptools import find_packages
+from setuptools import setup
+from setuptools.dist import Distribution
 
-if __name__ == "__main__":
-    setuptools.setup()
-
-
-# import os
-# import platform
-# import re
-# from pathlib import Path
-
-# from setuptools import Extension
-# from setuptools import find_packages
-# from setuptools import setup
-# from setuptools.dist import Distribution
-
-# # Enable code coverage for C code: we cannot use CFLAGS=-coverage in tox.ini, since that may mess with compiling
-# # dependencies (e.g. numpy). Therefore, we set SETUPPY_CFLAGS=-coverage in tox.ini and copy it to CFLAGS here (after
-# # deps have been safely installed).
-# if "TOX_ENV_NAME" in os.environ and os.environ.get("SETUPPY_EXT_COVERAGE") == "yes" and platform.system() == "Linux":
-#     CFLAGS = os.environ["CFLAGS"] = "-fprofile-arcs -ftest-coverage"
-#     LFLAGS = os.environ["LFLAGS"] = "-lgcov"
-# else:
-#     CFLAGS = ""
-#     LFLAGS = ""
+# Enable code coverage for C code: we cannot use CFLAGS=-coverage in tox.ini, since that may mess with compiling
+# dependencies (e.g. numpy). Therefore, we set SETUPPY_CFLAGS=-coverage in tox.ini and copy it to CFLAGS here (after
+# deps have been safely installed).
+if "TOX_ENV_NAME" in os.environ and os.environ.get("SETUPPY_EXT_COVERAGE") == "yes" and platform.system() == "Linux":
+    CFLAGS = os.environ["CFLAGS"] = "-fprofile-arcs -ftest-coverage"
+    LFLAGS = os.environ["LFLAGS"] = "-lgcov"
+else:
+    CFLAGS = ""
+    LFLAGS = ""
 
 
-# class BinaryDistribution(Distribution):
-#     """
-#     Distribution which almost always forces a binary package with platform name
-#     """
+class BinaryDistribution(Distribution):
+    """
+    Distribution which almost always forces a binary package with platform name
+    """
 
-#     def has_ext_modules(self):
-#         return super().has_ext_modules() or not os.environ.get("SETUPPY_ALLOW_PURE")
+    def has_ext_modules(self):
+        return super().has_ext_modules() or not os.environ.get("SETUPPY_ALLOW_PURE")
 
 
-# def read(*names, **kwargs):
-#     with Path(__file__).parent.joinpath(*names).open(encoding=kwargs.get("encoding", "utf8")) as fh:
-#         return fh.read()
+def read(*names, **kwargs):
+    with Path(__file__).parent.joinpath(*names).open(encoding=kwargs.get("encoding", "utf8")) as fh:
+        return fh.read()
 
 
 setup(

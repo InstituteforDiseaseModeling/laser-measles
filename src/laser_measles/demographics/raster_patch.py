@@ -131,9 +131,15 @@ class RasterPatchGenerator:
             new_dict["dotname"].append(k)
             new_dict["lat"].append(v["lat"])
             new_dict["lon"].append(v["lon"])
-            new_dict["mcv1"].append(v["pop"])
+            new_dict["mcv1"].append(v["val"])
 
         return pl.DataFrame(new_dict)
+
+    def clear_cache(self) -> None:
+        with cache.load_cache() as c:
+            for k in c.iterkeys():
+                if k.startswith(self.config.id):
+                    del c[k]
 
     def generate_birth_rates(self) -> pl.DataFrame: ...
 

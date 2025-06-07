@@ -55,10 +55,6 @@ classifiers = [
     "Topic :: Utilities",
 ]
 
-[project.optional-dependencies]
-dev = ["tox", "uv"]
-# docs = ["sphinx", "sphinx-rtd-theme"]
-
 [project.urls]
 Homepage = "https://example.com"
 Documentation = "https://laser-measles.readthedocs.io/en/latest/"

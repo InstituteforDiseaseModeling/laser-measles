@@ -18,7 +18,7 @@ Imports:
     - matplotlib.pyplot as plt: For plotting.
     - matplotlib.backends.backend_pdf: For PDF generation.
     - matplotlib.figure: For figure handling.
-    - tqdm: For progress bar visualization.
+    - alive_progress: For progress bar visualization.
     - laser_measles.measles_births: For handling measles birth data.
     - laser_measles.utils: For utility functions.
 
@@ -51,6 +51,7 @@ from datetime import datetime
 import click
 import numpy as np
 import pandas as pd
+from alive_progress import alive_bar
 from laser_core.demographics import AliasedDistribution
 from laser_core.demographics import load_pyramid_csv
 from laser_core.laserframe import LaserFrame
@@ -61,7 +62,6 @@ from laser_core.random import seed as seed_prng
 from matplotlib import pyplot as plt
 from matplotlib.backends.backend_pdf import PdfPages
 from matplotlib.figure import Figure
-from tqdm import tqdm
 
 from laser_measles import Births
 from laser_measles.utils import calc_capacity
@@ -162,10 +162,12 @@ class Model:
         mask = np.zeros(initial_pop, dtype=bool)
         dobs = self.population.dob[0:initial_pop]
         click.echo("Assigning day of year of birth to agents…")
-        for i in tqdm(range(len(age_distribution))):  # for each possible bin value...
-            mask[:] = samples == i  # ...find the agents that belong to this bin
-            # ...and assign a random age, in days, within the bin
-            dobs[mask] = self.prng.integers(bin_min_age_days[i], bin_max_age_days[i], mask.sum())
+        with alive_bar(len(age_distribution)) as bar:
+            for i in range(len(age_distribution)):  # for each possible bin value...
+                mask[:] = samples == i  # ...find the agents that belong to this bin
+                # ...and assign a random age, in days, within the bin
+                dobs[mask] = self.prng.integers(bin_min_age_days[i], bin_max_age_days[i], mask.sum())
+                bar()
 
         dobs *= -1  # convert ages to date of birth prior to _now_ (t = 0) ∴ negative
 
@@ -260,15 +262,17 @@ class Model:
         click.echo(f"{self.tstart}: Running the {self.name} model for {self.params.nticks} ticks…")
 
         self.metrics = []
-        for tick in tqdm(range(self.params.nticks)):
-            timing = [tick]
-            for phase in self.phases:
-                tstart = datetime.now(tz=None)  # noqa: DTZ005
-                phase(self, tick)
-                tfinish = datetime.now(tz=None)  # noqa: DTZ005
-                delta = tfinish - tstart
-                timing.append(delta.seconds * 1_000_000 + delta.microseconds)
-            self.metrics.append(timing)
+        with alive_bar(self.params.nticks) as bar:
+            for tick in range(self.params.nticks):
+                timing = [tick]
+                for phase in self.phases:
+                    tstart = datetime.now(tz=None)  # noqa: DTZ005
+                    phase(self, tick)
+                    tfinish = datetime.now(tz=None)  # noqa: DTZ005
+                    delta = tfinish - tstart
+                    timing.append(delta.seconds * 1_000_000 + delta.microseconds)
+                self.metrics.append(timing)
+                bar()
 
         self.tfinish = datetime.now(tz=None)  # noqa: DTZ005
         print(f"Completed the {self.name} model at {self.tfinish}…")

@@ -104,7 +104,7 @@ def run(**kwargs):
     model.run()
 
     # Visualize the results
-    if parameters["viz"]:
+    if not parameters["no_viz"]:
         model.visualize(pdf=parameters["pdf"])
 
     return
@@ -112,4 +112,4 @@ def run(**kwargs):
 
 if __name__ == "__main__":
     ctx = click.Context(run)
-    ctx.invoke(run, nticks=365, seed=20241107, verbose=True, pdf=False)
+    ctx.invoke(run, nticks=365, seed=20241107, viz=True,verbose=True, pdf=False)

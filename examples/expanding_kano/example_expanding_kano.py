@@ -44,6 +44,7 @@ config = raster_patch.RasterPatchConfig(
     mcv1_raster_path=this_dir / mcv1_raster_path,
 )
 generator = raster_patch.RasterPatchGenerator(config)
+generator.clear_cache()
 generator.generate_demographics()
 
 # Grab the data

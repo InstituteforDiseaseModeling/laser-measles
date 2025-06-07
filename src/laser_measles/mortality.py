@@ -11,7 +11,7 @@ Dependencies:
     - laser_core.sortedqueue.SortedQueue
     - matplotlib.pyplot as plt
     - matplotlib.figure.Figure
-    - tqdm
+    - alive_progress
 
 Usage:
     The NonDiseaseDeaths class is initialized with a model and an optional verbosity flag. It adds scalar properties to the population,
@@ -28,11 +28,11 @@ Example:
 
 import click
 import numpy as np
+from alive_progress import alive_bar
 from laser_core.demographics import KaplanMeierEstimator
 from laser_core.sortedqueue import SortedQueue
 from matplotlib import pyplot as plt
 from matplotlib.figure import Figure
-from tqdm import tqdm
 
 
 class NonDiseaseDeaths:
@@ -79,8 +79,10 @@ class NonDiseaseDeaths:
         # add non-disease mortality to the model
         model.nddq = SortedQueue(model.population.capacity, model.population.dod)
         print("Adding agents to the non-disease death queue…")
-        for i in tqdm(np.nonzero(dods[0 : model.population.count] < model.params.nticks)[0]):
-            model.nddq.push(i)
+        with alive_bar(len(np.nonzero(dods[0 : model.population.count] < model.params.nticks)[0])) as bar:
+            for i in np.nonzero(dods[0 : model.population.count] < model.params.nticks)[0]:
+                model.nddq.push(i)
+                bar()
 
         # +364 to account for something other than integral numbers of years (in nticks)
         # model.patches.add_vector_property("deaths", (model.params.nticks + 364) // 365)
