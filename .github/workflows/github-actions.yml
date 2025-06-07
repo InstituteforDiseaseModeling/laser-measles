@@ -73,7 +73,6 @@ jobs:
     - name: install dependencies
       run: |
         python -m pip install --progress-bar=off cibuildwheel -r ci/requirements.txt
-        python -m pip install git+https://github.com/InstituteforDiseaseModeling/RasterToolkit.git
         virtualenv --version
         pip --version
         tox --version
