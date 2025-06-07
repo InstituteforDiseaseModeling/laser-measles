@@ -81,8 +81,11 @@ def add_dotname(
     if inplace:
         for suffix in [".shp", ".shx", ".prj", ".cpg", ".prj", ".dbf"]:
             temp_path = make_temp_path(path, append_suffix=append_suffix, suffix=suffix)
+            target_path = path.with_suffix(suffix)
             if temp_path.exists():
-                temp_path.rename(path.with_suffix(suffix))
+                if target_path.exists():
+                    target_path.unlink()  # Remove existing file first
+                temp_path.rename(target_path)
 
 
 def get_dataframe(shapefile_path: str | Path) -> pl.DataFrame:
