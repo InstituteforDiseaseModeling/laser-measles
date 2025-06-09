@@ -87,16 +87,15 @@ def add_dotname(
                     target_path.unlink()  # Remove existing file first
                 temp_path.rename(target_path)
 
-
-def get_dataframe(shapefile_path: str | Path) -> pl.DataFrame:
+def get_shapefile_dataframe(shapefile_path: str | Path) -> pl.DataFrame:
     """
-    Get a Polars DataFrame containing the shapefile data with DOTNAME and shape columns.
+    Get a DataFrame containing the shapefile data with DOTNAME and shape columns.
 
     Args:
         shapefile_path: The path to the shapefile.
 
     Returns:
-        A Polars DataFrame with DOTNAME and shape columns.
+        A DataFrame with DOTNAME and shape columns.
     """
     shapefile_path = (
         Path(shapefile_path) if isinstance(shapefile_path, str) else shapefile_path
@@ -125,28 +124,31 @@ def get_dataframe(shapefile_path: str | Path) -> pl.DataFrame:
 
         return df
 
-        return df
-
-def plot_dataframe(df: pl.DataFrame, ax: plt.Axes | None = None, plot_kwargs: dict | None = None) -> plt.Figure:
+def plot_shapefile_dataframe(df: pl.DataFrame, ax: plt.Axes | None = None, plot_kwargs: dict | None = None) -> plt.Figure:
     if ax is None:
         fig, ax = plt.subplots()
     if plot_kwargs is None:
         plot_kwargs = {}
     default_plot_kwargs = {
         "closed": True,
-        "fill": False,
+        "fill": True,
         "edgecolor": "black",
-        "linewidth": 0.5,
+        "linewidth": 1.0,
+        "facecolor": "white",
     }
     default_plot_kwargs.update(plot_kwargs)
+    # if "facecolor" in default_plot_kwargs:
+        # default_plot_kwargs["fill"] = True
     xlim = [float("inf"), float("-inf")]
     ylim = [float("inf"), float("-inf")]
     def get_data(data: list[tuple[float, float]], index: int) -> list[float]:
         return [x[index] for x in data]
  
     for shape in df["shape"]:
-        polygon = Polygon(shape.points, **default_plot_kwargs)
-        ax.add_patch(polygon)
+        parts = [*shape.parts, len(shape.points)]
+        for part in range(len(parts) - 1): # Only plot first shape?
+            polygon = Polygon(shape.points[parts[part]:parts[part+1]], **default_plot_kwargs)
+            ax.add_patch(polygon)
         xlim[0] = min(xlim[0], min(get_data(shape.points, 0)))
         xlim[1] = max(xlim[1], max(get_data(shape.points, 0)))
         ylim[0] = min(ylim[0], min(get_data(shape.points, 1)))
@@ -159,5 +161,5 @@ def plot_dataframe(df: pl.DataFrame, ax: plt.Axes | None = None, plot_kwargs: di
 
 
 if __name__ == "__main__":
-    df = get_dataframe("/home/krosenfeld/code/laser-measles/examples/expanding_kano/gadm41_NGA_shp/gadm41_NGA_2_shp")
-    plot_dataframe(df)
+    df = get_shapefile_dataframe("/home/krosenfeld/code/laser-measles/examples/expanding_kano/gadm41_NGA_shp/gadm41_NGA_2_shp")
+    plot_shapefile_dataframe(df)
