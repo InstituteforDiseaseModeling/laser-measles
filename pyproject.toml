@@ -31,7 +31,7 @@ maintainers = [
   {name = "Christopher Lorton", email = "christopher.lorton@gatesfoundation.org"}
 ]
 description = "Spatial models of measles implemented with the LASER toolkit."
-readme = "README.md"
+readme = "README.rst"
 license = {file = "LICENSE"}
 keywords = ["measles", "spatial", "modeling", "laser"]
 classifiers = [
