@@ -1,5 +1,9 @@
 __version__ = "0.6.1"
 
+# --- Exports ---
+from .api import *  # noqa: F403
+from .api import __all__
+
 from .antibodies import MaternalAntibodies
 from .births import Births
 from .core import compute
