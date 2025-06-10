@@ -28,6 +28,14 @@ laser\_measles.antibodies module
    :undoc-members:
    :show-inheritance:
 
+laser\_measles.api module
+-------------------------
+
+.. automodule:: laser_measles.api
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 laser\_measles.births module
 ----------------------------
 

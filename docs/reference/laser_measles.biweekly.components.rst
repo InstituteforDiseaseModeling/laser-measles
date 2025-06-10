@@ -25,14 +25,6 @@ laser\_measles.biweekly.components.infection module
    :undoc-members:
    :show-inheritance:
 
-laser\_measles.biweekly.components.routine\_immunization module
----------------------------------------------------------------
-
-.. automodule:: laser_measles.biweekly.components.routine_immunization
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 laser\_measles.biweekly.components.vital\_dynamics module
 ---------------------------------------------------------
 
