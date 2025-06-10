@@ -139,11 +139,6 @@ search = 'version="{current_version}"'
 replace = 'version="{new_version}"'
 
 [[tool.bumpversion.files]]
-filename = "README.rst"
-search = "/v{current_version}...main"
-replace = "/v{new_version}...main"
-
-[[tool.bumpversion.files]]
 filename = "docs/conf.py"
 search = 'version = release = "{current_version}"'
 replace = 'version = release = "{new_version}"'
