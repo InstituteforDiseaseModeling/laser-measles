@@ -76,3 +76,9 @@ Note, to combine the coverage data from all the tox environments run:
       - ::
 
             PYTEST_ADDOPTS=--cov-append tox
+
+You can check that the bump versioning works by running:
+
+.. code-block:: bash
+
+    uvx bump-my-version bump minor --dry-run -vv
