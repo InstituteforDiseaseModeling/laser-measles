@@ -67,7 +67,7 @@ html_theme_options = {
     "navigation_depth": 3,
     "show_prev_next": True,
     "icon_links": [
-        {"name": "Web", "url": "https://starsim.org", "icon": "fas fa-home"},
+        {"name": "Web", "url": "https://laser-measles.readthedocs.io/en/latest/", "icon": "fas fa-home"},
         {
             "name": "GitHub",
             "url": "https://github.com/InstituteforDiseaseModeling/laser-measles",
