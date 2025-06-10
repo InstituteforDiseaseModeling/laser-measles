@@ -1,8 +1,10 @@
 """
-Raster patch generator for demographic data. 
+Raster patch generator for demographic data.
 You can use this to generate initial conditions for a laser-measles scenario.
 """
 
+import os
+from datetime import datetime
 from pathlib import Path
 
 import alive_progress
@@ -45,6 +47,37 @@ class RasterPatchGenerator:
         self.mcv2 = None
         self._validate_config()
 
+    def _get_file_mtime(self, file_path: str | Path) -> float:
+        """Get the modification time of a file."""
+        return os.path.getmtime(file_path)
+
+    def _check_source_files_modified(self, cache_key: str) -> bool:
+        """Check if any source files have been modified since cache was created."""
+        with cache.load_cache() as c:
+            if cache_key not in c:
+                return True
+
+            cache_entry = c[cache_key]
+            if not isinstance(cache_entry, dict) or "timestamp" not in cache_entry:
+                return True
+
+            cache_time = cache_entry["timestamp"]
+
+            # Check shapefile modification time
+            if self._get_file_mtime(self.shapefile) > cache_time:
+                return True
+
+            # Check population raster modification time
+            if self._get_file_mtime(self.config.population_raster_path) > cache_time:
+                return True
+
+            # Check MCV1 raster if it exists
+            if cache_key == "mcv1" and self.config.mcv1_raster_path:
+                if self._get_file_mtime(self.config.mcv1_raster_path) > cache_time:
+                    return True
+
+            return False
+
     def generate_demographics(self) -> None:
         self._validate_shapefile()
         self.population = self.generate_population()
@@ -54,6 +87,7 @@ class RasterPatchGenerator:
     def _validate_config(self) -> None:
         if not shapefiles.check_field(self.config.shapefile_path, "DOTNAME"):
             raise ValueError(f"Shapefile {self.config.shapefile_path} does not have a DOTNAME field")
+        self._validate_shapefile()
 
     def _validate_shapefile(self):
         """ """
@@ -65,14 +99,16 @@ class RasterPatchGenerator:
         self.shapefile = path
 
     def get_cache_key(self, key) -> str:
-        keys = ["shapefile", "population", "mcv1", "mcv2"]
+        keys = ["shapefile", "population", "mcv1"]
         if key not in keys:
             raise ValueError(f"Invalid key: {key}\nValid keys are: {keys}")
         return f"{self.config.id}" + ":" + key
 
     def generate_population(self) -> pl.DataFrame:
+        cache_key = self.get_cache_key("population")
+
         with cache.load_cache() as c:
-            if self.get_cache_key("population") not in c:
+            if cache_key not in c or self._check_source_files_modified(cache_key):
                 # clip the raster to the shapefile
                 with alive_progress.alive_bar(title="Clipping population raster to shapefile"):
                     popdict = raster_clip(self.config.population_raster_path, self.shapefile, include_latlon=True)
@@ -82,15 +118,18 @@ class RasterPatchGenerator:
                         new_dict["lat"].append(v["lat"])
                         new_dict["lon"].append(v["lon"])
                         new_dict["pop"].append(v["pop"])
-                    c[self.get_cache_key("population")] = new_dict
-            new_dict = c[self.get_cache_key("population")]
-            return pl.DataFrame(new_dict)
+
+                    # Store data with timestamp
+                    c[cache_key] = {"data": new_dict, "timestamp": datetime.now().timestamp()}
+
+            return pl.DataFrame(c[cache_key]["data"])
 
     def generate_mcv1(self) -> pl.DataFrame:
         """MCV1 coverage, population weighted"""
+        cache_key = self.get_cache_key("mcv1")
 
         with cache.load_cache() as c:
-            if self.get_cache_key("mcv1") not in c:
+            if cache_key not in c or self._check_source_files_modified(cache_key):
                 # Value array: Set negative values to zero
                 new_values_raster_file = self.config.mcv1_raster_path.with_name(f"{self.config.mcv1_raster_path.stem}_zeros.tif")
                 with Image.open(self.config.mcv1_raster_path) as raster:
@@ -119,13 +158,15 @@ class RasterPatchGenerator:
                         include_latlon=True,
                         weight_summary_func=np.mean,
                     )
-                    c[self.get_cache_key("mcv1")] = mcv_dict
+
+                    # Store data with timestamp
+                    c[cache_key] = {"data": mcv_dict, "timestamp": datetime.now().timestamp()}
 
                 # remove the rasters
                 new_weight_raster_file.unlink()
                 new_values_raster_file.unlink()
 
-        mcv_dict = c[self.get_cache_key("mcv1")]
+        mcv_dict = c[cache_key]["data"]
         new_dict = {"dotname": [], "lat": [], "lon": [], "mcv1": []}
         for k, v in mcv_dict.items():
             new_dict["dotname"].append(k)
@@ -146,6 +187,7 @@ class RasterPatchGenerator:
     def generate_mortality_rates(self) -> pl.DataFrame: ...
 
     def _add_dotname(self) -> None: ...
+
 
 if __name__ == "__main__":
     gadm = GADMShapefile("NGA")
