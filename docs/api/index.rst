@@ -93,15 +93,15 @@ Biweekly model utilities and mixing functions:
 
    mixing
 
-Generic Model
+ABM Model
 =============
 
-.. currentmodule:: laser_measles.generic
+.. currentmodule:: laser_measles.abm
 
 Core Model
 ----------
 
-General-purpose epidemiological model for any geographic region:
+Agent based model
 
 .. autosummary::
    :toctree: _autosummary
