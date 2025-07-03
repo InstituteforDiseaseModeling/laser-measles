@@ -7,7 +7,7 @@ name = "laser-measles"
 version = "0.6.3"
 
 dependencies = [
-  #"laser-core>=0.5.1",
+  "laser-core>=0.5.1",
   "diskcache>=5.6.3",
   "appdirs>=1.4.4",
   "pydantic>=2.11.5",
@@ -47,10 +47,9 @@ classifiers = [
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
-    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.12",    
     "Programming Language :: Python :: Implementation :: CPython",
     "Topic :: Utilities",
 ]
@@ -159,8 +158,9 @@ filename = "pyproject.toml"
 search = 'version = "{current_version}"'
 replace = 'version = "{new_version}"'
 
-[dependency-groups]
+[project.optional-dependencies]
 dev = [
+    "pytest",
     "pytest-order>=1.1.1",
 ]
 docs = [
@@ -171,4 +171,14 @@ examples = [
     "jupytext>=1.17.2",
     "notebook>=7.4.3",
     "seaborn>=0.13.2",
+    "ipykernel>=6.0.0",
+]
+full = [
+    "pytest-order>=1.1.1",
+    "sphinx-autodoc-typehints>=3.0.1",
+    "sphinxcontrib-napoleon>=0.7",
+    "jupytext>=1.17.2",
+    "notebook>=7.4.3",
+    "seaborn>=0.13.2",
+    "ipykernel>=6.0.0",
 ]

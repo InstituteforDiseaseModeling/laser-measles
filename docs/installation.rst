@@ -15,6 +15,45 @@ You can also install the in-development version with:
 
     pip install git+https://github.com/InstituteforDiseaseModeling/laser-measles.git@main
 
+Optional Dependencies
+====================
+
+The package supports several optional dependency groups that can be installed for additional functionality:
+
+.. code-block:: bash
+
+    # Development dependencies (testing, linting)
+    pip install laser-measles[dev]
+
+    # Documentation dependencies (Sphinx, autodoc)
+    pip install laser-measles[docs]
+
+    # Example dependencies (Jupyter, notebooks, plotting)
+    pip install laser-measles[examples]
+
+    # All optional dependencies
+    pip install laser-measles[full]
+
+Dependency Groups
+----------------
+
+**dev**: Development tools for testing and code quality
+    - pytest: Testing framework
+    - pytest-order: Ordered test execution
+
+**docs**: Documentation building tools
+    - sphinx-autodoc-typehints: Type hint documentation
+    - sphinxcontrib-napoleon: Google/NumPy docstring support
+
+**examples**: Tools for running examples and tutorials
+    - jupytext: Jupyter notebook text conversion
+    - notebook: Jupyter notebook interface
+    - seaborn: Statistical data visualization
+    - ipykernel: Jupyter kernel support
+
+**full**: All optional dependencies combined
+    - Includes all packages from dev, docs, and examples groups
+
 Development
 ===========
 
