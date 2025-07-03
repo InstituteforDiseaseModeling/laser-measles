@@ -28,9 +28,9 @@ class RasterPatchParams(BaseModel):
     id: str = Field(..., description="Unique identifier for the scenario")
     region: str = Field(..., description="Country identifier (ISO3 code)")
     shapefile: str | Path = Field(..., description="Path to the shapefile")
-    population_raster: str | Path = Field(..., description="Path to the population raster")
-    mcv1_raster: str | Path | None = Field(None, description="Path to the MCV1 raster")
-    mcv2_raster: str | Path | None = Field(None, description="Path to the MCV2 raster")
+    population_raster: str | Path | None = Field(default=None, description="Path to the population raster")
+    mcv1_raster: str | Path | None = Field(default=None, description="Path to the MCV1 raster")
+    mcv2_raster: str | Path | None = Field(default=None, description="Path to the MCV2 raster")
 
     @field_validator("shapefile")
     def shapefile_exists(cls, v, info):
