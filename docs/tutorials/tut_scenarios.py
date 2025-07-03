@@ -17,8 +17,10 @@ from pathlib import Path
 from IPython.display import display
 from laser_measles.demographics import GADMShapefile, get_shapefile_dataframe, plot_shapefile_dataframe
 
+# Name of the shapefile you want to use
 shapefile = Path("ETH/gadm41_ETH_1.shp")
 
+# We will check whether it exists and download it
 if not shapefile.exists():
     shp = GADMShapefile.download("ETH", admin_level=1 )
     print("Shapefile is now at", shp.shapefile)
@@ -26,9 +28,11 @@ else:
     print("Shapefile already exists")
     shp = GADMShapefile(shapefile=shapefile, admin_level=1)
 
+# Access the shapfile and metadata as a polars dataframe
+# This looks like geopandas but is more limited.
 df = get_shapefile_dataframe(shp.shapefile)
 print(df.head(n=2))
-
+# Plot the shapefile
 plot_shapefile_dataframe(df, plot_kwargs={'facecolor': 'xkcd:sky blue'});
 
 # %% [markdown]
@@ -67,9 +71,11 @@ config = RasterPatchParams(
     shapefile=shp.shapefile,
     population_raster=output_path,
 )
+# Create the generator
 generator = RasterPatchGenerator(config)
+# Time the population calculation
 with sc.Timer() as t:
-    # Generate the demographics (in this case the population)
+    # Generate the demographics (in this case the population per patch)
     generator.generate_demographics()
     print(f"Total population: {generator.population['pop'].sum()/1e6:.2f} million") # Should be ~90.5M
 # the result is stored in a polars dataframe and can be accessed via `population`
@@ -86,6 +92,8 @@ with sc.Timer() as t:
     new_generator.generate_demographics()
     print(f"Total population: {new_generator.population['pop'].sum()/1e6:.2f} million") # Should be ~90.5M
 
+# Note how the time to run the `generate_demographics` method a second time is greatly improved.
+
 # %% [markdown]
 # You can access the cache directory using the associated module
 
@@ -101,22 +109,23 @@ print(f"Cache directory: {cache.get_cache_dir()}")
 
 # %%
 
-# set the patch size
-patch_size = 700 # km
+# Set the patch size
+patch_size = 700 # sq km
 
 # Create the GADMShapefile using the original shapefile
 new_shp = GADMShapefile(shapefile=shp.shapefile, admin_level=1)
-# Subdivide
+
+# Subdivide the original shapefile (this is costly)
 new_shp.shape_subdivide(patch_size_km=patch_size)
 print("Shapefile is now at", new_shp.shapefile)
 
+# Get the results as a polars dataframe
 new_df = get_shapefile_dataframe(new_shp.shapefile)
 display(new_df.head(n=2))
 
+# Plot the resulting shapes
 import matplotlib.pyplot as plt
 plt.figure()
 ax = plt.gca()
 plot_shapefile_dataframe(new_df, plot_kwargs={'facecolor': 'xkcd:sky blue', 'edgecolor':'gray'}, ax=ax)
 plot_shapefile_dataframe(df, plot_kwargs={'fill': False}, ax=ax);
-
-

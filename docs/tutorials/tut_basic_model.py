@@ -254,8 +254,7 @@ def make_plot(model):
     ax1.set_title('Susceptible Fraction Over Time')
     ax1.grid(True, alpha=0.3)
 
-    # Plot 4: Spatial distribution of final states
-
+    # Plot 2: Spatial distribution of final states
     final_recovered = model.patches.states[lookup_state_idx(model, 'R')] + model.patches.states[lookup_state_idx(model, 'I')]  # R + I
     initial_population = scenario_data['pop'].to_numpy()
     attack_rates = (final_recovered / initial_population) * 100
@@ -275,7 +274,7 @@ def make_plot(model):
         ax2.annotate(f'N{i+1}', (lon, lat), xytext=(5, 5), 
                     textcoords='offset points', fontsize=8)
 
-    # Plot 5: Epidemic curve (new infections per time step)
+    # Plot 3: Epidemic curve (infections per time step)
     ax3 = plt.subplot(1, 3, 3)
     ax3.plot(time_steps, state_tracker.I, 'red', linewidth=1)
     ax3.set_xlabel('Time (ticks)')
@@ -297,5 +296,3 @@ make_plot(biweekly_model)
 
 # %%
 make_plot(compartmental_model)
-
-# %%
