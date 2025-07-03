@@ -1,5 +1,5 @@
 # %% [markdown]
-# # Basic Modeling Tutorial
+# # Creating and running models
 #
 # This tutorial demonstrates how to initialize and run a model using
 # the laser-measles framework.

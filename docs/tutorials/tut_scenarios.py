@@ -1,13 +1,15 @@
 # %% [markdown]
-# # Initialization using shapefiles and rasters
-
-# %% [markdown]
-# The initial conditions of the simulation are dictated by demographics (e.g., population, age distribution, etc.). The laser-measles package provides a number of tools to help you generate demographics for your simulation. In this tutorial, we'll download and process a shapefile of Ethiopia at administrative level 1 boundaries to estimate intitial populations per patch. We will also show how we can sub-divide each boundary shape into roughly equal-area patches.
+# # Creating model scenarios
+#
+# The initial conditions of the simulation are dictated by demographics (e.g., population, age distribution, etc.).
+# The laser-measles package provides a number of tools to help you generate demographics for your simulation.
+# In this tutorial, we'll download and process a shapefile of Ethiopia at administrative level 1 boundaries
+# to estimate intitial populations per patch. We will also show how we can sub-divide each boundary shape
+# into roughly equal-area patches.
 
 # %% [markdown]
 # ## Setup and plot the shapefile
-
-# %% [markdown]
+#
 # laser-measles provides some functionality for downloading and plotting GADM shapefiles. Below we will download the data, print it as a dataframe, and then plot it. Note that we have constructed a `DOTNAME` attribute has the format `COUNTRY:REGION`. The data is located in the local directory.
 
 # %%
@@ -31,9 +33,9 @@ plot_shapefile_dataframe(df, plot_kwargs={'facecolor': 'xkcd:sky blue'});
 
 # %% [markdown]
 # ## Population calculation
-
-# %% [markdown]
-# For the simulation we will want to know the initial number of people in each region. First we'll download our population file (~5.6MB) from worldpop using standard libraries:
+#
+# For the simulation we will want to know the initial number of people in each region. 
+# First we'll download our population file (~5.6MB) from worldpop using standard libraries:
 
 # %%
 import requests
@@ -52,7 +54,8 @@ if not output_path.exists():
         print(f"Failed to download. Status code: {response.status_code}")
 
 # %% [markdown]
-# We use the `RasterPatchGenerator` to sum the population in each of the shapes. This is saved into a dataframe that we can use to initialize a simulation.
+# We use the `RasterPatchGenerator` to sum the population in each of the shapes.
+# This is saved into a dataframe that we can use to initialize a simulation.
 
 # %%
 from laser_measles.demographics import RasterPatchParams, RasterPatchGenerator
@@ -69,10 +72,12 @@ with sc.Timer() as t:
     # Generate the demographics (in this case the population)
     generator.generate_demographics()
     print(f"Total population: {generator.population['pop'].sum()/1e6:.2f} million") # Should be ~90.5M
+# the result is stored in a polars dataframe and can be accessed via `population`
 generator.population.head(n=2)
 
 # %% [markdown]
-# laser-measles demographics uses caching to save results. Now we will run the calculation again with a new instance of the `RasterPatchGenerator`.
+# laser-measles demographics uses caching to save results.
+# Now we will run the calculation again with a new instance of the `RasterPatchGenerator`.
 
 # %%
 new_generator = RasterPatchGenerator(config)
@@ -90,15 +95,18 @@ print(f"Cache directory: {cache.get_cache_dir()}")
 
 # %% [markdown]
 # ## Sub-divide the regions
-
-# %% [markdown]
-# Now we will generate roughtly equal area patches of 700 km using the original `shp` shapefile. Now each shape has a unique identifier with the form `COUNTRY:REGION:ID`. We will also time how long this takes.
+#
+# Now we will generate roughtly equal area patches of 700 km using the original `shp` shapefile.
+# Now each shape has a unique identifier with the form `COUNTRY:REGION:ID`. We will also time how long this takes.
 
 # %%
-patch_size = 700 # km
-new_shapefile = Path(f"ETH/gadm41_ETH_1_{patch_size}km.shp")
 
+# set the patch size
+patch_size = 700 # km
+
+# Create the GADMShapefile using the original shapefile
 new_shp = GADMShapefile(shapefile=shp.shapefile, admin_level=1)
+# Subdivide
 new_shp.shape_subdivide(patch_size_km=patch_size)
 print("Shapefile is now at", new_shp.shapefile)
 

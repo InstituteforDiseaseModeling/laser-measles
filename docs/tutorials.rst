@@ -8,8 +8,7 @@ These tutorials are designed to get you started with the basics of the library.
     :maxdepth: 1
     
     tutorials/tut_basic_model.ipynb    
-    tutorials/tut_demographics.ipynb
-    tutorials/tut_generic_model_initialization.ipynb
+    tutorials/tut_scenarios.ipynb
 
 Feature tutorials
 ------------------

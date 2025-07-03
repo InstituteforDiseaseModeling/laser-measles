@@ -1,5 +1,5 @@
 # %% [markdown]
-# # Parameter validation using Pydantic
+# # Parameter validation
 #
 # This tutorial demonstrates the strengths of using Pydantic's BaseModel to define simulation 
 # parameters. Pydantic provides type 
@@ -21,6 +21,7 @@ import polars as pl
 from pydantic import BaseModel, Field, ValidationError
 from datetime import date
 from typing import Callable
+import traceback
 
 # Import the component parameter classes
 from laser_measles.biweekly.components import (
@@ -31,7 +32,8 @@ from laser_measles.biweekly.components import (
 )
 
 # %% [markdown]
-# ## Type Validation and Default Values**
+# ## Type Validation and Default Values
+#
 # Pydantic automatically validates parameter types and provides clear default values
 
 # %%
@@ -57,6 +59,7 @@ print(f"  season_start: {custom_infection_params.season_start}")
 
 # %% [markdown]
 # ## Range Constraints and Validation
+#
 # Pydantic enforces numerical constraints automatically
 
 # %%
@@ -69,6 +72,7 @@ try:
     print(f"✓ Valid beta=15.0: {valid_params.beta}")
 except ValidationError as e:
     print(f"✗ Validation error: {e}")
+    print(traceback.format_exc())
 
 # This will fail - beta must be > 0
 try:
@@ -76,8 +80,7 @@ try:
     print(f"✓ Invalid beta=-5.0: {invalid_params.beta}")
 except ValidationError as e:
     print(f"✗ Validation error for beta=-5.0:")
-    for error in e.errors():
-        print(f"  Field: {error['loc'][0]}, Error: {error['msg']}")
+    print(traceback.format_exc())
 
 # This will fail - seasonality must be 0 <= value <= 1
 try:
@@ -85,8 +88,7 @@ try:
     print(f"✓ Invalid seasonality=1.5: {invalid_params.seasonality}")
 except ValidationError as e:
     print(f"✗ Validation error for seasonality=1.5:")
-    for error in e.errors():
-        print(f"  Field: {error['loc'][0]}, Error: {error['msg']}")
+    print(traceback.format_exc())
 
 # %% [markdown]
 # ## Self-Documenting Parameters
@@ -190,8 +192,7 @@ try:
     print(f"✓ String 'high' converted: {params.detection_rate}")
 except ValidationError as e:
     print(f"✗ Invalid string conversion:")
-    for error in e.errors():
-        print(f"  Field: {error['loc'][0]}, Error: {error['msg']}")
+    print(traceback.format_exc())
 
 # Common mistake: out of range values
 # Note: ImportationPressureParams validation happens in the component's _validate_params method
@@ -201,8 +202,7 @@ try:
     print(f"✓ Negative importation rate accepted: {params.crude_importation_rate}")
 except ValidationError as e:
     print(f"✗ Negative importation rate caught:")
-    for error in e.errors():
-        print(f"  Field: {error['loc'][0]}, Error: {error['msg']}")
+    print(traceback.format_exc())
 
 # Time range validation happens at component level, not parameter level
 params_with_bad_time_range = ImportationPressureParams(
@@ -221,10 +221,10 @@ print("\n=== Parameter Inheritance and Customization ===")
 # Extend InfectionParams for a specific study
 class SeasonalInfectionParams(InfectionParams):
     """Extended infection parameters with seasonal variations"""
-    
-    winter_multiplier: float = Field(1.2, description="Winter transmission multiplier", gt=0.0)
-    summer_multiplier: float = Field(0.8, description="Summer transmission multiplier", gt=0.0)
-    humidity_effect: float = Field(0.05, description="Humidity effect on transmission", ge=0.0, le=0.5)
+
+    winter_multiplier: float = Field(default=1.2, description="Winter transmission multiplier", gt=0.0)
+    summer_multiplier: float = Field(default=0.8, description="Summer transmission multiplier", gt=0.0)
+    humidity_effect: float = Field(default=0.05, description="Humidity effect on transmission", ge=0.0, le=0.5)
 
 # Create extended parameters
 seasonal_params = SeasonalInfectionParams(
@@ -249,6 +249,7 @@ except ValidationError as e:
 
 # %% [markdown]
 # ## Configuration Management
+#
 # Pydantic makes it easy to manage multiple parameter sets for different scenarios
 
 # %%
@@ -285,7 +286,7 @@ def compare_scenarios(scenario1, scenario2, param_type):
     """Compare parameters between scenarios"""
     params1 = scenarios[scenario1][param_type]
     params2 = scenarios[scenario2][param_type]
-    
+
     print(f"\nComparing {param_type} parameters: {scenario1} vs {scenario2}")
     for field_name in params1.__class__.model_fields:
         val1 = getattr(params1, field_name)
@@ -296,8 +297,8 @@ def compare_scenarios(scenario1, scenario2, param_type):
 compare_scenarios("baseline", "high_transmission", "infection")
 
 # %% [markdown]
-
 # ## IDE Support and Type Hints
+#
 # Pydantic provides excellent IDE support with autocomplete and type checking
 
 # %%
