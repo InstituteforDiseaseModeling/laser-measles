@@ -26,3 +26,8 @@ from .tracker_state import StateTracker  # noqa: F401, E402
 __all__.extend(
     ["CaseSurveillanceParams", "CaseSurveillanceTracker", "FadeOutTracker", "SIACalendarParams", "SIACalendarProcess", "StateTracker"]
 )
+
+from .process_infection_seeding import InfectionSeedingParams  # noqa: F401, E402
+from .process_infection_seeding import InfectionSeedingProcess  # noqa: F401, E402
+
+__all__.extend(["InfectionSeedingParams", "InfectionSeedingProcess"])
