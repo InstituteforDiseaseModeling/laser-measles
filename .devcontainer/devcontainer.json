@@ -1,5 +1,5 @@
 {
-  "image": "mcr.microsoft.com/devcontainers/python:3.9",
+  "image": "mcr.microsoft.com/devcontainers/python:3.12",
   "customizations": {
       // Configure properties specific to VS Code.
       "vscode": {
@@ -11,9 +11,6 @@
               "ms-toolsai.jupyter-renderers",
               "charliermarsh.ruff",
               "github.codespace",
-              "github.copilot",
-              "github.copilot-chat",
-              "mechatroner.raincsv",
               "vscode-icons-team.vscode-icons"
           ]
       }
