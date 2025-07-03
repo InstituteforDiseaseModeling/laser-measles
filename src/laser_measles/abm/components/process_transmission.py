@@ -65,8 +65,8 @@ class TransmissionParams(BaseModel):
     """Parameters specific to the transmission process component."""
     
     beta: float = Field(default=32, description="Base transmission rate", gt=0.0)
-    seasonality_factor: Optional[float] = Field(default=1.0, description="Seasonality factor", ge=0.0, le=1.0)
-    seasonality_phase: Optional[float] = Field(default=0, description="Seasonality phase")
+    seasonality_factor: float = Field(default=1.0, description="Seasonality factor", ge=0.0, le=1.0)
+    seasonality_phase: float = Field(default=0, description="Seasonality phase")
     exp_mu: float = Field(default=11.0, description="Exposure mean (lognormal)", gt=0.0)
     exp_sigma: float = Field(default=2.0, description="Exposure sigma (lognormal)", gt=0.0)
     inf_mean: float = Field(default=8.0, description="Mean infection duration", gt=0.0)
