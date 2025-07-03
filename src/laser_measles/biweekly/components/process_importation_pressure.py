@@ -10,9 +10,9 @@ from laser_measles.utils import cast_type
 class ImportationPressureParams(BaseModel):
     """Parameters specific to the importation pressure component."""
 
-    crude_importation_rate: float = Field(1, description="Yearly crude importation rate per 1k population", ge=0.0)
-    importation_start: int = Field(0, description="Start time for importation (in biweeks)", ge=0)
-    importation_end: int = Field(4, description="End time for importation (in biweeks)", ge=0)
+    crude_importation_rate: float = Field(default=1, description="Yearly crude importation rate per 1k population", ge=0.0)
+    importation_start: int = Field(default=0, description="Start time for importation (in biweeks)", ge=0)
+    importation_end: int = Field(default=-1, description="End time for importation (in biweeks)", ge=-1)
 
 
 class ImportationPressureProcess(BaseComponent):
@@ -48,32 +48,30 @@ class ImportationPressureProcess(BaseComponent):
 
     def _validate_params(self) -> None:
         """Validate component parameters."""
-        if self.params.importation_end <= self.params.importation_start:
+        if self.params.importation_end != -1 and self.params.importation_end <= self.params.importation_start:
             raise ValueError("importation_end must be greater than importation_start")
 
         if self.params.crude_importation_rate < 0:
             raise ValueError("crude_importation_rate must be non-negative")
 
     def __call__(self, model, tick: int) -> None:
-        if tick < self.params.importation_start or tick > self.params.importation_end:
+        if tick < self.params.importation_start or (self.params.importation_end != -1 and tick > self.params.importation_end):
             return
 
         # state counts
         states = model.patches.states
 
         # population
-        population = states.sum(axis=0)
+        population = states.sum(axis=0, dtype=np.int64) # promote to int64, otherwise binomial draw will fail
 
-        # importation pressure
-        importation_pressure = population * (self.params.crude_importation_rate / 26.0 / 1000.0)
-
-        # ensure importation pressure is not greater than the susceptible population
-        importation_pressure = cast_type(importation_pressure, states.dtype)
-        np.minimum(importation_pressure, states[0], out=importation_pressure)
+        # Sample actual number of imported cases
+        imported_cases = np.random.binomial(population, (self.params.crude_importation_rate / 365.0 / 1000.0))
+        imported_cases = cast_type(imported_cases, states.dtype)
+        np.minimum(imported_cases, states.S, out=imported_cases)
 
         # update states
-        states[0] -= importation_pressure
-        states[1] += importation_pressure  # Move to infected state
+        states.S -= imported_cases
+        states.I += imported_cases  # Move to infected state
 
     def initialize(self, model: BaseLaserModel) -> None:
         pass
