@@ -213,7 +213,7 @@ class BaseLaserModel(ABC, Generic[ScenarioType, ParamsType]):
         Print timing summary for verbose mode.
         """
         try:
-            import pandas as pd
+            import pandas as pd # noqa: PLC0415, I001
 
             names = [type(phase).__name__ for phase in self.phases]
             metrics = pd.DataFrame(self.metrics, columns=["tick", *names])
@@ -226,7 +226,7 @@ class BaseLaserModel(ABC, Generic[ScenarioType, ParamsType]):
             print(f"{'Total:':{width + 1}} {sum_columns.sum():13,} microseconds")
         except ImportError:
             try:
-                import polars as pl
+                import polars as pl # noqa: PLC0415, I001
 
                 names = [type(phase).__name__ for phase in self.phases]
                 metrics = pl.DataFrame(self.metrics, schema=["tick"] + names)
@@ -318,7 +318,7 @@ class BaseLaserModel(ABC, Generic[ScenarioType, ParamsType]):
             # Don't let cleanup errors crash the program
             print(f"Warning: Error during model cleanup: {e}")
 
-    def get_instance(self, cls: type) -> list:
+    def get_instance(self, cls: type | str) -> list:
         """
         Get all instances of a specific component class.
 
@@ -334,10 +334,13 @@ class BaseLaserModel(ABC, Generic[ScenarioType, ParamsType]):
             if state_trackers:
                 state_tracker = state_trackers[0]  # Get first instance
         """
-        matches = [instance for instance in self.instances if isinstance(instance, cls)]
+        if isinstance(cls, str):
+            matches = [instance for instance in self.instances if instance.name == cls]
+        else:
+            matches = [instance for instance in self.instances if isinstance(instance, cls)]
         return matches if matches else [None]
 
-    def get_component(self, cls: type) -> list:
+    def get_component(self, cls: type | str) -> list:
         """
         Alias for get_instance (instances are instantiated, components are not)
         """
@@ -389,6 +392,7 @@ class BaseComponent(ABC):
         self.model = model
         self.verbose = verbose
         self.initialized = False
+        self.name = self.__class__.__name__
 
     @abstractmethod
     def initialize(self, model: BaseLaserModel) -> None:
