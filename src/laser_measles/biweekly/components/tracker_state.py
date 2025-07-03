@@ -27,11 +27,11 @@ class StateTrackerParams(BaseModel):
 
 class StateTracker(BasePhase):
     """
-    Component for tracking the number in each SEIR state for each time tick.
+    Component for tracking the number in each SIR state for each time tick.
 
     This class maintains a time series of state counts across nodes in the model.
     The states are dynamically generated as properties based on model.params.states
-    (e.g., "S", "E", "I", "R"). Each state can be accessed as a property that returns
+    (e.g., "S", "I", "R"). Each state can be accessed as a property that returns
     a numpy array containing the time series for that state.
 
     The tracking can be done at different aggregation levels:
@@ -46,6 +46,7 @@ class StateTracker(BasePhase):
 
     def __init__(self, model, verbose: bool = False, params: StateTrackerParams | None = None) -> None:
         super().__init__(model, verbose)
+        self.name = "StateTracker"
         self.params = params or StateTrackerParams()
         self._validate_params()
 

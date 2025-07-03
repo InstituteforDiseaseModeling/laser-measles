@@ -46,6 +46,7 @@ class StateTracker(BasePhase):
 
     def __init__(self, model, verbose: bool = False, params: StateTrackerParams | None = None) -> None:
         super().__init__(model, verbose)
+        self.name = "StateTracker"
         self.params = params or StateTrackerParams()
         self._validate_params()
 
