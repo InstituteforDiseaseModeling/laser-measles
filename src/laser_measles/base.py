@@ -18,6 +18,7 @@ from datetime import datetime
 from datetime import timedelta
 from typing import Any
 from typing import Generic
+from typing import Protocol
 from typing import TypeVar
 
 import alive_progress
@@ -27,7 +28,17 @@ from matplotlib.backends.backend_pdf import PdfPages
 from matplotlib.figure import Figure
 
 ScenarioType = TypeVar("ScenarioType")
-ParamsType = TypeVar("ParamsType")
+
+class ParamsProtocol(Protocol):
+    """Protocol defining the expected structure of model parameters."""
+    
+    seed: int | None
+    start_time: str
+    num_ticks: int
+    time_step_days: int
+    verbose: bool
+
+ParamsType = TypeVar("ParamsType", bound=ParamsProtocol)
 
 class BaseLaserModel(ABC, Generic[ScenarioType, ParamsType]):
     """
@@ -216,7 +227,7 @@ class BaseLaserModel(ABC, Generic[ScenarioType, ParamsType]):
             import pandas as pd # noqa: PLC0415, I001
 
             names = [type(phase).__name__ for phase in self.phases]
-            metrics = pd.DataFrame(self.metrics, columns=["tick", *names])
+            metrics = pd.DataFrame(self.metrics, columns=["tick"] + names)
             plot_columns = metrics.columns[1:]
             sum_columns = metrics[plot_columns].sum()
             width = max(map(len, sum_columns.index))
@@ -367,17 +378,17 @@ class BaseLaserModel(ABC, Generic[ScenarioType, ParamsType]):
         else:
             print("Generating PDF output…")
             pdf_filename = f"{self.name} {self.tstart:%Y-%m-%d %H%M%S}.pdf"
-            with PdfPages(pdf_filename) as pdf:
+            with PdfPages(pdf_filename) as pdf_file:
                 for instance in self.instances:
                     for _plot in instance.plot():
-                        pdf.savefig()
+                        pdf_file.savefig()
                         plt.close()
 
             print(f"PDF output saved to '{pdf_filename}'.")
 
         return
 
-    def plot(self, fig: Figure = None):
+    def plot(self, fig: Figure | None = None):
         raise NotImplementedError("Subclasses must implement this method")
 
 class BaseComponent(ABC):

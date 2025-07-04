@@ -13,9 +13,9 @@ class BiweeklyParams(BaseModel):
     """
 
     num_ticks: int = Field(..., description="Number of time steps (bi-weekly for 20 years)")
-    seed: int = Field(20241107, description="Random seed")
-    start_time: str = Field("2005-01", description="Initial start time of simulation in YYYY-MM format")
-    verbose: bool = Field(False, description="Whether to print verbose output")
+    seed: int = Field(default=20250314, description="Random seed")
+    start_time: str = Field(default="2005-01", description="Initial start time of simulation in YYYY-MM format")
+    verbose: bool = Field(default=False, description="Whether to print verbose output")
 
     @property
     def time_step_days(self) -> int:
@@ -27,3 +27,5 @@ class BiweeklyParams(BaseModel):
 
     def __str__(self) -> str:
         return json.dumps(OrderedDict(sorted(self.model_dump().items())), indent=2)
+
+Params = BiweeklyParams
