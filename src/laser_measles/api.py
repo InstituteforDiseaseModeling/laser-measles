@@ -6,6 +6,7 @@ from . import biweekly  # noqa: F401
 from . import demographics  # noqa: F401
 from . import abm  # noqa: F401
 from . import compartmental  # noqa: F401
+from . import scenarios  # noqa: F401
 
 __all__.extend(
     [
@@ -13,6 +14,7 @@ __all__.extend(
         "demographics",
         "abm",
         "compartmental",
+        "scenarios",
     ]
 )
 

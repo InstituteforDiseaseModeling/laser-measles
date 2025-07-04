@@ -13,54 +13,29 @@
 # %% [markdown]
 # ## Setting up the scenario
 #
-# First we'll create a scenario with 9 spatial nodes (patches) representing
-# different communities. Each node has population, geographic coordinates, and
-# MCV1 vaccination coverage. We will also divide the nodes into 3 different
-# sections using colon convection: (sub_division_i:node_j). This is useful for
-# doing spatial aggregation of e.g., case counts.
+# First we'll create a scenario with two clusters of 50 spatial nodes each,
+# representing different communities around two major population centers.
+# Each node has population, geographic coordinates, and MCV1 vaccination coverage.
+# The nodes are distributed around each center using a Gaussian distribution
+# for radial distance, creating realistic spatial clustering patterns.
+# We will also divide the nodes into clusters using colon convention: (cluster_i:node_j).
+# This is useful for doing spatial aggregation of e.g., case counts.
 
 # %%
 import numpy as np
 import polars as pl
+import matplotlib.pyplot as plt
+from laser_measles.scenarios import synthetic
 
-# Set random seed for reproducibility
-np.random.seed(42)
-
-# Create scenario data for 9 nodes arranged in a 3x3 grid
-n_nodes = 9
-node_ids = [f"node_{i+1}" for i in range(n_nodes)]
-
-# Subdivide the grid into sections
-node_ids = [f"div_{j // 3}:{node_id}" for j,node_id in enumerate(node_ids)]
-
-# Create a 3x3 grid of coordinates
-grid_size = 3
-coordinates = []
-for i in range(grid_size):
-    for j in range(grid_size):
-        lat = 40.0 + i * 0.5  # Latitude from 40.0 to 41.0
-        lon = -74.0 + j * 0.5  # Longitude from -74.0 to -73.0
-        coordinates.append((lat, lon))
-
-lats, lons = zip(*coordinates)
-
-# Generate population sizes (10,000 to 100,000 per node)
-populations = np.random.randint(10000, 100000, n_nodes)
-
-# Generate MCV1 coverage (40% to 70%)
-mcv1_coverage = np.random.uniform(0.4, 0.7, n_nodes)
-
-# Create scenario DataFrame
-scenario_data = pl.DataFrame({
-    "id": node_ids,
-    "pop": populations,
-    "lat": lats,
-    "lon": lons,
-    "mcv1": mcv1_coverage
-})
-
-print("Scenario data:")
-print(scenario_data)
+scenario_data = synthetic.two_cluster_scenario(cluster_size_std=1.0)
+plt.figure(figsize=(10, 10))
+plt.scatter(scenario_data['lon'], scenario_data['lat'], c=scenario_data['pop'], cmap='viridis')
+plt.colorbar(label='Population')
+plt.xlabel('Longitude')
+plt.ylabel('Latitude')
+plt.title('Population Distribution')
+plt.show()
+scenario_data.head(n=3)
 
 # %% [markdown]
 # ## Model selection
@@ -255,24 +230,23 @@ def make_plot(model):
     ax1.grid(True, alpha=0.3)
 
     # Plot 2: Spatial distribution of final states
+    scenario_data = model.scenario
+    coordinates = scenario_data[["lat", "lon"]].to_numpy()
     final_recovered = model.patches.states[lookup_state_idx(model, 'R')] + model.patches.states[lookup_state_idx(model, 'I')]  # R + I
     initial_population = scenario_data['pop'].to_numpy()
     attack_rates = (final_recovered / initial_population) * 100
     ax2 = plt.subplot(1, 3, 2)
     coords_array = np.array(coordinates)
     # Size points by population, color by attack rate
+    # Scale down point sizes for better visualization with many nodes
+    point_sizes = np.array(scenario_data['pop']) / 1000
     scatter = ax2.scatter(coords_array[:, 1], coords_array[:, 0],
-                        s=populations/500, c=attack_rates,
+                        s=point_sizes, c=attack_rates,
                         cmap='Reds', alpha=0.7, edgecolors='black')
     ax2.set_xlabel('Longitude')
     ax2.set_ylabel('Latitude')
     ax2.set_title('Spatial Attack Rate Distribution')
     plt.colorbar(scatter, ax=ax2, label='Attack Rate (%)')
-
-    # Add node labels
-    for i, (lon, lat) in enumerate(coordinates):
-        ax2.annotate(f'N{i+1}', (lon, lat), xytext=(5, 5), 
-                    textcoords='offset points', fontsize=8)
 
     # Plot 3: Epidemic curve (infections per time step)
     ax3 = plt.subplot(1, 3, 3)
