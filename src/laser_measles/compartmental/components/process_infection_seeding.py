@@ -18,12 +18,12 @@ from laser_measles.utils import cast_type
 class InfectionSeedingParams(BaseModel):
     """Parameters for the infection seeding component."""
 
-    num_infections: int = Field(1, description="Default number of infections to seed", ge=1)
-    target_patches: list[str] | None = Field(None, description="List of specific patch IDs to seed")
+    num_infections: int = Field(default=1, description="Default number of infections to seed", ge=1)
+    target_patches: list[str] | None = Field(default=None, description="List of specific patch IDs to seed")
     infections_per_patch: (
         int | list[int]
-    ) | None = Field(None, description="Number of infections per patch (single int or list matching target_patches)")
-    use_largest_patch: bool = Field(True, description="Whether to seed the largest patch by default")
+    ) | None = Field(default=None, description="Number of infections per patch (single int or list matching target_patches)")
+    use_largest_patch: bool = Field(default=True, description="Whether to seed the largest patch by default")
 
     @validator("infections_per_patch")
     def validate_infections_per_patch(cls, v, values):
@@ -110,8 +110,6 @@ class InfectionSeedingProcess(BaseComponent):
         """
         if self.verbose:
             print("Initializing infection seeding...")
-
-        states = model.patches.states
 
         # Get patch information from the scenario
         scenario_df = model.scenario.unwrap()
