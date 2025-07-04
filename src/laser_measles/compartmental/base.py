@@ -2,9 +2,8 @@
 Basic classes
 """
 import numpy as np
-import polars as pl
-from pydantic import BaseModel
 import patito as pt
+import polars as pl
 
 class BaseScenarioSchema(pt.Model):
     """

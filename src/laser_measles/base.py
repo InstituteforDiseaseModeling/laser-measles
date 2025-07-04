@@ -36,12 +36,15 @@ ScenarioType = TypeVar("ScenarioType")
 
 class ParamsProtocol(Protocol):
     """Protocol defining the expected structure of model parameters."""
-    
-    seed: int | None
+
+    seed: int
     start_time: str
     num_ticks: int
-    time_step_days: int
     verbose: bool
+    @property
+    def time_step_days(self) -> int: ...
+    @property
+    def states(self) -> list[str]: ...
 
 ParamsType = TypeVar("ParamsType", bound=ParamsProtocol)
 
