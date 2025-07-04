@@ -16,5 +16,6 @@ These tutorials are designed to highlight specific features of the library.
 
 .. toctree::
     :maxdepth: 1
-
+    
+    tutorials/tut_random_numbers.ipynb  
     tutorials/tut_pydantic_component_parameters.ipynb
