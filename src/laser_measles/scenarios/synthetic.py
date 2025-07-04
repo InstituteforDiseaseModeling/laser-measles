@@ -2,13 +2,24 @@ import numpy as np
 import polars as pl
 
 
+def single_patch_scenario(
+    seed: int = 42,
+    population: int = 100_000,
+    mcv1_coverage: float = 0.0
+) -> pl.DataFrame:
+    """ Generate a synthetic scenario with a single patch.
+    """
+    df = pl.DataFrame({"id": ["patch_1"], "pop": [population], "lat": [40.0], "lon": [4.0], "mcv1": [mcv1_coverage]})
+    return df
+
+
 def two_cluster_scenario(
     seed: int = 42,
     n_nodes_per_cluster: int = 50,
     cluster_centers: list[tuple[float, float]] | None = None,
     cluster_size_std: float = 0.3,
     mcv1_coverage_range: tuple[float, float] | None = None,
-):
+) -> pl.DataFrame:
     """ Generate a synthetic scenario with two clusters of nodes.
 
     Args:
@@ -62,7 +73,7 @@ def two_cluster_scenario(
             node_ids.append(node_id)
             coordinates.append((cluster_lats[i], cluster_lons[i]))
 
-    lats, lons = zip(*coordinates)
+    lats, lons = zip(*coordinates, strict=False)
 
     # Generate population sizes with larger populations near cluster centers
     populations = []
