@@ -23,20 +23,15 @@ from typing import TypeVar
 
 import alive_progress
 import matplotlib.pyplot as plt
+import polars as pl
 from laser_core.random import seed as seed_prng
 from matplotlib.backends.backend_pdf import PdfPages
 from matplotlib.figure import Figure
-
-try:
-    import polars as pl  # noqa: PLC0415
-except ImportError:
-    pl = None  # type: ignore
 
 ScenarioType = TypeVar("ScenarioType")
 
 class ParamsProtocol(Protocol):
     """Protocol defining the expected structure of model parameters."""
-
     seed: int
     start_time: str
     num_ticks: int
@@ -48,6 +43,10 @@ class ParamsProtocol(Protocol):
 
 ParamsType = TypeVar("ParamsType", bound=ParamsProtocol)
 
+class LaserFrameWithStates(Protocol):
+    """Protocol for LaserFrame that has a states property."""
+    states: Any  # StateArray with attribute access (S, E, I, R, etc.)
+
 class BaseLaserModel(ABC, Generic[ScenarioType, ParamsType]):
     """
     Base class for laser-measles simulation models.
@@ -55,6 +54,9 @@ class BaseLaserModel(ABC, Generic[ScenarioType, ParamsType]):
     Provides common functionality for model initialization, component management,
     timing, metrics collection, and execution loops.
     """
+
+    # Type annotations for attributes that subclasses will set
+    patches: LaserFrameWithStates
 
     def __init__(self, scenario: ScenarioType, params: ParamsType, name: str) -> None:
         """
@@ -443,9 +445,34 @@ class BasePhase(BaseComponent):
     def __call__(self, model, tick: int) -> None:
         """Execute component logic for a given simulation tick."""
 
-class BaseScenario(Protocol):
-    """
-    Protocol for all laser-measles scenarios.
-    """
-    
-    df: Any  # DataFrame from polars or pandas
+# class BaseScenario(Protocol):
+#     """
+#     Protocol for all laser-measles scenarios.
+#     """
+
+#     df: Any  # DataFrame from polars or pandas
+
+class BaseScenario(ABC):
+    def __init__(self, df: pl.DataFrame):
+        self._df = df
+
+    @abstractmethod
+    def _validate(self, df: pl.DataFrame):
+        # Validate required columns exist - derive from schema
+        raise NotImplementedError("Subclasses must implement this method")
+
+    def __getattr__(self, attr):
+        # Forward attribute access to the underlying DataFrame
+        return getattr(self._df, attr)
+
+    def __getitem__(self, key):
+        return self._df[key]
+
+    def __repr__(self):
+        return repr(self._df)
+
+    def __len__(self):
+        return len(self._df)
+
+    def unwrap(self) -> pl.DataFrame:
+        return self._df

@@ -1,27 +1,29 @@
 """
-Basic classes
+Basic classes for biweekly model.
 """
 import numpy as np
 import polars as pl
-from pydantic import BaseModel
+import patito as pt
+
+from laser_measles.base import BaseScenario
 
 
-class BaseScenarioSchema(BaseModel):
+class BaseScenarioSchema(pt.Model):
     """
     Schema for the scenario data.
     """
 
-    pop: list[int]  # population
-    lat: list[float]  # latitude
-    lon: list[float]  # longitude
-    id: list[str | int]  # id of the patches
-    mcv1: list[float]  # MCV1 coverages (as percentages, will be divided by 100)
+    pop: int  # population
+    lat: float  # latitude
+    lon: float  # longitude
+    id: str # ids of the nodes
+    mcv1: float  # MCV1 coverages (as percentages, will be divided by 100)
 
 
-class BaseScenario:
+class BaseBiweeklyScenario(BaseScenario):
     def __init__(self, df: pl.DataFrame):
-        self._df = df
-        self._validate(df)
+        super().__init__(df)
+        BaseScenarioSchema.validate(df, allow_superfluous_columns=True)
 
     def _validate(self, df: pl.DataFrame):
         # Validate required columns exist
@@ -62,18 +64,4 @@ class BaseScenario:
         except Exception as e:
             raise ValueError(f"DataFrame validation error:\n{e}") from e
 
-    def __getattr__(self, attr):
-        # Forward attribute access to the underlying DataFrame
-        return getattr(self._df, attr)
-
-    def __getitem__(self, key):
-        return self._df[key]
-
-    def __repr__(self):
-        return repr(self._df)
-
-    def __len__(self):
-        return len(self._df)
-
-    def unwrap(self) -> pl.DataFrame:
-        return self._df
+BaseScenario = BaseBiweeklyScenario
