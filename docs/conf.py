@@ -135,9 +135,44 @@ if os.environ.get('READTHEDOCS') == 'True':
     search_project = os.environ["READTHEDOCS_PROJECT"]
     search_version = os.environ["READTHEDOCS_VERSION"]
 
-    rtd_sphinx_search_default_filter = f"subprojects:{search_project}/{search_version}"
+    rtd_sphinx_search_default_filter = f"subprojects:{search_project_parent}/{search_version}"
 
     rtd_sphinx_search_filters = {
         "Search this project": f"project:{search_project}/{search_version}",
         "Search all IDM docs": f"subprojects:{search_project_parent}/{search_version}",
     }
+
+# -- Linkcheck configuration -------------------------------------------------
+# Configuration for sphinx-build -b linkcheck
+
+# URLs that should be ignored during link checking
+linkcheck_ignore = [
+    r'https://chatgpt\.com/g/g-674f5fd33aec8191bcdc1a2736fb7c8d-laser-gpt-jenner',  # Requires authentication
+    r'https://.*\.idmod\.org/.*',  # Internal IDM links that may require auth
+    r'https://.*\.gatesfoundation\.org/.*',  # Gates Foundation internal links
+]
+
+# HTTP status codes that should be considered as "working" (not broken)
+# 403 = Forbidden (requires authentication)
+# 401 = Unauthorized (requires authentication) 
+linkcheck_allowed_redirects = {
+    r'https://.*\.idmod\.org/.*': r'.*',
+    r'https://.*\.gatesfoundation\.org/.*': r'.*',
+}
+
+# Timeout for link checking (in seconds)
+linkcheck_timeout = 30
+
+# Number of workers for parallel link checking
+linkcheck_workers = 5
+
+# Whether to check anchors in links
+linkcheck_anchors = False
+
+# Whether to check anchors in relative links
+linkcheck_anchors_ignore = [
+    r'#.*',  # Ignore all anchor links
+]
+
+# Retry count for failed links
+linkcheck_retries = 2

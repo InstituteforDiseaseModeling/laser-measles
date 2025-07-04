@@ -19,3 +19,9 @@ These tutorials are designed to highlight specific features of the library.
     
     tutorials/tut_random_numbers.ipynb  
     tutorials/tut_pydantic_component_parameters.ipynb
+
+AI Assistance
+------------
+
+For those within IDM you can use our custom GPT `Laser-GPT Jenner <https://chatgpt.com/g/g-674f5fd33aec8191bcdc1a2736fb7c8d-laser-gpt-jenner>`_
+to get help with ``laser-core``.
