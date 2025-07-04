@@ -162,6 +162,8 @@ replace = 'version = "{new_version}"'
 dev = [
     "pytest",
     "pytest-order>=1.1.1",
+    "pyright",
+    "mypy"
 ]
 docs = [
     "sphinx-autodoc-typehints>=3.0.1",
@@ -181,4 +183,6 @@ full = [
     "notebook>=7.4.3",
     "seaborn>=0.13.2",
     "ipykernel>=6.0.0",
+    "mypy",
+    "pyright"
 ]
