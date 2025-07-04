@@ -65,7 +65,7 @@ class ImportationPressureProcess(BaseComponent):
         population = states.sum(axis=0, dtype=np.int64) # promote to int64, otherwise binomial draw will fail
 
         # Sample actual number of imported cases
-        imported_cases = np.random.binomial(population, (self.params.crude_importation_rate / 365.0 / 1000.0))
+        imported_cases = model.prng.binomial(population, (self.params.crude_importation_rate / 365.0 / 1000.0))
         imported_cases = cast_type(imported_cases, states.dtype)
         np.minimum(imported_cases, states.S, out=imported_cases)
 

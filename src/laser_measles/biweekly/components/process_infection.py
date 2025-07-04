@@ -1,13 +1,13 @@
 import numpy as np
-from pydantic import BaseModel
 from pydantic import Field
 
-from laser_measles.base import BasePhase, BaseLaserModel
+from laser_measles.base import BaseLaserModel
+from laser_measles.base_components import BaseInfection, BaseInfectionParams
 from laser_measles.biweekly.mixing import init_gravity_diffusion
 from laser_measles.utils import cast_type
 
 
-class InfectionParams(BaseModel):
+class InfectionParams(BaseInfectionParams):
     """Parameters specific to the infection process component."""
 
     beta: float = Field(default=1, description="Base transmission rate (infections per day)", gt=0.0) # beta = R0 / (mean infectious period)
@@ -20,7 +20,7 @@ class InfectionParams(BaseModel):
     def beta_per_tick(self) -> float:
         return (self.beta * 365) / 26
 
-class InfectionProcess(BasePhase):
+class InfectionProcess(BaseInfection):
     """
     Component for simulating the spread of infection in the model.
 
@@ -78,7 +78,7 @@ class InfectionProcess(BasePhase):
         )
 
         prob = 1 - np.exp(-lambda_i)                         # already per-susceptible
-        dI   = np.random.binomial(states[0], prob).astype(states.dtype)
+        dI   = model.prng.binomial(states[0], prob).astype(states.dtype)
 
         # move all currently infected to recovered (using configurable recovery period)
         states[2] += states[1]

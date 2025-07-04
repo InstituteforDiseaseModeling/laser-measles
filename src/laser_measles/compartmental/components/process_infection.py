@@ -98,15 +98,15 @@ class InfectionProcess(BasePhase):
 
         # 1. S → E: New exposures
         prob_exposure = 1 - np.exp(-lambda_i)
-        new_exposures = np.random.binomial(states.S, prob_exposure).astype(states.dtype)
+        new_exposures = cast_type(model.prng.binomial(states.S, prob_exposure), states.dtype)
 
         # 2. E → I: Progression to infectious
         prob_infection = 1 - np.exp(-self.params.sigma)
-        new_infections = np.random.binomial(states.E, prob_infection).astype(states.dtype)
+        new_infections = cast_type(model.prng.binomial(states.E, prob_infection), states.dtype)
 
         # 3. I → R: Recovery
         prob_recovery = 1 - np.exp(-self.params.gamma)
-        new_recoveries = np.random.binomial(states.I, prob_recovery).astype(states.dtype)
+        new_recoveries = cast_type(model.prng.binomial(states.I, prob_recovery), states.dtype)
 
         # Update compartments
         states.S -= new_exposures  # S decreases
