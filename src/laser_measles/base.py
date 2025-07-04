@@ -27,6 +27,11 @@ from laser_core.random import seed as seed_prng
 from matplotlib.backends.backend_pdf import PdfPages
 from matplotlib.figure import Figure
 
+try:
+    import polars as pl  # noqa: PLC0415
+except ImportError:
+    pl = None  # type: ignore
+
 ScenarioType = TypeVar("ScenarioType")
 
 class ParamsProtocol(Protocol):
@@ -58,7 +63,8 @@ class BaseLaserModel(ABC, Generic[ScenarioType, ParamsType]):
             name: Model name
         """
         self.tinit = datetime.now(tz=None)  # noqa: DTZ005
-        print(f"{self.tinit}: Creating the {name} model…")
+        if params.verbose:
+            print(f"{self.tinit}: Creating the {name} model…")
 
         self.scenario = scenario
         self.params = params
@@ -165,7 +171,8 @@ class BaseLaserModel(ABC, Generic[ScenarioType, ParamsType]):
         # TODO: Check that the model has been initialized
         num_ticks = self.params.num_ticks
         self.tstart = datetime.now(tz=None)  # noqa: DTZ005
-        print(f"{self.tstart}: Running the {self.name} model for {num_ticks} ticks…")
+        if self.params.verbose:
+            print(f"{self.tstart}: Running the {self.name} model for {num_ticks} ticks…")
 
         self.metrics = []
         with alive_progress.alive_bar(num_ticks) as bar:
@@ -174,9 +181,8 @@ class BaseLaserModel(ABC, Generic[ScenarioType, ParamsType]):
                 bar()
 
         self.tfinish = datetime.now(tz=None)  # noqa: DTZ005
-        print(f"Completed the {self.name} model at {self.tfinish}…")
-
-        if getattr(self.params, "verbose", False):
+        if self.params.verbose:
+            print(f"Completed the {self.name} model at {self.tfinish}…")
             self._print_timing_summary()
 
     def _execute_tick(self, tick: int) -> None:
@@ -433,3 +439,10 @@ class BasePhase(BaseComponent):
     @abstractmethod
     def __call__(self, model, tick: int) -> None:
         """Execute component logic for a given simulation tick."""
+
+class BaseScenario(Protocol):
+    """
+    Protocol for all laser-measles scenarios.
+    """
+    
+    df: Any  # DataFrame from polars or pandas
