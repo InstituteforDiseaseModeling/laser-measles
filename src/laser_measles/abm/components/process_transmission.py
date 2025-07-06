@@ -26,61 +26,62 @@ Functions:
 
 import numba as nb
 import numpy as np
-from matplotlib import pyplot as plt
-from matplotlib.figure import Figure
-from pydantic import BaseModel, Field
-from typing import Optional
+from pydantic import BaseModel
+from pydantic import Field
 
-from laser_measles.base import BaseComponent
+from laser_measles.base import BasePhase
+from laser_measles.compartmental.mixing import init_gravity_diffusion  # TODO: consolidate spatial mixing into separate module
+
 
 @nb.njit(
-    (nb.uint8[:], nb.uint16[:], nb.uint8[:], nb.float32[:], nb.uint16[:], nb.uint32, nb.float32, nb.float32, nb.uint32[:], nb.uint32[:], nb.int_),
+    (nb.uint8[:], nb.uint16[:], nb.uint8[:], nb.float64[:], nb.uint16[:], nb.uint32, nb.float32, nb.float32, nb.uint32[:]),
     parallel=True,
     nogil=True,
-    cache=True,
 )
-def nb_transmission_update(
-    states, nodeids, state, forces, etimers, count, exp_mu, exp_sigma, incidence, doi, tick
-):  # pragma: no cover
+def nb_lognormal_update(states, patch_ids, state, forces, etimers, count, exp_mu, exp_sigma, flow):  # pragma: no cover
     """Numba compiled function to stochastically transmit infection to agents in parallel."""
-    max_node_id = np.max(nodeids)
-    thread_incidences = np.zeros((nb.config.NUMBA_DEFAULT_NUM_THREADS, max_node_id + 1), dtype=np.uint32)
+    max_node_id = np.max(patch_ids)
+    thread_incidences = np.zeros((nb.get_num_threads(), max_node_id + 1), dtype=np.uint32)
 
     for i in nb.prange(count):
         state = states[i]
         if state == 0:
-            nodeid = nodeids[i]
-            force = forces[nodeid]  # force of infection attenuated by personal susceptibility
+            patch_id = patch_ids[i]
+            force = forces[patch_id]  # force of infection attenuated by personal susceptibility
             if (force > 0) and (np.random.random_sample() < force):  # draw random number < force means infection
                 states[i] = 1  # set state to exposed
                 # set exposure timer for newly infected individuals to a draw from a lognormal distribution, must be at least 1 day
                 etimers[i] = np.maximum(np.uint16(1), np.uint16(np.round(np.random.lognormal(exp_mu, exp_sigma))))
-                doi[i] = tick
-                thread_incidences[nb.get_thread_id(), nodeid] += 1
+                thread_incidences[nb.get_thread_id(), patch_id] += 1
 
-    incidence[:] = thread_incidences.sum(axis=0)
+    flow[:] = thread_incidences.sum(axis=0)
 
     return
+
+
 class TransmissionParams(BaseModel):
     """Parameters specific to the transmission process component."""
-    
+
     beta: float = Field(default=32, description="Base transmission rate", gt=0.0)
     seasonality_factor: float = Field(default=1.0, description="Seasonality factor", ge=0.0, le=1.0)
-    seasonality_phase: float = Field(default=0, description="Seasonality phase")
+    season_start: float = Field(default=0.0, description="Seasonality phase", ge=0, le=364)
     exp_mu: float = Field(default=11.0, description="Exposure mean (lognormal)", gt=0.0)
     exp_sigma: float = Field(default=2.0, description="Exposure sigma (lognormal)", gt=0.0)
-    inf_mean: float = Field(default=8.0, description="Mean infection duration", gt=0.0)
-    inf_sigma: float = Field(default=2.0, description="Shape parameter for infection duration", gt=0.0)
+    distance_exponent: float = Field(default=1.5, description="Distance exponent", ge=0.0)
+    mixing_scale: float = Field(default=0.001, description="Mixing scale", ge=0.0)
 
     @property
-    def inf_shape(self) -> float:
-        return (self.inf_mean / self.inf_sigma) ** 2
-    
+    def mu_underlying(self) -> float:
+        """The mean of the underlying lognormal distribution."""
+        return np.log(self.exp_mu**2 / np.sqrt(self.exp_mu**2 + self.exp_sigma**2))
+
     @property
-    def inf_scale(self) -> float:
-        return self.inf_mean / self.inf_shape
-    
-class TransmissionProcess(BaseComponent):
+    def sigma_underlying(self) -> float:
+        """The standard deviation of the underlying lognormal distribution."""
+        return np.sqrt(np.log(1 + (self.exp_sigma / self.exp_mu) ** 2))
+
+
+class TransmissionProcess(BasePhase):
     """
     A component to model the transmission of disease in a population.
     """
@@ -108,19 +109,13 @@ class TransmissionProcess(BaseComponent):
         super().__init__(model, verbose)
 
         self.params = params if params is not None else TransmissionParams()
+        self._mixing = None
 
-        model.population.add_scalar_property("etimer", dtype=np.uint16, default=0)
-        model.population.add_scalar_property("itimer", dtype=np.uint16, default=0)
-        model.population.add_scalar_property("doi", dtype=np.uint32, default=0)
-
-        model.patches.add_vector_property("exposed", length=model.params.nticks, dtype=np.uint32)
-        model.patches.add_vector_property("recovered", length=model.params.nticks, dtype=np.uint32)
-        model.patches.add_vector_property("cases", length=model.params.nticks, dtype=np.uint32)
-        model.patches.add_scalar_property("forces", dtype=np.float32)
-        model.patches.add_vector_property("incidence", model.params.nticks, dtype=np.uint32)
-
+        # add new properties to the laserframes
+        model.people.add_scalar_property("etimer", dtype=np.uint16, default=0)  # exposure timer
+        model.people.add_scalar_property("itimer", dtype=np.uint16, default=0)  # infection timer
+        model.patches.add_scalar_property("incidence", dtype=np.uint32, default=0)  # new infections per time step
         return
-
 
     def __call__(self, model, tick) -> None:
         """
@@ -142,48 +137,40 @@ class TransmissionProcess(BaseComponent):
             None
 
         """
+        # access the patch and people laserframes
         patches = model.patches
-        population = model.population
+        people = model.people
 
-        patches.cases[tick,:] = np.bincount(population.nodeid[population.state == 2], 
-                                            minlength=patches.count).astype(patches.populations.dtype)
+        seasonal_factor = 1 + self.params.seasonality_factor * np.sin(2 * np.pi * (tick - self.params.season_start) / 365)
+        beta_effective = self.params.beta * seasonal_factor
 
-        contagion = patches.cases[tick, :]  # we will accumulate current infections into this view into the cases array
-        # contagion = patches.cases_test[tick, :].copy().astype(np.float32)
-        if hasattr(patches, "network"):
-            network = patches.network
-            transfer = contagion * network.T
-            contagion += transfer.sum(axis=1)  # increment by incoming "migration"
-            contagion -= transfer.sum(axis=0)  # decrement by outgoing "migration"
+        # transfer between and w/in patches
+        # NB: this assumes that the mixing matrix is properly normalized
+        # i.e., that the sum of each row is 1 (self.mixing.sum(axis=1) == 1)
+        forces = self.mixing @ (beta_effective * patches.states.I)
 
-        forces = patches.forces
-        beta_effective = self.params.beta
-        if 'seasonality_factor' in model.params:
-            beta_effective *= (1+ self.params.seasonality_factor * np.sin(
-            2 * np.pi * (tick - self.params.seasonality_phase) / 365
-            ))
-
-        np.multiply(contagion, beta_effective, out=forces)
-        np.divide(forces, model.patches.populations, out=forces)  # per agent force of infection
+        # normalize by the population
+        forces /= patches.states[:-1, :].sum(axis=0)
         np.negative(forces, out=forces)
-        np.expm1(forces, out=forces)
+        np.expm1(forces, out=forces) # exp(x) - 1
         np.negative(forces, out=forces)
 
-        nb_transmission_update(
-            population.state,
-            population.nodeid,
-            population.state,
+        # S --> E
+        nb_lognormal_update(
+            people.state,
+            people.patch_id,
+            people.state,
             forces,
-            population.etimer,
-            population.count,
-            self.params.exp_mu,
-            self.params.exp_sigma,
-            model.patches.incidence[tick, :],
-            population.doi,
-            tick,
+            people.etimer,
+            people.count,
+            np.float32(self.params.mu_underlying),
+            np.float32(self.params.sigma_underlying),
+            model.patches.incidence, # flow
         )
+        # Update susceptible and exposed counters
+        patches.states.S -= model.patches.incidence
+        patches.states.E += model.patches.incidence
         return
-
 
     def on_birth(self, model, _tick, istart, iend) -> None:
         """
@@ -210,48 +197,14 @@ class TransmissionProcess(BaseComponent):
             model.population.doi[istart] = 0
         return
 
-    def plot(self, fig: Figure = None):
-        """
-        Plots the cases and incidence for the two largest patches in the model.
+    @property
+    def mixing(self) -> np.ndarray:
+        """Returns the mixing matrix, initializing if necessary"""
+        if self._mixing is None:
+            self._mixing = init_gravity_diffusion(self.model.scenario, self.params.mixing_scale, self.params.distance_exponent)
+        return self._mixing
 
-        This function creates a figure with four subplots:
-
-            - Cases for the largest patch
-            - Incidence for the largest patch
-            - Cases for the second largest patch
-            - Incidence for the second largest patch
-
-        If no figure is provided, a new figure is created with a size of 12x9 inches and a DPI of 128.
-
-        Parameters:
-
-            fig (Figure, optional): A Matplotlib Figure object to plot on. If None, a new figure is created.
-
-        Yields:
-
-            None
-        """
-
-        fig = plt.figure(figsize=(12, 9), dpi=128) if fig is None else fig
-        fig.suptitle("Cases and Incidence for Two Largest Patches")
-
-        itwo, ione = np.argsort(self.model.patches.populations[-1, :])[-2:]
-
-        fig.add_subplot(2, 2, 1)
-        plt.title(f"Cases - Node {ione}")  # ({self.names[ione]})")
-        plt.plot(self.model.patches.cases[:, ione])
-
-        fig.add_subplot(2, 2, 2)
-        plt.title(f"Incidence - Node {ione}")  # ({self.names[ione]})")
-        plt.plot(self.model.patches.incidence[:, ione])
-
-        fig.add_subplot(2, 2, 3)
-        plt.title(f"Cases - Node {itwo}")  # ({self.names[itwo]})")
-        plt.plot(self.model.patches.cases[:, itwo])
-
-        fig.add_subplot(2, 2, 4)
-        plt.title(f"Incidence - Node {itwo}")  # ({self.names[itwo]})")
-        plt.plot(self.model.patches.incidence[:, itwo])
-
-        yield
-        return
+    @mixing.setter
+    def mixing(self, mixing: np.ndarray) -> None:
+        """Sets the mixing matrix"""
+        self._mixing = mixing

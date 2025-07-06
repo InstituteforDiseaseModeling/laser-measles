@@ -1,14 +1,15 @@
 """
 Basic classes
 """
+
 import numpy as np
-import polars as pl
-from pydantic import BaseModel
 import patito as pt
+import polars as pl
 
-from laser_measles.base import BaseScenario
+from laser_measles.base import BaseScenario as LaserMeaslesBaseScenario
 
-class BaseScenarioSchema(pt.Model):
+
+class BaseABMScenarioSchema(pt.Model):
     """
     Schema for the scenario data.
     """
@@ -16,17 +17,18 @@ class BaseScenarioSchema(pt.Model):
     pop: int  # population
     lat: float  # latitude
     lon: float  # longitude
-    id: str # ids of the nodes
-    mcv1: float  # MCV1 coverages (as percentages, will be divided by 100)
+    id: str  # ids of the nodes
+    mcv1: float  # MCV1 coverage
 
-class BaseABMScenario(BaseScenario):
+
+class BaseABMScenario(LaserMeaslesBaseScenario):
     def __init__(self, df: pl.DataFrame):
         super().__init__(df)
-        BaseScenarioSchema.validate(df, allow_superfluous_columns=True)
+        BaseABMScenarioSchema.validate(df, allow_superfluous_columns=True)
 
     def _validate(self, df: pl.DataFrame):
         # Validate required columns exist - derive from schema
-        required_columns = list(BaseScenarioSchema.model_fields.keys())
+        required_columns = list(BaseABMScenarioSchema.model_fields.keys())
         missing_columns = [col for col in required_columns if col not in df.columns]
         if missing_columns:
             raise ValueError(f"Missing required columns: {missing_columns}")
@@ -62,5 +64,6 @@ class BaseABMScenario(BaseScenario):
 
         except Exception as e:
             raise ValueError(f"DataFrame validation error:\n{e}") from e
+
 
 BaseScenario = BaseABMScenario

@@ -44,28 +44,43 @@ Model Class:
             Generates plots for the scenario patches and populations, distribution of day of birth, and update phase times.
 """
 
-
 import numpy as np
 import polars as pl
+from typing import Protocol
 from laser_core.laserframe import LaserFrame
-from laser_core.propertyset import PropertySet
 from matplotlib import pyplot as plt
 from matplotlib.figure import Figure
 
 from laser_measles.base import BaseLaserModel
-from laser_measles.utils import cast_type, StateArray
+from laser_measles.utils import cast_type, StateArray, get_laserframe_properties
+from laser_measles.abm.base import BaseABMScenario
+
+from . import components
 
 from .components.process_births import BirthsProcess
 from .components.process_births_contant_pop import BirthsConstantPopProcess
 from .params import ABMParams
 
+class PeopleLaserFrame(LaserFrame):
+    """
+    Laserframe for people (e.g., agent) properties
+    """
+    patch_id: np.ndarray
+    state: np.ndarray
+    susceptibility: np.ndarray
 
-class ABMModel(BaseLaserModel):
+    def __init__(self, capacity: int, initial_count: int = 0) -> None:
+        super().__init__(capacity=capacity, initial_count=initial_count)
+
+
+class ABMModel(BaseLaserModel[BaseABMScenario, ABMParams]):
     """
     A class to represent the agent-based model.
     """
 
-    def __init__(self, scenario: pl.DataFrame, parameters: ABMParams, name: str = "abm") -> None:
+    people: PeopleLaserFrame
+
+    def __init__(self, scenario: BaseABMScenario, params: ABMParams, name: str = "abm") -> None:
         """
         Initialize the disease model with the given scenario and parameters.
 
@@ -79,21 +94,26 @@ class ABMModel(BaseLaserModel):
 
             None
         """
-        super().__init__(scenario, parameters, name)
+        super().__init__(scenario, params, name)
 
         print(f"Initializing the {name} model with {len(scenario)} patches…")
 
-        # Setup patches and people - initialization is done via components
-        self.setup_patches(scenario, parameters)
-        self.setup_people(scenario, parameters)
+        # Setup patches
+        self.setup_patches()
+        # Setup people - initialization is done via components
+        self.setup_people()
 
         return
 
-    def setup_patches(self, scenario: pl.DataFrame, parameters: PropertySet) -> None:
+    def setup_patches(self) -> None:
+        """Setup the patches for the model."""
+
+        scenario = self.scenario
+
         self.patches = LaserFrame(capacity=len(scenario))
         # Create the state vector for each of the patches (4, num_patches) for SEIR
         self.patches.add_vector_property("states", len(self.params.states))  # S, E, I, R
-        
+
         # Wrap the states array with StateArray for attribute access
         self.patches.states = StateArray(self.patches.states, state_names=self.params.states)
 
@@ -102,51 +122,53 @@ class ABMModel(BaseLaserModel):
         self.patches.states.E[:] = 0  # No exposed initially
         self.patches.states.I[:] = 0  # No infected initially
         self.patches.states.R[:] = 0  # No recovered initially
+        self.patches.states.D[:] = 0  # No deaths initially
 
         return
 
-    def setup_people(self, scenario: pl.DataFrame, parameters: PropertySet) -> None:
-        capacity = np.sum(self.patches.populations) # TODO: capacity should be set by vital dynamics
-        self.people = LaserFrame(capacity=int(capacity), initial_count=0)
-        self.people.add_scalar_property("nodeid", dtype=np.uint16)
-        self.people.add_scalar_property("state", dtype=np.uint8, default=0)
-        self.people.add_scalar_property("susceptibility", dtype=np.float32, default=0)
+    def setup_people(self) -> None:
+        """Placeholder for people - sets the data types for patch_id and susceptibility."""
 
-        for nodeid, count in enumerate(self.patches.populations):
-            first, last = self.people.add(count)
-            self.people.nodeid[first:last] = nodeid
+        self.people = PeopleLaserFrame(capacity=1)
+        self.people.add_scalar_property("patch_id", dtype=np.uint16)  # patch id
+        self.people.add_scalar_property("state", dtype=np.uint8, default=0)  # state
+        self.people.add_scalar_property("susceptibility", dtype=np.float32, default=0)  # susceptibility factor
 
         return
 
-    def _setup_components(self) -> None:
+    def initialize_people_capacity(self, capacity: int) -> None:
+        people = self.people
+        # Get a set of all the properties
+        properties = get_laserframe_properties(people)
+        new_people = LaserFrame(capacity=capacity)
+        # Add all the properties to the new people laserframe
+        for property_name in properties:
+            property = getattr(people, property_name)
+            if property.ndim == 1:
+                new_people.add_scalar_property(property_name, dtype=property.dtype, default=property[0])
+            elif (property.ndim == 2):
+                # TODO: Currently assumin vector property. Need to deal with array properties.
+                new_people.add_vector_property(property_name, len(property), dtype=property.dtype, default=property[0])
+        # Update the people laserframe
+        self.people = new_people
+
+    def initialize(self) -> None:
         """
         Setup birth component registration for generic model.
         """
-        births = next(filter(lambda obj: isinstance(obj, (BirthsProcess, BirthsConstantPopProcess)), self.instances), None)
-        # TODO: raise an exception if there are components with an on_birth function but no Births component
-        for instance in self.instances:
-            if births is not None and "on_birth" in dir(instance):
-                births.initializers.append(instance)
+
+        # This will re-run all instantiaion 
+        if len(self.people) != self.patches.states.sum():
+            if self.params.verbose:
+                print("No vital dynamics provided. Creating a new people laserframe with the same properties as the patches.")
+            self.prepend_component(components.NoBirthsProcess)
+
+        super().initialize()
 
     def __call__(self, model, tick: int) -> None:
-        """
-        Updates the population of patches for the next tick. Copies the previous
-        population data to the next tick to be updated, optionally, by a Birth and/or
-        Mortality component.
-
-        Args:
-
-            model: The model containing the patches and their populations.
-            tick (int): The current time step or tick.
-
-        Returns:
-
-            None
-        """
         return
 
-
-    def plot(self, fig: Figure = None):
+    def plot(self, fig: Figure | None = None):
         """
         Plots various visualizations related to the scenario and population data.
 
@@ -171,10 +193,10 @@ class ABMModel(BaseLaserModel):
             ax = plt.gca()
             self.scenario.plot(ax=ax)
         scatter = plt.scatter(
-            self.scenario.longitude,
-            self.scenario.latitude,
-            s=self.scenario.population / 1000,
-            c=self.scenario.population,
+            self.scenario.lat,
+            self.scenario.lon,
+            s=self.scenario.pop / 1000,
+            c=self.scenario.pop,
             cmap="inferno",
         )
         plt.colorbar(scatter, label="Population")
@@ -207,6 +229,7 @@ class ABMModel(BaseLaserModel):
 
         yield
         return
+
 
 # Alias for backwards compatibility
 Model = ABMModel

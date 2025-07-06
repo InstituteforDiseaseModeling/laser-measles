@@ -1,70 +1,98 @@
-from matplotlib.figure import Figure
 import numba as nb
 import numpy as np
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
+from pydantic import Field
+
 from laser_measles.base import BaseComponent
 
-@nb.njit((nb.uint32, nb.uint16[:], nb.uint16[:], nb.uint8[:], nb.float32, nb.float32, nb.uint32[:], nb.uint16[:]), parallel=True, cache=True)
-def nb_gamma_update(count, etimers, itimers, state, mean, shape, flow, nodeid):  # pragma: no cover
+
+@nb.njit(
+    (nb.uint32, nb.uint16[:], nb.uint16[:], nb.uint8[:], nb.float32, nb.float32, nb.uint32[:], nb.uint16[:]), parallel=True
+)
+def nb_gamma_update(count, timers_0, timers_1, state, shape, scale, flow, patch_id):  # pragma: no cover
     """Numba compiled function to check and update exposed timers for the population in parallel."""
-    max_node_id = np.max(nodeid) + 1
-    thread_flow = np.zeros((nb.config.NUMBA_DEFAULT_NUM_THREADS, max_node_id), dtype=np.uint32)
+    max_node_id = np.max(patch_id) + 1
+    thread_flow = np.zeros((nb.get_num_threads(), max_node_id), dtype=np.uint32)
 
     for i in nb.prange(count):
-        etimer = etimers[i]
-        if etimer > 0:
-            etimer -= 1
+        timer_0 = timers_0[i]
+        if timer_0 > 0:
+            timer_0 -= 1
             # if we have decremented etimer from >0 to <=0, set infectious timer.
-            if etimer <= 0:
-                scale = mean / shape
-                itimers[i] = np.maximum(np.uint16(1), np.uint16(np.ceil(np.random.gamma(shape, scale))))
-                thread_flow[nb.get_thread_id(), nodeid[i]] += 1
+            if timer_0 <= 0:
+                timers_1[i] = np.maximum(np.uint16(1), np.uint16(np.round(np.random.gamma(shape, scale))))
+                thread_flow[nb.get_thread_id(), patch_id[i]] += 1
                 state[i] = 2
-            etimers[i] = etimer
-
+            timers_0[i] = timer_0
     flow[:] += thread_flow.sum(axis=0)
-
     return
 
-@nb.njit((nb.uint32, nb.uint16[:], nb.uint8[:], nb.uint8), parallel=True, cache=True)
-def nb_state_update(count, itimers, state, new_state):  # pragma: no cover
+
+@nb.njit((nb.uint32, nb.uint16[:], nb.uint8[:], nb.uint8, nb.uint32[:], nb.uint16[:]), parallel=True)
+def nb_state_update(count, timers, state, new_state, flow, patch_id):
     """Numba compiled function to check and update infection timers for the population in parallel."""
+    max_patch_id = np.max(patch_id) + 1
+    thread_flow = np.zeros((nb.get_num_threads(), max_patch_id), dtype=np.uint32)
     for i in nb.prange(count):
-        itimer = itimers[i]
-        if itimer > 0:
-            itimer -= 1
-            if itimer == 0:
+        timer = timers[i]
+        if timer > 0:
+            timer -= 1
+            if timer == 0:
+                thread_flow[nb.get_thread_id(), patch_id[i]] += 1
                 state[i] = new_state
-            itimers[i] = itimer
-
+            timers[i] = timer
+    flow[:] += thread_flow.sum(axis=0)
     return
+
 
 class DiseaseParams(BaseModel):
-    inf_mean: float = Field(default=8.0, description="Mean infectious period")
-    inf_sigma: float = Field(default=2.0, description="Shape of the infectious period")
+    inf_mean: float = Field(default=8.0, description="Mean infectious period (days)")
+    inf_sigma: float = Field(default=2.0, description="Shape of the infectious period (days)")
 
     @property
     def inf_shape(self) -> float:
-        return self.inf_sigma ** 2 / self.inf_mean
-    
+        return (self.inf_mean / self.inf_sigma) ** 2
+
     @property
     def inf_scale(self) -> float:
-        return self.inf_mean / self.inf_shape
+        return self.inf_sigma ** 2 / self.inf_mean
+
 
 class DiseaseProcess(BaseComponent):
+    """
+    This component provides disease progression (E->I->R)
+    It is used to update the infectious timers and the exposed timers.
+    """
+
     def __init__(self, model, verbose: bool = False, params: DiseaseParams | None = None):
         super().__init__(model, verbose)
         self.params = params if params is not None else DiseaseParams()
 
     def __call__(self, model, tick: int) -> None:
+        people = model.people
+        patches = model.patches
+        flow = np.zeros(len(model.patches), dtype=np.uint32)
+        # Update the infectious timers
+        # I --> R
+        nb_state_update(
+            people.count, people.itimer, people.state, np.uint8(model.params.states.index("R")), flow, people.patch_id
+        )
+        patches.states.I -= flow
+        patches.states.R += flow
 
-        # Update the infectious timers S=0, E=1, I=2, R=3
-        nb_state_update(model.population.count, model.population.itimer, model.population.state, np.uint8(3)) # TODO, capture the state in an ENUM?
-
-        # Update the exposure timers for the population in the model, 
+        # Update the exposure timers for the population in the model,
         # move to infectious which follows a gamma distribution
-        inf_flow = np.zeros(len(model.patches), dtype=np.uint32)
-        nb_gamma_update(model.population.count, model.population.etimer, model.population.itimer, model.population.state,
-                        self.params.inf_mean, self.params.inf_shape, inf_flow, model.population.nodeid)
-
+        flow = np.zeros(len(model.patches), dtype=np.uint32)
+        nb_gamma_update(
+            people.count,
+            people.etimer,
+            people.itimer,
+            people.state,
+            self.params.inf_shape,
+            self.params.inf_scale,
+            flow,
+            people.patch_id,
+        )
+        patches.states.E -= flow
+        patches.states.I += flow
         return

@@ -8,7 +8,7 @@ from pydantic import BaseModel
 from pydantic import Field
 
 TIME_STEP_DAYS = 1
-STATES = ["S", "E", "I", "R"]
+STATES = ["S", "E", "I", "R", "D"]
 
 class ABMParams(BaseModel):
     """
@@ -19,6 +19,7 @@ class ABMParams(BaseModel):
     seed: int = Field(default=20250314, description="Random seed")
     start_time: str = Field(default="2000-01", description="Initial start time of simulation in YYYY-MM format")
     verbose: bool = Field(default=False, description="Whether to print verbose output")
+    # default_population_process: str | type = Field(default="NoBirthsProcess", description="The process to use for setting people/agents in the simulation. Can be overridden by components.")
 
     @property
     def time_step_days(self) -> int:

@@ -1,22 +1,29 @@
+
 from matplotlib.figure import Figure
-from pydantic import BaseModel, Field
-from typing import Optional
+from pydantic import BaseModel
+from pydantic import Field
 
 from laser_measles.base import BaseComponent
-from .process_transmission import TransmissionProcess, TransmissionParams
-from .process_disease import DiseaseProcess, DiseaseParams
+from laser_measles.base import BaseLaserModel
+
+from .process_disease import DiseaseParams
+from .process_disease import DiseaseProcess
+from .process_transmission import TransmissionParams
+from .process_transmission import TransmissionProcess
 
 
 class InfectionParams(BaseModel):
     """Combined parameters for transmission and disease processes."""
-    
+
     beta: float = Field(default=32, description="Base transmission rate", gt=0.0)
     seasonality_factor: float = Field(default=1.0, description="Seasonality factor", ge=0.0, le=1.0)
-    seasonality_phase: float = Field(default=0, description="Seasonality phase")
-    exp_mu: float = Field(default=11.0, description="Exposure mean (lognormal)", gt=0.0)
+    season_start: float = Field(default=0, description="Season start day (0-364)", ge=0, le=364)
+    exp_mu: float = Field(default=6.0, description="Exposure mean (lognormal)", gt=0.0)
     exp_sigma: float = Field(default=2.0, description="Exposure sigma (lognormal)", gt=0.0)
     inf_mean: float = Field(default=8.0, description="Mean infection duration", gt=0.0)
     inf_sigma: float = Field(default=2.0, description="Shape parameter for infection duration", gt=0.0)
+    distance_exponent: float = Field(default=1.5, description="Distance exponent", ge=0.0)
+    mixing_scale: float = Field(default=0.001, description="Mixing scale", ge=0.0)
 
     @property
     def transmission_params(self) -> TransmissionParams:
@@ -24,33 +31,30 @@ class InfectionParams(BaseModel):
         return TransmissionParams(
             beta=self.beta,
             seasonality_factor=self.seasonality_factor,
-            seasonality_phase=self.seasonality_phase,
+            season_start=self.season_start,
             exp_mu=self.exp_mu,
             exp_sigma=self.exp_sigma,
-            inf_mean=self.inf_mean,
-            inf_sigma=self.inf_sigma
+            distance_exponent=self.distance_exponent,
+            mixing_scale=self.mixing_scale,
         )
-    
+
     @property
     def disease_params(self) -> DiseaseParams:
         """Extract disease-specific parameters."""
-        return DiseaseParams(
-            inf_mean=self.inf_mean,
-            inf_sigma=self.inf_sigma
-        )
+        return DiseaseParams(inf_mean=self.inf_mean, inf_sigma=self.inf_sigma)
 
 
 class InfectionProcess(BaseComponent):
     """
     Combined infection process that orchestrates transmission and disease progression.
-    
+
     This component provides a unified interface for both disease transmission
     (handled by TransmissionProcess) and disease progression through states
     (handled by DiseaseProcess), similar to the biweekly model's InfectionProcess
     but for agent-based modeling.
     """
 
-    def __init__(self, model, verbose: bool = False, params: InfectionParams | None = None) -> None:
+    def __init__(self, model: BaseLaserModel, verbose: bool = False, params: InfectionParams | None = None) -> None:
         """
         Initialize the combined infection process.
 
@@ -60,9 +64,9 @@ class InfectionProcess(BaseComponent):
             params: Combined parameters for both transmission and disease processes.
         """
         super().__init__(model, verbose)
-        
+
         self.params = params if params is not None else InfectionParams()
-        
+
         # Initialize sub-components
         self.transmission = TransmissionProcess(model, verbose, self.params.transmission_params)
         self.disease = DiseaseProcess(model, verbose, self.params.disease_params)
@@ -77,14 +81,18 @@ class InfectionProcess(BaseComponent):
         """
         # First handle disease progression (exposed -> infectious -> recovered)
         self.disease(model, tick)
-        
+
         # Then handle transmission (susceptible -> exposed)
         self.transmission(model, tick)
+
+    def initialize(self, model: BaseLaserModel) -> None:
+        self.transmission.initialize(model)
+        self.disease.initialize(model)
 
     def on_birth(self, model, tick, istart, iend) -> None:
         """
         Handle birth events by delegating to the transmission component.
-        
+
         Args:
             model: The simulation model containing the population data.
             tick: The current tick or time step in the simulation.
@@ -93,7 +101,7 @@ class InfectionProcess(BaseComponent):
         """
         self.transmission.on_birth(model, tick, istart, iend)
 
-    def plot(self, fig: Figure = None):
+    def plot(self, fig: Figure | None = None):
         """
         Plot cases and incidence using the transmission component's plotting functionality.
 

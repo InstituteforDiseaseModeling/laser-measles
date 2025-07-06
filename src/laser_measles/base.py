@@ -29,23 +29,31 @@ from matplotlib.backends.backend_pdf import PdfPages
 from matplotlib.figure import Figure
 
 ScenarioType = TypeVar("ScenarioType")
+ModelType = TypeVar("ModelType")
+
 
 class ParamsProtocol(Protocol):
     """Protocol defining the expected structure of model parameters."""
+
     seed: int
     start_time: str
     num_ticks: int
     verbose: bool
+
     @property
     def time_step_days(self) -> int: ...
     @property
     def states(self) -> list[str]: ...
 
+
 ParamsType = TypeVar("ParamsType", bound=ParamsProtocol)
+
 
 class LaserFrameWithStates(Protocol):
     """Protocol for LaserFrame that has a states property."""
+
     states: Any  # StateArray with attribute access (S, E, I, R, etc.)
+
 
 class BaseLaserModel(ABC, Generic[ScenarioType, ParamsType]):
     """
@@ -106,7 +114,7 @@ class BaseLaserModel(ABC, Generic[ScenarioType, ParamsType]):
     @components.setter
     def components(self, components: list[type[BaseComponent]]) -> None:
         """
-        Sets up the components of the model and initializes instances and phases.
+        Sets up the components of the model and constructs all instances.
 
         Args:
             components (list): A list of component classes to be initialized and integrated into the model.
@@ -115,7 +123,7 @@ class BaseLaserModel(ABC, Generic[ScenarioType, ParamsType]):
         self.instances = []
         self.phases = []
         for component in components:
-            instance = component(self, getattr(self.params, "verbose", False))
+            instance = component(self, verbose=getattr(self.params, "verbose", False))
             self.instances.append(instance)
             if "__call__" in dir(instance):
                 self.phases.append(instance)
@@ -125,26 +133,25 @@ class BaseLaserModel(ABC, Generic[ScenarioType, ParamsType]):
 
     def add_component(self, component: type[BaseComponent]) -> None:
         """
-        Add the component class and an instance in model.instances.
+        Add the component class and an instance in model.instances. Note that this does not create new instances of othr components.
+
         Args:
             component (BaseComponent): A component class to be initialized and integrated into the model.
         """
         self._components.append(component)
-        instance = component(self, getattr(self.params, "verbose", False))
+        instance = component(self, verbose=getattr(self.params, "verbose", False))
         self.instances.append(instance)
         if "__call__" in dir(instance):
             self.phases.append(instance)
-        # Allow subclasses to perform additional component setup
         self._setup_components()
 
-    def append(self, component: type[BaseComponent]) -> None:
-        """
-        Add a single component to the model (alias for add_component).
-
-        Args:
-            component (BaseComponent): A component class to be initialized and integrated into the model.
-        """
-        self.add_component(component)
+    def prepend_component(self, component: type[BaseComponent]) -> None:
+        self._components.insert(0, component)
+        instance = component(self, verbose=getattr(self.params, "verbose", False))
+        self.instances.insert(0, instance)
+        if "__call__" in dir(instance):
+            self.phases.insert(0, instance)
+        self._setup_components()
 
     def _setup_components(self) -> None:
         """
@@ -170,7 +177,7 @@ class BaseLaserModel(ABC, Generic[ScenarioType, ParamsType]):
         if len(self.components) == 0:
             raise RuntimeError("No components have been added to the model")
 
-        # Initialize all components
+        # Initialize all component instances
         self.initialize()
 
         # TODO: Check that the model has been initialized
@@ -220,7 +227,7 @@ class BaseLaserModel(ABC, Generic[ScenarioType, ParamsType]):
 
     def initialize(self) -> None:
         """
-        Initialize all components in the model.
+        Initialize all component instances in the model.
 
         This method calls initialize() on all component instances and sets
         their initialized flag to True after successful initialization.
@@ -235,7 +242,7 @@ class BaseLaserModel(ABC, Generic[ScenarioType, ParamsType]):
         Print timing summary for verbose mode.
         """
         try:
-            import pandas as pd # noqa: PLC0415, I001
+            import pandas as pd  # noqa: PLC0415, I001
 
             names = [type(phase).__name__ for phase in self.phases]
             metrics = pd.DataFrame(self.metrics, columns=["tick"] + names)
@@ -248,7 +255,7 @@ class BaseLaserModel(ABC, Generic[ScenarioType, ParamsType]):
             print(f"{'Total:':{width + 1}} {sum_columns.sum():13,} microseconds")
         except ImportError:
             try:
-                import polars as pl # noqa: PLC0415, I001
+                import polars as pl  # noqa: PLC0415, I001
 
                 names = [type(phase).__name__ for phase in self.phases]
                 metrics = pl.DataFrame(self.metrics, schema=["tick"] + names)
@@ -402,7 +409,8 @@ class BaseLaserModel(ABC, Generic[ScenarioType, ParamsType]):
     def plot(self, fig: Figure | None = None):
         raise NotImplementedError("Subclasses must implement this method")
 
-class BaseComponent(ABC):
+
+class BaseComponent(ABC, Generic[ModelType]):
     """
     Base class for all laser-measles components.
 
@@ -414,12 +422,11 @@ class BaseComponent(ABC):
         self.model = model
         self.verbose = verbose
         self.initialized = False
-        self.name = self.__class__.__name__
+        if not hasattr(self, "name"):
+            self.name = self.__class__.__name__
 
-    @abstractmethod
     def initialize(self, model: BaseLaserModel) -> None:
-        """Initialize component based on other existing components."""
-        raise NotImplementedError("Subclasses must implement this method")
+        """Initialize component based on other existing components. This is run at the beginning of model.run()."""
 
     def __str__(self) -> str:
         """Return string representation using class docstring."""
@@ -445,12 +452,14 @@ class BasePhase(BaseComponent):
     def __call__(self, model, tick: int) -> None:
         """Execute component logic for a given simulation tick."""
 
+
 # class BaseScenario(Protocol):
 #     """
 #     Protocol for all laser-measles scenarios.
 #     """
 
 #     df: Any  # DataFrame from polars or pandas
+
 
 class BaseScenario(ABC):
     def __init__(self, df: pl.DataFrame):
@@ -476,3 +485,27 @@ class BaseScenario(ABC):
 
     def unwrap(self) -> pl.DataFrame:
         return self._df
+
+    def find_row_number(self, column: str, target_value: str) -> int:
+        """
+        Find the row number (0-based index) of a target string in a DataFrame column.
+
+        Args:
+            column: Column name to search in
+            target_value: String value to find
+
+        Returns:
+            Row number (0-based index) of the target string
+
+        Raises:
+            ValueError: If the target string is not found
+        """
+        # Use arg_max on a boolean mask for maximum efficiency
+        mask = self._df[column] == target_value
+
+        # Check if value exists
+        if not mask.any():
+            raise ValueError(f"String '{target_value}' not found in column '{column}'")
+
+        # arg_max returns the index of the first True value
+        return mask.arg_max()

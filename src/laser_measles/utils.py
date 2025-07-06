@@ -19,6 +19,7 @@ Functions:
 """
 
 import numpy as np
+from laser_core.laserframe import LaserFrame
 from laser_core.migration import distance
 
 
@@ -45,7 +46,7 @@ def calc_distances(latitudes: np.ndarray, longitudes: np.ndarray, verbose: bool 
     assert longitudes.shape == latitudes.shape, "Latitude and longitude arrays must have the same shape"
     npatches = len(latitudes)
     distances = np.zeros((npatches, npatches), dtype=np.float32)
-    for i, (lat, long) in enumerate(zip(latitudes, longitudes)):
+    for i, (lat, long) in enumerate(zip(latitudes, longitudes, strict=False)):
         distances[i, :] = distance(lat, long, latitudes, longitudes)
 
     if verbose:
@@ -136,7 +137,7 @@ def seed_infections_in_patch(model, ipatch: int, ninfections: int = 100) -> None
     # Seed initial infections in a specific location at the start of the simulation
     ids = np.nonzero(np.logical_and(model.population.nodeid == ipatch, model.population.susceptibility > 0))[0]
     np.random.shuffle(ids)
-    model.population.itimer[ids[:min(ninfections, len(ids))]] = model.params.inf_mean
+    model.population.itimer[ids[: min(ninfections, len(ids))]] = model.params.inf_mean
 
     return
 
@@ -161,55 +162,66 @@ def cast_type(a, dtype):
 class StateArray(np.ndarray):
     """
     A numpy array wrapper that provides attribute access to state compartments.
-    
+
     This class allows accessing state compartments by name (e.g., states.S, states.I, states.R)
-    while maintaining full numpy array functionality and backward compatibility with 
+    while maintaining full numpy array functionality and backward compatibility with
     numeric indexing (e.g., states[0], states[1]).
-    
+
     Example:
         >>> states = StateArray(np.zeros((3, 100)), state_names=["S", "I", "R"])
         >>> states.S[0] = 1000  # Set susceptible population in patch 0
         >>> prevalence = states.I / states.sum(axis=0)  # Calculate prevalence
         >>> states[0] += births  # Numeric indexing still works
-    
+
     Args:
         input_array: The numpy array to wrap
         state_names: List of state compartment names (e.g., ["S", "E", "I", "R"])
     """
-    
+
     def __new__(cls, input_array, state_names=None):
         obj = np.asarray(input_array).view(cls)
         obj._state_names = state_names or []
         obj._state_indices = {name: i for i, name in enumerate(obj._state_names)}
         return obj
-    
+
     def __array_finalize__(self, obj):
         if obj is None:
             return
-        self._state_names = getattr(obj, '_state_names', [])
-        self._state_indices = getattr(obj, '_state_indices', {})
-    
+        self._state_names = getattr(obj, "_state_names", [])
+        self._state_indices = getattr(obj, "_state_indices", {})
+
     def __getattr__(self, name):
         if name in self._state_indices:
             return self[self._state_indices[name]]
         raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{name}'")
-    
+
     def __setattr__(self, name, value):
-        if name.startswith('_') or name in ['base', 'dtype', 'shape', 'size', 'ndim']:
+        if name.startswith("_") or name in ["base", "dtype", "shape", "size", "ndim"]:
             super().__setattr__(name, value)
-        elif hasattr(self, '_state_indices') and name in self._state_indices:
+        elif hasattr(self, "_state_indices") and name in self._state_indices:
             self[self._state_indices[name]] = value
         else:
             # For invalid state names, raise AttributeError
-            if hasattr(self, '_state_indices') and name not in ['base', 'dtype', 'shape', 'size', 'ndim']:
+            if hasattr(self, "_state_indices") and name not in ["base", "dtype", "shape", "size", "ndim"]:
                 raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{name}'")
             super().__setattr__(name, value)
-    
+
     @property
     def state_names(self):
         """Return the list of state compartment names."""
         return self._state_names.copy()
-    
+
     def get_state_index(self, name):
         """Get the numeric index for a state compartment name."""
         return self._state_indices.get(name)
+
+
+def get_laserframe_properties(laserframe: LaserFrame):
+    """
+    Get the scalar and vector properties of a laserframe that are numpy arrays.
+    """
+    properties = set()
+    for key, value in laserframe.__dict__.items():
+        if isinstance(value, np.ndarray) and value.shape[-1] == laserframe._capacity:
+            properties.add(key)
+    return properties
