@@ -122,7 +122,7 @@ def seed_infections_randomly_SI(model, ninfections: int = 100) -> None:
     return
 
 
-def seed_infections_randomly(model, ninfections: int = 100) -> None:
+def seed_infections_randomly(model, ninfections: int = 100) -> np.ndarray:
     """
     Seed initial infections in random locations at the start of the simulation.
     This function randomly selects individuals from the population and seeds
@@ -136,12 +136,10 @@ def seed_infections_randomly(model, ninfections: int = 100) -> None:
 
     Returns:
 
-        None
+        np.ndarray: The nodeids of the individuals seeded with an infection.
     """
 
     # Seed initial infections in random locations at the start of the simulation
-    inf_nodeids = np.zeros(ninfections, dtype=np.uint16)
-
     myinds = np.where(model.population.susceptibility > 0)[0]
     if len(myinds) > ninfections:
         myinds = np.random.choice(myinds, ninfections, replace=False)
@@ -149,7 +147,7 @@ def seed_infections_randomly(model, ninfections: int = 100) -> None:
     model.population.susceptibility[myinds] = 0
     inf_nodeids = model.population.nodeid[myinds]
 
-    return inf_nodeids
+    return np.array(inf_nodeids, dtype=np.uint16)
 
 
 def seed_infections_in_patch(model, ipatch: int, ninfections: int = 1) -> None:

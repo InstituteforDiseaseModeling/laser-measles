@@ -35,6 +35,7 @@ from laser_measles.wrapper import pretty_laserframe
 ScenarioType = TypeVar("ScenarioType")
 ModelType = TypeVar("ModelType")
 
+
 class ParamsProtocol(Protocol):
     """Protocol defining the expected structure of model parameters."""
 
@@ -47,12 +48,15 @@ class ParamsProtocol(Protocol):
     def time_step_days(self) -> int: ...
     @property
     def states(self) -> list[str]: ...
+
+
 ParamsType = TypeVar("ParamsType", bound=ParamsProtocol)
 
 
 @pretty_laserframe
 class BasePatchLaserFrame(LaserFrame):
     """LaserFrame that has a states property."""
+
     states: StateArray  # StateArray with attribute access (S, E, I, R, etc.)
 
 
@@ -60,32 +64,32 @@ class BasePatchLaserFrame(LaserFrame):
 class BasePeopleLaserFrame(LaserFrame):
     """
     Base class for people LaserFrames with enhanced printing capabilities.
-    
+
     This class provides factory methods for creating new instances with the same
     properties but different capacity, making it easy to resize people collections.
     """
-    
+
     @classmethod
-    def create_with_capacity(cls, capacity: int, source_frame: 'BasePeopleLaserFrame') -> Any:
+    def create_with_capacity(cls, capacity: int, source_frame: BasePeopleLaserFrame) -> Any:
         """
         Create a new instance of the same type with specified capacity.
-        
+
         This factory method creates a new instance of the same class as the source_frame,
         with the specified capacity, and copies all properties from the source.
-        
+
         Args:
             capacity: The capacity for the new LaserFrame
             source_frame: The source LaserFrame to copy properties from
-            
+
         Returns:
             A new instance of the same type with copied properties
         """
         # Create new instance of the same type
         new_frame = cls(capacity=capacity)
-        
+
         # Copy all properties from source
         new_frame.copy_properties_from(source_frame)
-        
+
         return new_frame
         """
         Create a new instance of the same type with specified capacity.
@@ -102,47 +106,46 @@ class BasePeopleLaserFrame(LaserFrame):
         """
         # Create new instance of the same type
         new_frame = cls(capacity=capacity)
-        
+
         # Copy all properties from source
         new_frame.copy_properties_from(source_frame)
-        
+
         return new_frame
-    
-    def copy_properties_from(self, source_frame: 'BasePeopleLaserFrame') -> None:
+
+    def copy_properties_from(self, source_frame: BasePeopleLaserFrame) -> None:
         """
         Copy all properties from another LaserFrame instance.
-        
+
         This method copies all scalar and vector properties from the source frame,
         including their data types and default values.
-        
+
         Args:
             source_frame: The source LaserFrame to copy properties from
         """
         from laser_measles.utils import get_laserframe_properties
-        
+
         properties = get_laserframe_properties(source_frame)
-        
+
         for property_name in properties:
             source_property = getattr(source_frame, property_name)
-            
+
             if source_property.ndim == 1:
                 # Scalar property
                 self.add_scalar_property(
-                    property_name, 
-                    dtype=source_property.dtype, 
-                    default=source_property[0] if len(source_property) > 0 else 0
+                    property_name, dtype=source_property.dtype, default=source_property[0] if len(source_property) > 0 else 0
                 )
             elif source_property.ndim == 2:
                 # Vector property
                 self.add_vector_property(
-                    property_name, 
-                    len(source_property), 
-                    dtype=source_property.dtype, 
-                    default=source_property[:, 0] if source_property.shape[1] > 0 else 0
+                    property_name,
+                    len(source_property),
+                    dtype=source_property.dtype,
+                    default=source_property[:, 0] if source_property.shape[1] > 0 else 0,
                 )
             else:
                 # Handle higher dimensional properties if needed
                 raise NotImplementedError(f"Property {property_name} has {source_property.ndim} dimensions, not supported")
+
 
 class BaseLaserModel(ABC, Generic[ScenarioType, ParamsType]):
     """
@@ -542,19 +545,10 @@ class BasePhase(BaseComponent):
         """Execute component logic for a given simulation tick."""
 
 
-# class BaseScenario(Protocol):
-#     """
-#     Protocol for all laser-measles scenarios.
-#     """
-
-#     df: Any  # DataFrame from polars or pandas
-
-
-class BaseScenario(ABC):
+class BaseScenario:
     def __init__(self, df: pl.DataFrame):
         self._df = df
 
-    @abstractmethod
     def _validate(self, df: pl.DataFrame):
         # Validate required columns exist - derive from schema
         raise NotImplementedError("Subclasses must implement this method")

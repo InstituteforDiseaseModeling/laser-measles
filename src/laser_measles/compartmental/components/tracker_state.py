@@ -8,8 +8,8 @@ from matplotlib.figure import Figure
 from pydantic import BaseModel
 from pydantic import Field
 
-from laser_measles.base import BasePhase
 from laser_measles.base import BaseLaserModel
+from laser_measles.base import BasePhase
 
 
 class StateTrackerParams(BaseModel):
@@ -21,8 +21,8 @@ class StateTrackerParams(BaseModel):
                           Use -1 to sum over all patches (default behavior).
     """
 
-    filter_fn: Callable[[str], bool] = Field(lambda x: True, description="Function to filter which nodes to include in aggregation")
-    aggregation_level: int = Field(-1, description="Number of levels to use for aggregation. Use -1 to sum over all patches")
+    filter_fn: Callable[[str], bool] = Field(default=lambda x: True, description="Function to filter which nodes to include in aggregation")
+    aggregation_level: int = Field(default=-1, description="Number of levels to use for aggregation. Use -1 to sum over all patches")
 
 
 class StateTracker(BasePhase):
@@ -127,7 +127,7 @@ class StateTracker(BasePhase):
     def initialize(self, model: BaseLaserModel) -> None:
         pass
 
-    def plot(self, fig: Figure = None):
+    def plot(self, fig: Figure | None = None):
         """
         Plots the time series of SEIR state counts across all nodes using subplots.
 
@@ -178,7 +178,7 @@ class StateTracker(BasePhase):
             if frame:
                 del frame
 
-    def plot_combined(self, fig: Figure = None):
+    def plot_combined(self, fig: Figure | None = None):
         """
         Plots all SEIR states on a single plot for easy comparison.
 

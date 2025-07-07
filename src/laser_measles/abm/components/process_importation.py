@@ -17,21 +17,22 @@ Functions:
 
 import numpy as np
 from matplotlib.figure import Figure
-from pydantic import BaseModel, Field
-from typing import Optional
+from pydantic import BaseModel
+from pydantic import Field
 
-from ..utils import seed_infections_in_patch, seed_infections_randomly
+from ..utils import seed_infections_in_patch
+from ..utils import seed_infections_randomly
 
 
 class ImportationParams(BaseModel):
     """Parameters specific to the importation process components."""
-    
+
     nticks: int = Field(description="Total number of simulation ticks", gt=0)
     importation_period: int = Field(description="Period between importation events", gt=0)
     importation_count: int = Field(description="Number of agents to import per event", gt=0)
-    importation_start: Optional[int] = Field(default=0, description="Start tick for importations", ge=0)
-    importation_end: Optional[int] = Field(default=None, description="End tick for importations")
-    importation_patchlist: Optional[list] = Field(default=None, description="List of patches to import into")
+    importation_start: int | None = Field(default=0, description="Start tick for importations", ge=0)
+    importation_end: int | None = Field(default=None, description="End tick for importations")
+    importation_patchlist: list | None = Field(default=None, description="List of patches to import into")
 
 
 class InfectRandomAgentsProcess:
@@ -67,10 +68,10 @@ class InfectRandomAgentsProcess:
                 importation_period=model.params.importation_period,
                 importation_count=model.params.importation_count,
                 importation_start=getattr(model.params, "importation_start", 0),
-                importation_end=getattr(model.params, "importation_end", None)
+                importation_end=getattr(model.params, "importation_end", None),
             )
         self.params = params
-        
+
         self.period = self.params.importation_period
         self.count = self.params.importation_count
         self.start = self.params.importation_start or 0
@@ -93,16 +94,15 @@ class InfectRandomAgentsProcess:
         """
         if (tick >= self.start) and ((tick - self.start) % self.period == 0) and (tick < self.end):
             inf_nodeids = seed_infections_randomly(model, self.count)
-            if hasattr(model.patches, 'cases_test'):
+            if hasattr(model.patches, "cases_test"):
                 unique, counts = np.unique(inf_nodeids, return_counts=True)
-                for nodeid, count in zip(unique, counts):
-                    model.patches.cases_test[tick+1, nodeid] += count
-                    model.patches.susceptibility_test[tick+1, nodeid] -= count
-
+                for nodeid, count in zip(unique, counts, strict=False):
+                    model.patches.cases_test[tick + 1, nodeid] += count
+                    model.patches.susceptibility_test[tick + 1, nodeid] -= count
 
         return
 
-    def plot(self, fig: Figure = None):
+    def plot(self, fig: Figure | None = None):
         """
         Nothing yet
         """
@@ -143,10 +143,10 @@ class InfectAgentsInPatchProcess:
                 importation_count=getattr(model.params, "importation_count", 1),
                 importation_start=getattr(model.params, "importation_start", 0),
                 importation_end=getattr(model.params, "importation_end", None),
-                importation_patchlist=getattr(model.params, "importation_patchlist", None)
+                importation_patchlist=getattr(model.params, "importation_patchlist", None),
             )
         self.params = params
-        
+
         self.period = self.params.importation_period
         self.count = self.params.importation_count or 1
         self.patchlist = self.params.importation_patchlist or np.arange(model.patches.count)
@@ -174,7 +174,7 @@ class InfectAgentsInPatchProcess:
 
         return
 
-    def plot(self, fig: Figure = None):
+    def plot(self, fig: Figure | None = None):
         """
         Nothing yet
         """

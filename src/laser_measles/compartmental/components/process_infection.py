@@ -2,13 +2,15 @@ import numpy as np
 from pydantic import BaseModel
 from pydantic import Field
 
-from laser_measles.base import BasePhase, BaseLaserModel
+from laser_measles.base import BaseLaserModel
+from laser_measles.base import BasePhase
 from laser_measles.compartmental.mixing import init_gravity_diffusion
 from laser_measles.utils import cast_type
 
 
 class InfectionParams(BaseModel):
     """Parameters specific to the SEIR infection process component."""
+
     beta: float = Field(default=1.0, description="Transmission rate per day", gt=0.0)
     exp_mu: float = Field(default=6.0, description="Exposure mean", gt=0.0)
     inf_mu: float = Field(default=8.0, description="Infection mean", gt=0.0)
@@ -107,17 +109,17 @@ class InfectionProcess(BasePhase):
 
         # 1. S → E: New exposures
         # prob_exposure = 1 - np.exp(-lambda_i)
-        prob_exposure = -1*np.expm1(-lambda_i)
+        prob_exposure = -1 * np.expm1(-lambda_i)
         new_exposures = cast_type(model.prng.binomial(states.S, prob_exposure), states.dtype, round=True)
 
         # 2. E → I: Progression to infectious
         # prob_infection = 1 - np.exp(-self.params.sigma)
-        prob_infection = -1*np.expm1(-self.params.sigma)
+        prob_infection = -1 * np.expm1(-self.params.sigma)
         new_infections = cast_type(model.prng.binomial(states.E, prob_infection), states.dtype, round=True)
 
         # 3. I → R: Recovery
         # prob_recovery = 1 - np.exp(-self.params.gamma)
-        prob_recovery = -1*np.expm1(-self.params.gamma)
+        prob_recovery = -1 * np.expm1(-self.params.gamma)
         new_recoveries = cast_type(model.prng.binomial(states.I, prob_recovery), states.dtype, round=True)
 
         # Update compartments

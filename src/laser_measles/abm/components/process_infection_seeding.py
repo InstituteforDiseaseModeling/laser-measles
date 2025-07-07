@@ -10,11 +10,10 @@ from pydantic import BaseModel
 from pydantic import Field
 from pydantic import field_validator
 
+from laser_measles.abm.base import PatchLaserFrame
 from laser_measles.abm.base import PeopleLaserFrame
-from laser_measles.abm.model import ABMModel
 from laser_measles.base import BaseComponent
 from laser_measles.base import BaseLaserModel
-from laser_measles.abm.base import PatchLaserFrame
 from laser_measles.utils import cast_type
 
 
@@ -169,13 +168,15 @@ class InfectionSeedingProcess(BaseComponent):
         if missing_patches:
             raise ValueError(f"Target patches not found in model: {missing_patches}")
 
-    def _seed_infections(self, model: BaseLaserModel, target_patches: list[str], infections_per_patch: list[int], patch_ids: list[str]) -> int:
+    def _seed_infections(
+        self, model: BaseLaserModel, target_patches: list[str], infections_per_patch: list[int], patch_ids: list[str]
+    ) -> int:
         """Seed infections in the specified patches."""
-        if not hasattr(model, 'people') or model.people is None:
+        if not hasattr(model, "people") or model.people is None:
             raise RuntimeError("Model does not have people attribute or it is None")
-        if not hasattr(model, 'patches') or model.patches is None:
+        if not hasattr(model, "patches") or model.patches is None:
             raise RuntimeError("Model does not have patches attribute or it is None")
-        
+
         people: PeopleLaserFrame = model.people
         patches: PatchLaserFrame = model.patches
         total_seeded = 0

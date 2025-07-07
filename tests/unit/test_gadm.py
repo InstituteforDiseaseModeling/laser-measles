@@ -15,6 +15,7 @@ def test_clear_cache_dir():
     assert not Path(cache_dir).exists()
 
 
+@pytest.mark.slow
 @pytest.mark.order(2)
 def test_download_gadm_cuba():
     # Download Cuba's shapefile

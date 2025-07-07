@@ -1,12 +1,11 @@
 import numpy as np
 import polars as pl
-import scipy as sp
-from laser_core import PropertySet
 import pytest
+from laser_core import PropertySet
 
 import laser_measles as lm
-from laser_measles.base import BasePhase
 from laser_measles.base import BaseLaserModel
+from laser_measles.base import BasePhase
 from laser_measles.biweekly import BiweeklyModel
 from laser_measles.compartmental import CompartmentalModel
 
@@ -29,9 +28,10 @@ def SI_logistic(t: int, size: int, beta: float, t0: int = 0, i0: int = 1) -> flo
 
 
 # def half_life(f, **kwargs):
-    # return sp.optimize.minimize(lambda t: np.abs(f(t, **kwargs)/kwargs["size"] - 0.5), x0=[10])
+# return sp.optimize.minimize(lambda t: np.abs(f(t, **kwargs)/kwargs["size"] - 0.5), x0=[10])
 def SI_logistic_half_life(size: int, beta: float, i0: int = 1) -> float:
     return 1 / beta * np.log(size / i0 - 1)
+
 
 class LogisticGrowthTrackerBase(BasePhase):
     """
@@ -73,6 +73,7 @@ class Biweekly2SI(BasePhase):
     """
     Removes recovereds from the model
     """
+
     def __call__(self, model: BiweeklyModel, tick: int) -> None:
         model.patches.states[1] += model.patches.states[2]
         model.patches.states[2] = 0
@@ -80,10 +81,12 @@ class Biweekly2SI(BasePhase):
     def initialize(self, model: BiweeklyModel) -> None:
         pass
 
+
 class Compartmental2SI(BasePhase):
     """
     Removes recovereds from the model
     """
+
     def __call__(self, model: CompartmentalModel, tick: int) -> None:
         model.patches.states[2] += model.patches.states[1]
         model.patches.states[2] += model.patches.states[3]
@@ -92,6 +95,7 @@ class Compartmental2SI(BasePhase):
 
     def initialize(self, model: CompartmentalModel) -> None:
         pass
+
 
 @pytest.mark.slow
 @pytest.mark.parametrize("model_type", ["compartmental", "biweekly"])
@@ -117,7 +121,9 @@ def test_no_vital_dynamics(model_type):
 
     if model_type == "biweekly":
         # create params
-        params = lm.biweekly.BiweeklyParams(num_ticks=(problem_params["num_ticks"] // 365) * 26, start_time="2001-01", seed=np.random.randint(1000000))
+        params = lm.biweekly.BiweeklyParams(
+            num_ticks=(problem_params["num_ticks"] // 365) * 26, start_time="2001-01", seed=np.random.randint(1000000)
+        )
         # create model
         model = lm.biweekly.Model(params=params, scenario=scenario)
         # seed with infections
@@ -132,7 +138,9 @@ def test_no_vital_dynamics(model_type):
         ]
     elif model_type == "compartmental":
         # create params
-        params = lm.compartmental.CompartmentalParams(num_ticks=problem_params["num_ticks"], start_time="2001-01", seed=np.random.randint(1000000))
+        params = lm.compartmental.CompartmentalParams(
+            num_ticks=problem_params["num_ticks"], start_time="2001-01", seed=np.random.randint(1000000)
+        )
         # create model
         model = lm.compartmental.Model(params=params, scenario=scenario)
         # seed with infections
@@ -143,7 +151,7 @@ def test_no_vital_dynamics(model_type):
         model.components = [
             lm.compartmental.components.StateTracker,
             lm.create_component(lm.compartmental.components.InfectionProcess, params=transmission_params),
-            Compartmental2SI
+            Compartmental2SI,
         ]
     else:
         raise ValueError(f"Invalid model type: {model_type}")
@@ -156,8 +164,12 @@ def test_no_vital_dynamics(model_type):
             state_tracker = instance
 
     # Time to half the population is infectious
-    t_2_theory = SI_logistic_half_life(size=problem_params["population_size"], beta=problem_params["beta"], i0=problem_params["initial_infections"])
-    t_2_simulated = np.interp( 0.5 * problem_params["population_size"], state_tracker.I, model.params.time_step_days * np.arange(model.params.num_ticks))
+    t_2_theory = SI_logistic_half_life(
+        size=problem_params["population_size"], beta=problem_params["beta"], i0=problem_params["initial_infections"]
+    )
+    t_2_simulated = np.interp(
+        0.5 * problem_params["population_size"], state_tracker.I, model.params.time_step_days * np.arange(model.params.num_ticks)
+    )
 
     rel_error = (t_2_simulated - t_2_theory) / t_2_theory
 
