@@ -10,12 +10,22 @@ from laser_measles.utils import cast_type
 class InfectionParams(BaseModel):
     """Parameters specific to the SEIR infection process component."""
     beta: float = Field(default=1.0, description="Transmission rate per day", gt=0.0)
-    sigma: float = Field(default=1.0 / 6.0, description="Progression rate from exposed to infectious (1/incubation_period)", gt=0.0)
-    gamma: float = Field(default=1.0 / 8.0, description="Recovery rate from infection (1/infectious_period)", gt=0.0)
-    seasonality: float = Field(default=0.0, description="Seasonality factor, default is no seasonality", ge=0.0, le=1.0)
+    exp_mu: float = Field(default=6.0, description="Exposure mean", gt=0.0)
+    inf_mu: float = Field(default=8.0, description="Infection mean", gt=0.0)
+    seasonality_factor: float = Field(default=0.0, description="Seasonality factor, default is no seasonality", ge=0.0, le=1.0)
     season_start: float = Field(default=0, description="Season start day (0-364)", ge=0, le=364)
     distance_exponent: float = Field(default=1.5, description="Distance exponent", ge=0.0)
     mixing_scale: float = Field(default=0.001, description="Mixing scale", ge=0.0)
+
+    @property
+    def sigma(self) -> float:
+        """Progression rate from exposed to infectious (1/exposure_period)"""
+        return 1 / self.exp_mu
+
+    @property
+    def gamma(self) -> float:
+        """Recovery rate from infection (1/infectious_period)"""
+        return 1 / self.inf_mu
 
     @property
     def basic_reproduction_number(self) -> float:
@@ -68,11 +78,10 @@ class InfectionProcess(BasePhase):
     sinusoidally over time with a period of 365 days.
     """
 
-    def __init__(self, model: BaseLaserModel, verbose: bool = False, params: InfectionParams | None = None) -> None:
+    def __init__(self, model: BaseLaserModel, params: InfectionParams | None = None, verbose: bool = False) -> None:
         super().__init__(model, verbose)
-        if params is None:
-            params = InfectionParams()
-        self.params = params
+
+        self.params = params if params is not None else InfectionParams()
         self._mixing = None
 
     def __call__(self, model: BaseLaserModel, tick: int) -> None:
@@ -89,7 +98,7 @@ class InfectionProcess(BasePhase):
         prevalence = states.I / total_pop  # I_j / N_j
 
         # Calculate force of infection with seasonal variation
-        seasonal_factor = 1 + self.params.seasonality * np.sin(2 * np.pi * (tick - self.params.season_start) / 365.0)
+        seasonal_factor = 1 + self.params.seasonality_factor * np.sin(2 * np.pi * (tick - self.params.season_start) / 365.0)
         lambda_i = (
             self.params.beta * seasonal_factor * np.matmul(self.mixing, prevalence)  # M @ (I_j / N_j)
         )
@@ -97,16 +106,19 @@ class InfectionProcess(BasePhase):
         # Stochastic transitions using binomial sampling
 
         # 1. S → E: New exposures
-        prob_exposure = 1 - np.exp(-lambda_i)
-        new_exposures = cast_type(model.prng.binomial(states.S, prob_exposure), states.dtype)
+        # prob_exposure = 1 - np.exp(-lambda_i)
+        prob_exposure = -1*np.expm1(-lambda_i)
+        new_exposures = cast_type(model.prng.binomial(states.S, prob_exposure), states.dtype, round=True)
 
         # 2. E → I: Progression to infectious
-        prob_infection = 1 - np.exp(-self.params.sigma)
-        new_infections = cast_type(model.prng.binomial(states.E, prob_infection), states.dtype)
+        # prob_infection = 1 - np.exp(-self.params.sigma)
+        prob_infection = -1*np.expm1(-self.params.sigma)
+        new_infections = cast_type(model.prng.binomial(states.E, prob_infection), states.dtype, round=True)
 
         # 3. I → R: Recovery
-        prob_recovery = 1 - np.exp(-self.params.gamma)
-        new_recoveries = cast_type(model.prng.binomial(states.I, prob_recovery), states.dtype)
+        # prob_recovery = 1 - np.exp(-self.params.gamma)
+        prob_recovery = -1*np.expm1(-self.params.gamma)
+        new_recoveries = cast_type(model.prng.binomial(states.I, prob_recovery), states.dtype, round=True)
 
         # Update compartments
         states.S -= new_exposures  # S decreases

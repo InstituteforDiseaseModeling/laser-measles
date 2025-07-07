@@ -10,8 +10,11 @@ from pydantic import BaseModel
 from pydantic import Field
 from pydantic import field_validator
 
+from laser_measles.abm.base import PeopleLaserFrame
+from laser_measles.abm.model import ABMModel
 from laser_measles.base import BaseComponent
 from laser_measles.base import BaseLaserModel
+from laser_measles.abm.base import PatchLaserFrame
 from laser_measles.utils import cast_type
 
 
@@ -146,7 +149,7 @@ class InfectionSeedingProcess(BaseComponent):
 
     def _get_specified_patch_seeding(self) -> tuple[list[str], list[int]]:
         """Get specified patches and infection counts."""
-        target_patches = self.params.target_patches.copy()
+        target_patches = self.params.target_patches.copy() if self.params.target_patches is not None else []
 
         if self.params.infections_per_patch is None:
             # Use default num_infections for all patches
@@ -166,12 +169,15 @@ class InfectionSeedingProcess(BaseComponent):
         if missing_patches:
             raise ValueError(f"Target patches not found in model: {missing_patches}")
 
-    def _seed_infections(
-        self, model: BaseLaserModel, target_patches: list[str], infections_per_patch: list[int], patch_ids: list[str]
-    ) -> int:
+    def _seed_infections(self, model: BaseLaserModel, target_patches: list[str], infections_per_patch: list[int], patch_ids: list[str]) -> int:
         """Seed infections in the specified patches."""
-        people = model.people
-        patches = model.patches
+        if not hasattr(model, 'people') or model.people is None:
+            raise RuntimeError("Model does not have people attribute or it is None")
+        if not hasattr(model, 'patches') or model.patches is None:
+            raise RuntimeError("Model does not have patches attribute or it is None")
+        
+        people: PeopleLaserFrame = model.people
+        patches: PatchLaserFrame = model.patches
         total_seeded = 0
 
         for patch_id, num_infections in zip(target_patches, infections_per_patch, strict=False):
@@ -196,13 +202,18 @@ class InfectionSeedingProcess(BaseComponent):
                 infections_to_seed = cast_type(actual_infections, patches.states.dtype)
 
                 idx = np.where(np.logical_and(people.patch_id == patch_idx, people.state == model.params.states.index("S")))[0]
-                flag = False
+                # idx = model.prng.choice(idx, size=actual_infections, replace=False)
+                model.prng.shuffle(idx)
+                idx = idx[:actual_infections]
+                flag = 0
                 for instance in model.instances:
                     if hasattr(instance, "infect"):
                         instance.infect(model, idx)
-                        flag = True
-                if not flag:
-                    raise ValueError("No instance found with an infect method")
+                        flag += 1
+                if flag == 0:
+                    raise RuntimeError("No instance found with an infect method")
+                elif flag > 1:
+                    raise RuntimeError("Multiple instances found with an infect method")
 
                 # Move from Susceptible to Infected
                 patches.states.S[patch_idx] -= infections_to_seed

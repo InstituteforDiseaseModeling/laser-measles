@@ -2,14 +2,23 @@ import numpy as np
 import polars as pl
 
 
-def single_patch_scenario(
-    seed: int = 42,
-    population: int = 100_000,
-    mcv1_coverage: float = 0.0
-) -> pl.DataFrame:
-    """ Generate a synthetic scenario with a single patch.
-    """
+def single_patch_scenario(population: int = 100_000, mcv1_coverage: float = 0.0) -> pl.DataFrame:
+    """Generate a synthetic scenario with a single patch."""
     df = pl.DataFrame({"id": ["patch_1"], "pop": [population], "lat": [40.0], "lon": [4.0], "mcv1": [mcv1_coverage]})
+    return df
+
+
+def two_patch_scenario(population: int = 100_000, mcv1_coverage: float = 0.0) -> pl.DataFrame:
+    """Generate a synthetic scenario with two patches."""
+    df = pl.DataFrame(
+        {
+            "id": ["patch_1", "patch_2"],
+            "pop": [population, population//2],
+            "lat": [40.0, 34.0],
+            "lon": [4.0, 10.0],
+            "mcv1": [mcv1_coverage, mcv1_coverage],
+        }
+    )
     return df
 
 
@@ -20,7 +29,7 @@ def two_cluster_scenario(
     cluster_size_std: float = 0.3,
     mcv1_coverage_range: tuple[float, float] | None = None,
 ) -> pl.DataFrame:
-    """ Generate a synthetic scenario with two clusters of nodes.
+    """Generate a synthetic scenario with two clusters of nodes.
 
     Args:
         seed: Random seed for reproducibility.

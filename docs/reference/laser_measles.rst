@@ -13,9 +13,11 @@ Subpackages
    :maxdepth: 4
 
    laser_measles.abm
+   laser_measles.base_components
    laser_measles.biweekly
    laser_measles.compartmental
    laser_measles.demographics
+   laser_measles.scenarios
 
 Submodules
 ----------

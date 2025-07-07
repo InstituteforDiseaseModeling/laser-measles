@@ -29,7 +29,7 @@ import numpy as np
 from pydantic import BaseModel
 from pydantic import Field
 
-from laser_measles.base import BaseLaserModel
+from laser_measles.abm.model import ABMModel
 from laser_measles.base import BasePhase
 from laser_measles.compartmental.mixing import init_gravity_diffusion  # TODO: consolidate spatial mixing into separate module
 from laser_measles.utils import cast_type
@@ -186,7 +186,7 @@ class TransmissionProcess(BasePhase):
         """Sets the mixing matrix"""
         self._mixing = mixing
 
-    def infect(self, model: BaseLaserModel, idx: np.ndarray | int) -> None:
+    def infect(self, model: ABMModel, idx: np.ndarray | int) -> None:
         if isinstance(idx, int):
             idx = np.array([idx])
         people = model.people

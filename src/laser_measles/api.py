@@ -1,29 +1,38 @@
 # Public API Export List
+# ruff: noqa: F401, E402
 
 __all__ = []
 
-from . import biweekly  # noqa: F401
-from . import demographics  # noqa: F401
-from . import abm  # noqa: F401
-from . import compartmental  # noqa: F401
-from . import scenarios  # noqa: F401
+from . import abm
+from . import biweekly
+from . import compartmental
+from . import demographics
+from . import scenarios
 
 __all__.extend(
     [
-        "biweekly",
-        "demographics",
         "abm",
+        "biweekly",
         "compartmental",
+        "demographics",
         "scenarios",
     ]
 )
 
-from .components import component  # noqa: E402,F401
-from .components import create_component  # noqa: E402,F401
+from .components import component
+from .components import create_component
 
 __all__.extend(
     [
         "component",
         "create_component",
+    ]
+)
+
+from .wrapper import pretty_laserframe
+
+__all__.extend(
+    [
+        "pretty_laserframe",
     ]
 )

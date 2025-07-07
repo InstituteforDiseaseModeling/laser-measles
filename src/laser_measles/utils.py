@@ -142,9 +142,10 @@ def seed_infections_in_patch(model, ipatch: int, ninfections: int = 100) -> None
     return
 
 
-def cast_type(a, dtype):
+def cast_type(a, dtype, round: bool = False):
     """
     Cast a value to a specified data type.
+    Note that this casting truncates by default.
 
     Args:
         a: The value to cast
@@ -154,7 +155,10 @@ def cast_type(a, dtype):
         The value cast to the specified data type
     """
     if isinstance(a, np.ndarray):
-        return a.astype(dtype) if a.dtype != dtype else a
+        if round:
+            return np.round(a.astype(dtype)) if a.dtype != dtype else a
+        else:
+            return a.astype(dtype) if a.dtype != dtype else a
     else:
         return a
 

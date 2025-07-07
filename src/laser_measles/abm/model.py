@@ -46,31 +46,19 @@ Model Class:
 
 import numpy as np
 import polars as pl
-from typing import Protocol
 from laser_core.laserframe import LaserFrame
 from matplotlib import pyplot as plt
 from matplotlib.figure import Figure
 
-from laser_measles.base import BaseLaserModel
-from laser_measles.utils import cast_type, StateArray, get_laserframe_properties
 from laser_measles.abm.base import BaseABMScenario
+from laser_measles.abm.base import PatchLaserFrame
+from laser_measles.abm.base import PeopleLaserFrame
+from laser_measles.base import BaseLaserModel
+from laser_measles.utils import StateArray
+from laser_measles.utils import get_laserframe_properties
 
 from . import components
-
-from .components.process_births import BirthsProcess
-from .components.process_births_contant_pop import BirthsConstantPopProcess
 from .params import ABMParams
-
-class PeopleLaserFrame(LaserFrame):
-    """
-    Laserframe for people (e.g., agent) properties
-    """
-    patch_id: np.ndarray
-    state: np.ndarray
-    susceptibility: np.ndarray
-
-    def __init__(self, capacity: int, initial_count: int = 0) -> None:
-        super().__init__(capacity=capacity, initial_count=initial_count)
 
 
 class ABMModel(BaseLaserModel[BaseABMScenario, ABMParams]):
@@ -96,7 +84,8 @@ class ABMModel(BaseLaserModel[BaseABMScenario, ABMParams]):
         """
         super().__init__(scenario, params, name)
 
-        print(f"Initializing the {name} model with {len(scenario)} patches…")
+        if self.params.verbose:
+            print(f"Initializing the {name} model with {len(scenario)} patches…")
 
         # Setup patches
         self.setup_patches()
@@ -110,7 +99,7 @@ class ABMModel(BaseLaserModel[BaseABMScenario, ABMParams]):
 
         scenario = self.scenario
 
-        self.patches = LaserFrame(capacity=len(scenario))
+        self.patches = PatchLaserFrame(capacity=len(scenario))
         # Create the state vector for each of the patches (4, num_patches) for SEIR
         self.patches.add_vector_property("states", len(self.params.states))  # S, E, I, R
 
@@ -137,18 +126,22 @@ class ABMModel(BaseLaserModel[BaseABMScenario, ABMParams]):
         return
 
     def initialize_people_capacity(self, capacity: int) -> None:
-        people = self.people
-        # Get a set of all the properties
-        properties = get_laserframe_properties(people)
-        new_people = LaserFrame(capacity=capacity)
-        # Add all the properties to the new people laserframe
-        for property_name in properties:
-            property = getattr(people, property_name)
-            if property.ndim == 1:
-                new_people.add_scalar_property(property_name, dtype=property.dtype, default=property[0])
-            elif (property.ndim == 2):
-                # TODO: Currently assumin vector property. Need to deal with array properties.
-                new_people.add_vector_property(property_name, len(property), dtype=property.dtype, default=property[0])
+        """
+        Initialize the people LaserFrame with a new capacity while preserving all properties.
+
+        This method uses the factory method from BasePeopleLaserFrame to create a new
+        instance of the same type with the specified capacity, copying all properties
+        from the existing instance.
+
+        Args:
+            capacity: The new capacity for the people LaserFrame
+        """
+        if self.people is None:
+            raise RuntimeError("Cannot initialize capacity: people LaserFrame is None")
+
+        # Use the factory method to create a new instance with the same type and properties
+        new_people = type(self.people).create_with_capacity(capacity, self.people)
+
         # Update the people laserframe
         self.people = new_people
 
@@ -157,7 +150,7 @@ class ABMModel(BaseLaserModel[BaseABMScenario, ABMParams]):
         Setup birth component registration for generic model.
         """
 
-        # This will re-run all instantiaion 
+        # This will re-run all instantiaion
         if len(self.people) != self.patches.states.sum():
             if self.params.verbose:
                 print("No vital dynamics provided. Creating a new people laserframe with the same properties as the patches.")
@@ -214,14 +207,18 @@ class ABMModel(BaseLaserModel[BaseABMScenario, ABMParams]):
         yield
 
         _fig = plt.figure(figsize=(12, 9), dpi=128) if fig is None else fig
+        column_names = ["tick"] + [type(phase).__name__ for phase in self.phases]
+        metrics = pl.DataFrame(self.metrics, schema=column_names)
+        sum_columns = metrics.select([pl.sum(col).alias(col) for col in metrics.columns[1:]]).to_dict(as_series=False)
 
-        metrics = pl.DataFrame(self.metrics, columns=["tick"] + [type(phase).__name__ for phase in self.phases])
-        plot_columns = metrics.columns[1:]
-        sum_columns = metrics[plot_columns].sum()
+        # Build labels (strip "do_" if present)
+        labels = [name[3:] if name.startswith("do_") else name for name in sum_columns.keys()]
+        values = list(sum_columns.values())
 
+        # Plot pie chart
         plt.pie(
-            sum_columns,
-            labels=[name if not name.startswith("do_") else name[3:] for name in sum_columns.index],
+            values,
+            labels=labels,
             autopct="%1.1f%%",
             startangle=140,
         )

@@ -6,8 +6,22 @@ import numpy as np
 import patito as pt
 import polars as pl
 
+from laser_measles.base import BasePatchLaserFrame
+from laser_measles.base import BasePeopleLaserFrame
 from laser_measles.base import BaseScenario as LaserMeaslesBaseScenario
 
+
+class PeopleLaserFrame(BasePeopleLaserFrame):
+    """
+    Laserframe for people (e.g., agent) properties
+    """
+    patch_id: np.ndarray
+    state: np.ndarray
+    susceptibility: np.ndarray
+
+
+class PatchLaserFrame(BasePatchLaserFrame):
+    ...
 
 class BaseABMScenarioSchema(pt.Model):
     """

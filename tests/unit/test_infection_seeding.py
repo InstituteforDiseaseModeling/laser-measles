@@ -1,11 +1,13 @@
-import pytest
 import importlib
+
+import pytest
+
 import laser_measles as lm
 
-@pytest.mark.parametrize("measles_module", [
-    "laser_measles.biweekly",
-    "laser_measles.compartmental"
-])
+MEASLES_MODULES = ["laser_measles.biweekly", "laser_measles.compartmental", "laser_measles.abm"]
+
+
+@pytest.mark.parametrize("measles_module", MEASLES_MODULES)
 def test_seed_single_patch(measles_module):
     """
     Test infection seeding for different model types.
@@ -15,14 +17,15 @@ def test_seed_single_patch(measles_module):
     """
     MeaslesModel = importlib.import_module(measles_module)
 
-    scenario = MeaslesModel.BaseScenario(lm.scenarios.synthetic.two_cluster_scenario())
+    scenario = MeaslesModel.BaseScenario(lm.scenarios.synthetic.single_patch_scenario())
     model = MeaslesModel.Model(scenario, MeaslesModel.Params(num_ticks=25), name="test_seed_single_patch")
-    model.components = [MeaslesModel.components.InfectionSeedingProcess]
+    model.components = [MeaslesModel.components.InfectionSeedingProcess]  # NB: No disease progression included in the components
     model.run()
     assert model.patches.states.I.sum() == 1
 
+
 if __name__ == "__main__":
-    for module in ["laser_measles.biweekly", "laser_measles.compartmental"]:
+    for module in MEASLES_MODULES:
         print(f"Testing {module}...")
         test_seed_single_patch(module)
         print(f"✓ {module} test passed")
