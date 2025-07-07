@@ -23,8 +23,7 @@ def test_infection_single_patch(measles_module):
         MeaslesModel.components.InfectionSeedingProcess,
         MeaslesModel.components.InfectionProcess]
     model.run()
-    print(f"Final fraction recovered: {100*model.patches.states.R.sum() / scenario['pop'].sum():.2f}%")
-    print(f"Final number recovered: {model.patches.states.R.sum()}")
+    print(f"Final fraction recovered: {100*model.patches.states.R.sum() / scenario['pop'].sum():.2f}% (N={model.patches.states.R.sum()})")
     assert model.patches.states.R.sum() > 1
 
 @pytest.mark.parametrize("measles_module", MEASLES_MODULES)
@@ -36,8 +35,7 @@ def test_infection_two_patch(measles_module):
         MeaslesModel.components.InfectionSeedingProcess,
         MeaslesModel.components.InfectionProcess]
     model.run()
-    print(f"Final fraction recovered: {100*model.patches.states.R.sum() / scenario['pop'].sum():.2f}%")
-    print(f"Final number recovered: {model.patches.states.R.sum()}")
+    print(f"Final fraction recovered: {100*model.patches.states.R.sum() / scenario['pop'].sum():.2f}% (N={model.patches.states.R.sum()})")
     assert model.patches.states.R.sum() > 1
 
 if __name__ == "__main__":

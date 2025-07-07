@@ -5,9 +5,11 @@ Classes:
     LaserFrameWrapper: A wrapper around LaserFrame that provides clean and snazzy printing.
 """
 
+from typing import Any
+
 import numpy as np
-from typing import Any, Optional
 from laser_core.laserframe import LaserFrame
+
 from .utils import get_laserframe_properties
 
 
@@ -56,7 +58,7 @@ class PrettyLaserFrameWrapper:
 
     def __repr__(self) -> str:
         """Return a detailed representation of the wrapper."""
-        return f"LaserFrameWrapper({repr(self._laserframe)})"
+        return f"LaserFrameWrapper({self._laserframe!r})"
 
     def _format_laserframe(self) -> str:
         """
@@ -79,7 +81,7 @@ class PrettyLaserFrameWrapper:
         count = getattr(self._laserframe, "_count", "Unknown")
 
         # Build the header
-        header = f"┌─ LaserFrame (capacity: {capacity}, count: {count}) ─"
+        header = f"┌─ {self._laserframe.__class__.__name__} (capacity: {capacity}, count: {count}) ─"
         header += "─" * max(0, 50 - len(header)) + "┐"
 
         # Build property lines
@@ -103,11 +105,11 @@ class PrettyLaserFrameWrapper:
         # Combine everything
         result = header + "\n"
         result += "\n".join(lines)
-        result += "\n" + "─" * len(header) + "┘"
+        result += "\n" + "─" * (len(header) - 1) + "┘"
 
         return result
 
-    def print_laserframe(self, max_items: Optional[int] = None) -> None:
+    def print_laserframe(self, max_items: int | None = None) -> None:
         """
         Print the LaserFrame with optional data preview.
 
@@ -248,57 +250,56 @@ def pretty_laserframe(cls):
 
         def __repr__(self):
             """Override __repr__ to use the wrapper formatting."""
-            return f"{self.__class__.__name__}({repr(self._laserframe)})"
+            return f"{self.__class__.__name__}({self._laserframe!r})"
 
         def print_laserframe(self, max_items=None):
             """Add the print_laserframe method."""
             wrapper = PrettyLaserFrameWrapper(self)
             wrapper.print_laserframe(max_items)
-        
+
         @classmethod
-        def create_resized_copy(cls, capacity: int, source_frame) -> 'WrappedClass':
+        def create_resized_copy(cls, capacity: int, source_frame) -> "WrappedClass":
             """
             Alternative factory method for creating resized copies.
-            
+
             This method provides an alternative approach to the factory method
             in BasePeopleLaserFrame, allowing for flexible initialization
             through the wrapper decorator.
-            
+
             Args:
                 capacity: The capacity for the new LaserFrame
                 source_frame: The source LaserFrame to copy properties from
-                
+
             Returns:
                 A new instance with the specified capacity and copied properties
             """
             # Create new instance
             new_frame = cls(capacity=capacity)
-            
+
             # Copy properties if the source has the copy_properties_from method
-            if hasattr(source_frame, 'copy_properties_from'):
+            if hasattr(source_frame, "copy_properties_from"):
                 new_frame.copy_properties_from(source_frame)
             else:
                 # Fallback: manually copy properties
                 from laser_measles.utils import get_laserframe_properties
+
                 properties = get_laserframe_properties(source_frame)
-                
+
                 for property_name in properties:
                     source_property = getattr(source_frame, property_name)
-                    
+
                     if source_property.ndim == 1:
                         new_frame.add_scalar_property(
-                            property_name, 
-                            dtype=source_property.dtype, 
-                            default=source_property[0] if len(source_property) > 0 else 0
+                            property_name, dtype=source_property.dtype, default=source_property[0] if len(source_property) > 0 else 0
                         )
                     elif source_property.ndim == 2:
                         new_frame.add_vector_property(
-                            property_name, 
-                            len(source_property), 
-                            dtype=source_property.dtype, 
-                            default=source_property[:, 0] if source_property.shape[1] > 0 else 0
+                            property_name,
+                            len(source_property),
+                            dtype=source_property.dtype,
+                            default=source_property[:, 0] if source_property.shape[1] > 0 else 0,
                         )
-            
+
             return new_frame
 
     # Copy the class name and module

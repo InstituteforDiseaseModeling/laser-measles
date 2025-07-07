@@ -5,7 +5,12 @@ import numpy as np
 import patito as pt
 import polars as pl
 
-from laser_measles.base import BaseScenario
+from laser_measles.base import BasePatchLaserFrame, BaseScenario
+from laser_measles.wrapper import pretty_laserframe
+
+
+class PatchLaserFrame(BasePatchLaserFrame):
+    ...
 
 
 class BaseScenarioSchema(pt.Model):

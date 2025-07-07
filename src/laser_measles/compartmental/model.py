@@ -31,14 +31,14 @@ Model Class:
             Generates plots for the scenario patches and populations, distribution of day of birth, and update phase times.
 """
 
-
 import numpy as np
-from laser_core.laserframe import LaserFrame
 
 from laser_measles.base import BaseLaserModel
 from laser_measles.compartmental.base import BaseScenario
+from laser_measles.compartmental.base import PatchLaserFrame
 from laser_measles.compartmental.params import CompartmentalParams
-from laser_measles.utils import cast_type, StateArray
+from laser_measles.utils import StateArray
+from laser_measles.utils import cast_type
 
 
 class CompartmentalModel(BaseLaserModel[BaseScenario, CompartmentalParams]):
@@ -60,7 +60,7 @@ class CompartmentalModel(BaseLaserModel[BaseScenario, CompartmentalParams]):
             - `lat` (float degrees): The latitude of the patches (e.g., from geographic or population centroid).
             - `lon` (float degrees): The longitude of the patches (e.g., from geographic or population centroid).
             - `mcv1` (float): The MCV1 coverage for the patches.
-            
+
         The model uses SEIR compartments:
             - S: Susceptible individuals
             - E: Exposed individuals (infected but not yet infectious)
@@ -85,11 +85,11 @@ class CompartmentalModel(BaseLaserModel[BaseScenario, CompartmentalParams]):
         super().__init__(scenario, params, name)
 
         # Add patches to the model
-        self.patches = LaserFrame(capacity=len(scenario))
+        self.patches = PatchLaserFrame(capacity=len(scenario))
 
         # Create the state vector for each of the patches (4, num_patches) for SEIR
         self.patches.add_vector_property("states", len(self.params.states))  # S, E, I, R
-        
+
         # Wrap the states array with StateArray for attribute access
         self.patches.states = StateArray(self.patches.states, state_names=self.params.states)
 
