@@ -35,6 +35,9 @@ pre-commit run --all-files
 ```
 
 ### Documentation
+
+Use google style docstrings.
+
 ```bash
 # Build documentation (requires tox)
 tox -e docs
