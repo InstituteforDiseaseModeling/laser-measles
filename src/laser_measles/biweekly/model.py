@@ -31,14 +31,14 @@ Model Class:
             Generates plots for the scenario patches and populations, distribution of day of birth, and update phase times.
 """
 
-
 import numpy as np
-from laser_core.laserframe import LaserFrame
 
 from laser_measles.base import BaseLaserModel
 from laser_measles.biweekly.base import BaseScenario
+from laser_measles.biweekly.base import PatchLaserFrame
 from laser_measles.biweekly.params import BiweeklyParams
-from laser_measles.utils import cast_type, StateArray
+from laser_measles.utils import StateArray
+from laser_measles.utils import cast_type
 
 
 class BiweeklyModel(BaseLaserModel[BaseScenario, BiweeklyParams]):
@@ -62,6 +62,8 @@ class BiweeklyModel(BaseLaserModel[BaseScenario, BiweeklyParams]):
             - `mcv1` (float): The MCV1 coverage for the patches.
     """
 
+    patches: PatchLaserFrame
+
     def __init__(self, scenario: BaseScenario, params: BiweeklyParams, name: str = "biweekly") -> None:
         """
         Initialize the disease model with the given scenario and parameters.
@@ -79,11 +81,11 @@ class BiweeklyModel(BaseLaserModel[BaseScenario, BiweeklyParams]):
         super().__init__(scenario, params, name)
 
         # Add patches to the model
-        self.patches = LaserFrame(capacity=len(scenario))
+        self.patches = PatchLaserFrame(capacity=len(scenario))
 
         # Create the state vector for each of the patches (3, num_patches)
         self.patches.add_vector_property("states", len(self.params.states))  # S, I, R
-        
+
         # Wrap the states array with StateArray for attribute access
         self.patches.states = StateArray(self.patches.states, state_names=self.params.states)
 

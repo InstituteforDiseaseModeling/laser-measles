@@ -1,11 +1,16 @@
 """
 Basic classes for biweekly model.
 """
-import numpy as np
-import polars as pl
-import patito as pt
 
+import numpy as np
+import patito as pt
+import polars as pl
+
+from laser_measles.base import BasePatchLaserFrame
 from laser_measles.base import BaseScenario
+
+
+class PatchLaserFrame(BasePatchLaserFrame): ...
 
 
 class BaseScenarioSchema(pt.Model):
@@ -16,7 +21,7 @@ class BaseScenarioSchema(pt.Model):
     pop: int  # population
     lat: float  # latitude
     lon: float  # longitude
-    id: str # ids of the nodes
+    id: str  # ids of the nodes
     mcv1: float  # MCV1 coverages (as percentages, will be divided by 100)
 
 
@@ -63,5 +68,6 @@ class BaseBiweeklyScenario(BaseScenario):
 
         except Exception as e:
             raise ValueError(f"DataFrame validation error:\n{e}") from e
+
 
 BaseScenario = BaseBiweeklyScenario

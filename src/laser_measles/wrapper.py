@@ -105,7 +105,7 @@ class PrettyLaserFrameWrapper:
         # Combine everything
         result = header + "\n"
         result += "\n".join(lines)
-        result += "\n" + "─" * (len(header) - 1) + "┘"
+        result += "\n" + "└" + "─" * (len(header) - 2) + "┘"
 
         return result
 
