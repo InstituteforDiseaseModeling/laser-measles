@@ -7,15 +7,14 @@ import laser_measles as lm
 
 MEASLES_MODULES = ["laser_measles.biweekly", "laser_measles.compartmental", "laser_measles.abm"]
 VERBOSE = False
-SEED = np.random.randint(0, 1000000)
-print(f"Using seed: {SEED}")
+SEED = 42
 
 @pytest.mark.parametrize("measles_module", MEASLES_MODULES)
 def test_infection_single_patch(measles_module):
     """ Test the infection process in a single patch. """
     MeaslesModel = importlib.import_module(measles_module)
     scenario = MeaslesModel.BaseScenario(lm.scenarios.synthetic.single_patch_scenario())
-    model = MeaslesModel.Model(scenario, MeaslesModel.Params(num_ticks=50, verbose=VERBOSE, seed=SEED), name="test_infection_single_patch")
+    model = MeaslesModel.Model(scenario, MeaslesModel.Params(num_ticks=50, verbose=VERBOSE, seed=SEED))
     model.components = [
         lm.create_component(MeaslesModel.components.InfectionSeedingProcess, MeaslesModel.components.InfectionSeedingParams(num_infections=10)),
         MeaslesModel.components.InfectionProcess]
@@ -29,7 +28,7 @@ def test_infection_two_patch(measles_module):
     """ Test the infection process in two patches. """
     MeaslesModel = importlib.import_module(measles_module)
     scenario = MeaslesModel.BaseScenario(lm.scenarios.synthetic.two_patch_scenario())
-    model = MeaslesModel.Model(scenario, MeaslesModel.Params(num_ticks=25, verbose=VERBOSE, seed=SEED), name="test_infection_double_patch")
+    model = MeaslesModel.Model(scenario, MeaslesModel.Params(num_ticks=25, verbose=VERBOSE, seed=SEED))
     model.components = [
         lm.create_component(MeaslesModel.components.InfectionSeedingProcess, MeaslesModel.components.InfectionSeedingParams(num_infections=10)),
         MeaslesModel.components.InfectionProcess]

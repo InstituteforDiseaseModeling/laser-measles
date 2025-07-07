@@ -1,0 +1,34 @@
+from laser_core import LaserFrame
+from sciris import prettyobj
+
+import laser_measles as lm
+from laser_measles.base import BaseLaserModel
+
+VERBOSE = False
+
+
+# Initialize the model and its population
+def test_laserframe():
+    # Use the proper LaserModel base class
+    class TestModel(BaseLaserModel):
+        def __init__(self, scenario=None, parameters=None, name="test"):
+            scenario = lm.base.BaseScenario(lm.scenarios.synthetic.single_patch_scenario())
+            parameters = {'verbose':VERBOSE}
+            super().__init__(scenario, parameters, name)
+            # Create the agent population with max size 1000
+            self.population = LaserFrame(capacity=1000, initial_count=0)
+            # Add our properties, which can be thought of as the columns of our dataframe.
+            self.population.add_scalar_property("disease_state")
+            # Explicitly add the total population size, in this case the same as our max capacity
+            self.population.add(1000)
+
+        def __call__(self, model, tick):
+            # Minimal implementation for testing
+            pass
+
+    model = TestModel()
+
+
+if __name__ == "__main__":
+    test_laserframe()
+    print("✓ test_laserframe passed")
