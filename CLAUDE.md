@@ -39,6 +39,9 @@ pyright src/
 ```
 
 ### Documentation
+
+Use google docstring convections.
+
 ```bash
 # Generate API documentation
 tox -e docs
