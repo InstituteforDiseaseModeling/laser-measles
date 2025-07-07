@@ -29,8 +29,10 @@ import numpy as np
 from pydantic import BaseModel
 from pydantic import Field
 
+from laser_measles.base import BaseLaserModel
 from laser_measles.base import BasePhase
 from laser_measles.compartmental.mixing import init_gravity_diffusion  # TODO: consolidate spatial mixing into separate module
+from laser_measles.utils import cast_type
 
 
 @nb.njit(
@@ -51,7 +53,7 @@ def nb_lognormal_update(states, patch_ids, state, forces, etimers, count, exp_mu
             if (force > 0) and (np.random.random_sample() < force):  # draw random number < force means infection
                 states[i] = 1  # set state to exposed
                 # set exposure timer for newly infected individuals to a draw from a lognormal distribution, must be at least 1 day
-                etimers[i] = np.maximum(np.uint16(1), np.uint16(np.round(np.random.lognormal(exp_mu, exp_sigma))))
+                etimers[i] = np.uint16(np.maximum(1, np.round(np.random.lognormal(exp_mu, exp_sigma))))
                 thread_incidences[nb.get_thread_id(), patch_id] += 1
 
     flow[:] = thread_incidences.sum(axis=0)
@@ -62,11 +64,11 @@ def nb_lognormal_update(states, patch_ids, state, forces, etimers, count, exp_mu
 class TransmissionParams(BaseModel):
     """Parameters specific to the transmission process component."""
 
-    beta: float = Field(default=32, description="Base transmission rate", gt=0.0)
+    beta: float = Field(default=1.0, description="Base transmission rate", gt=0.0)
     seasonality_factor: float = Field(default=1.0, description="Seasonality factor", ge=0.0, le=1.0)
     season_start: float = Field(default=0.0, description="Seasonality phase", ge=0, le=364)
-    exp_mu: float = Field(default=11.0, description="Exposure mean (lognormal)", gt=0.0)
-    exp_sigma: float = Field(default=2.0, description="Exposure sigma (lognormal)", gt=0.0)
+    exp_mu: float = Field(default=6.0, description="Exposure mean (days)", gt=0.0)
+    exp_sigma: float = Field(default=2.0, description="Exposure sigma (days)", gt=0.0)
     distance_exponent: float = Field(default=1.5, description="Distance exponent", ge=0.0)
     mixing_scale: float = Field(default=0.001, description="Mixing scale", ge=0.0)
 
@@ -149,7 +151,7 @@ class TransmissionProcess(BasePhase):
         # i.e., that the sum of each row is 1 (self.mixing.sum(axis=1) == 1)
         forces = self.mixing @ (beta_effective * patches.states.I)
 
-        # normalize by the population
+        # normalize by the population (excluding D state)
         forces /= patches.states[:-1, :].sum(axis=0)
         np.negative(forces, out=forces)
         np.expm1(forces, out=forces) # exp(x) - 1
@@ -172,31 +174,6 @@ class TransmissionProcess(BasePhase):
         patches.states.E += model.patches.incidence
         return
 
-    def on_birth(self, model, _tick, istart, iend) -> None:
-        """
-        This function sets the date of infection for newborns to zero.
-        Appears here because transmission is where I have decided to add the "doi" property,
-        and I think it thus makes sense to also have the on-birth initializer here.  Could
-        just as easily choose to do this over in Infection class instead.
-
-        Args:
-
-            model: The simulation model containing the population data.
-            tick: The current tick or time step in the simulation (unused in this function).
-            istart: The starting index of the newborns in the population array.
-            iend: The ending index of the newborns in the population array.
-
-        Returns:
-
-            None
-        """
-
-        if iend is not None:
-            model.population.doi[istart:iend] = 0
-        else:
-            model.population.doi[istart] = 0
-        return
-
     @property
     def mixing(self) -> np.ndarray:
         """Returns the mixing matrix, initializing if necessary"""
@@ -208,3 +185,11 @@ class TransmissionProcess(BasePhase):
     def mixing(self, mixing: np.ndarray) -> None:
         """Sets the mixing matrix"""
         self._mixing = mixing
+
+    def infect(self, model: BaseLaserModel, idx: np.ndarray | int) -> None:
+        if isinstance(idx, int):
+            idx = np.array([idx])
+        people = model.people
+        people.state[idx] = 1
+        people.etimer[idx] = cast_type(np.maximum(1, np.round(np.random.lognormal(self.params.mu_underlying, self.params.sigma_underlying, size=len(idx)))), people.etimer.dtype)
+        return

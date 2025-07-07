@@ -1,4 +1,4 @@
-
+import numpy as np
 from matplotlib.figure import Figure
 from pydantic import BaseModel
 from pydantic import Field
@@ -15,8 +15,8 @@ from .process_transmission import TransmissionProcess
 class InfectionParams(BaseModel):
     """Combined parameters for transmission and disease processes."""
 
-    beta: float = Field(default=32, description="Base transmission rate", gt=0.0)
-    seasonality_factor: float = Field(default=1.0, description="Seasonality factor", ge=0.0, le=1.0)
+    beta: float = Field(default=1.0, description="Base transmission rate", gt=0.0)
+    seasonality_factor: float = Field(default=0.0, description="Seasonality factor", ge=0.0, le=1.0)
     season_start: float = Field(default=0, description="Season start day (0-364)", ge=0, le=364)
     exp_mu: float = Field(default=6.0, description="Exposure mean (lognormal)", gt=0.0)
     exp_sigma: float = Field(default=2.0, description="Exposure sigma (lognormal)", gt=0.0)
@@ -89,17 +89,8 @@ class InfectionProcess(BaseComponent):
         self.transmission.initialize(model)
         self.disease.initialize(model)
 
-    def on_birth(self, model, tick, istart, iend) -> None:
-        """
-        Handle birth events by delegating to the transmission component.
-
-        Args:
-            model: The simulation model containing the population data.
-            tick: The current tick or time step in the simulation.
-            istart: The starting index of the newborns in the population array.
-            iend: The ending index of the newborns in the population array.
-        """
-        self.transmission.on_birth(model, tick, istart, iend)
+    def infect(self, model: BaseLaserModel, idx: np.ndarray) -> None:
+        self.transmission.infect(model, idx)
 
     def plot(self, fig: Figure | None = None):
         """
