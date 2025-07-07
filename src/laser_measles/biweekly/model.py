@@ -34,14 +34,14 @@ Model Class:
 import numpy as np
 
 from laser_measles.base import BaseLaserModel
-from laser_measles.biweekly.base import BaseScenario
+from laser_measles.biweekly.base import BaseBiweeklyScenario
 from laser_measles.biweekly.base import PatchLaserFrame
 from laser_measles.biweekly.params import BiweeklyParams
 from laser_measles.utils import StateArray
 from laser_measles.utils import cast_type
 
 
-class BiweeklyModel(BaseLaserModel[BaseScenario, BiweeklyParams]):
+class BiweeklyModel(BaseLaserModel[BaseBiweeklyScenario, BiweeklyParams]):
     """
     A class to represent the biweekly model.
 
@@ -64,7 +64,7 @@ class BiweeklyModel(BaseLaserModel[BaseScenario, BiweeklyParams]):
 
     patches: PatchLaserFrame
 
-    def __init__(self, scenario: BaseScenario, params: BiweeklyParams, name: str = "biweekly") -> None:
+    def __init__(self, scenario: BaseBiweeklyScenario, params: BiweeklyParams, name: str = "biweekly") -> None:
         """
         Initialize the disease model with the given scenario and parameters.
 
