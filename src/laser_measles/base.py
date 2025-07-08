@@ -535,7 +535,7 @@ class BaseLaserModel(ABC, Generic[ScenarioType, ParamsType]):
                 attrs.append(f"{attr}=<LaserFrame shape={getattr(value, 'shape', None)}>")
             else:
                 # Only show simple types to avoid clutter
-                if isinstance(value, (int, float, str, bool, type(None))):
+                if isinstance(value, int | float | str | bool | type(None)):
                     attrs.append(f"{attr}={value!r}")
         return f"<{self.__class__.__name__}({', '.join(attrs)})>"
 
@@ -553,7 +553,7 @@ class BaseLaserModel(ABC, Generic[ScenarioType, ParamsType]):
                 attrs[attr] ='\n'+value.__str__()
             else:
                 # Only show simple types to avoid clutter
-                if isinstance(value, (int, float, str, bool, type(None))):
+                if isinstance(value, int | float | str | bool | type(None)):
                     attrs[attr] = value.__str__()
         return f"<{self.__class__.__name__}:\n{'\n'.join([f'{k}: {v}' for k, v in attrs.items()])}>"
 
