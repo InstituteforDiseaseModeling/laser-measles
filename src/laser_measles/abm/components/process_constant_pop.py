@@ -35,17 +35,13 @@ class ConstantPopProcess(BasePhase):
             verbose (bool, optional): If True, enables verbose output. Defaults to False.
             params (BirthsParams, optional): Component parameters. If None, uses model.params.
 
-        Raises:
-
-            AssertionError: If the model does not have a `population` attribute.
-            AssertionError: If the model's population does not have a `dob` attribute.
         """
 
         super().__init__(model, verbose)
 
         self.params = params if params is not None else ConstantPopParams()
 
-        model.people.add_scalar_property("dob", dtype=np.int32, default=model.params.num_ticks + 1)
+        model.people.add_scalar_property("date_of_birth", dtype=np.int32, default=model.params.num_ticks + 1)
 
         model.patches.add_scalar_property("births", dtype=np.uint32)
 
@@ -63,7 +59,7 @@ class ConstantPopProcess(BasePhase):
         # Simple initializer for ages where birth rate = mortality rate:
         daily_mortality_rate = (1 + self.params.crute_birth_rate / 1000) ** (1 / 365 * self.model.params.time_step_days) - 1
         # Initialize ages for existing population
-        people.dob[0 : people.count] = cast_type(-1 * model.prng.exponential(1 / daily_mortality_rate, people.count), people.dob.dtype)
+        people.date_of_birth[0 : people.count] = cast_type(-1 * model.prng.exponential(1 / daily_mortality_rate, people.count), people.date_of_birth.dtype)
 
     @property
     def lambda_birth(self) -> float:
@@ -113,5 +109,5 @@ class ConstantPopProcess(BasePhase):
         patches.states.S += cast_type(births, patches.states.dtype)
 
         # Births, set date of birth and state to 0 (susceptible)
-        people.dob[idx] = tick  # set to current tick
+        people.date_of_birth[idx] = tick  # set to current tick
         people.state[idx] = model.params.states.index("S")  # set to susceptible

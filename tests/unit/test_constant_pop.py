@@ -20,6 +20,8 @@ def test_constant_pop_single_patch(measles_module):
         MeaslesModel.components.ConstantPopProcess]
     model.run()
     assert model.patches.states[:-1,:].sum() == scenario["pop"].sum()
+    component = model.get_component(MeaslesModel.components.ConstantPopProcess)[0]
+    assert component.mu_death == component.lambda_birth
 
 @pytest.mark.parametrize("measles_module", MEASLES_MODULES)
 def test_constant_pop_two_patch(measles_module):
@@ -31,6 +33,7 @@ def test_constant_pop_two_patch(measles_module):
         MeaslesModel.components.ConstantPopProcess]
     model.run()
     assert model.patches.states[:-1,:].sum() == scenario["pop"].sum()
+
 
 if __name__ == "__main__":
     for module in MEASLES_MODULES:
