@@ -16,3 +16,11 @@ __all__.extend([
     "BaseStateTracker",
     "BaseStateTrackerParams",
 ])
+
+from .base_vital_dynamics import BaseVitalDynamicsParams
+from .base_vital_dynamics import BaseVitalDynamicsProcess
+
+__all__.extend([
+    "BaseVitalDynamicsParams",
+    "BaseVitalDynamicsProcess",
+])
