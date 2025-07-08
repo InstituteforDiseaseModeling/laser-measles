@@ -15,14 +15,6 @@ def test_generic_cli_help():
     assert "Usage:" in result.stdout
 
 
-def test_generic_cli_run_command():
-    """Test that the generic CLI run command works with typer."""
-    runner = CliRunner()
-    result = runner.invoke(app, [])
-    # Should complete without error (exact behavior depends on core.compute implementation)
-    assert result.exit_code == 0
-
-
 def test_generic_cli_run_with_arguments():
     """Test that the generic CLI accepts arguments."""
     runner = CliRunner()

@@ -24,7 +24,7 @@ app = typer.Typer()
 
 
 @app.command()
-def run(names: List[str] = typer.Argument(default=[], help="Names to process")):
+def run(names: List[str] = typer.Argument(help="Names to process")):
     """Main command to run laser-measles CLI."""
     typer.echo(compute(names))
 

@@ -15,7 +15,7 @@ from .process_transmission import TransmissionProcess
 class InfectionParams(BaseModel):
     """Combined parameters for transmission and disease processes."""
 
-    beta: float = Field(default=1.0, description="Base transmission rate", gt=0.0)
+    beta: float = Field(default=1.0, description="Base transmission rate", ge=0.0)
     seasonality_factor: float = Field(default=0.0, description="Seasonality factor", ge=0.0, le=1.0)
     season_start: float = Field(default=0, description="Season start day (0-364)", ge=0, le=364)
     exp_mu: float = Field(default=6.0, description="Exposure mean (lognormal)", gt=0.0)

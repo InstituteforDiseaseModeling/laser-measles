@@ -72,4 +72,4 @@ class ImportationPressureProcess(BasePhase):
 
         # update states
         states.S -= imported_cases
-        states.I += imported_cases  # Move to infected state
+        states.E += imported_cases  # Move to exposed state

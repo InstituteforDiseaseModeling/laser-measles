@@ -62,9 +62,8 @@ Issues = "https://github.com/InstituteforDiseaseModeling/laser-measles/issues"
 Changelog = "https://github.com/InstituteforDiseaseModeling/laser-measles/blob/master/CHANGELOG.md"
 
 [project.scripts]
-cli = "laser_measles.cli:app"
-nigeria = "laser_measles.nigeria.model:app"
-measles = "laser_measles.abm.cli:app"
+lm = "laser_measles.cli:app"
+lm-abm = "laser_measles.abm.cli:app"
 
 [tool.ruff]
 extend-exclude = ["static", "ci/templates"]

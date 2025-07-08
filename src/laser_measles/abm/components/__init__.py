@@ -26,11 +26,11 @@ __all__.extend(["TransmissionParams", "TransmissionProcess"])
 from .process_infection import InfectionParams, InfectionProcess
 __all__.extend(["InfectionParams", "InfectionProcess"])
 
-# from .process_importation import ImportationParams, InfectRandomAgentsProcess, InfectAgentsInPatchProcess
-# __all__.extend(["ImportationParams", "InfectAgentsInPatchProcess", "InfectRandomAgentsProcess"])
-
 from .process_infection_seeding import InfectionSeedingParams, InfectionSeedingProcess
 __all__.extend(["InfectionSeedingParams", "InfectionSeedingProcess"])
+
+from .process_importation_pressure import ImportationPressureParams, ImportationPressureProcess
+__all__.extend(["ImportationPressureParams", "ImportationPressureProcess"])
 
 # Trackers
 # --------

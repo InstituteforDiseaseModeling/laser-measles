@@ -11,7 +11,7 @@ from laser_measles.utils import cast_type
 class InfectionParams(BaseModel):
     """Parameters specific to the SEIR infection process component."""
 
-    beta: float = Field(default=1.0, description="Transmission rate per day", gt=0.0)
+    beta: float = Field(default=1.0, description="Base transmission rate", ge=0.0)
     exp_mu: float = Field(default=6.0, description="Exposure mean", gt=0.0)
     inf_mu: float = Field(default=8.0, description="Infection mean", gt=0.0)
     seasonality_factor: float = Field(default=0.0, description="Seasonality factor, default is no seasonality", ge=0.0, le=1.0)
