@@ -42,6 +42,7 @@ def component(cls: type[T] = None, **default_params):
     Examples
     --------
     Basic usage:
+    
     >>> @component
     ... class MyComponent(BaseComponent):
     ...     def __init__(self, model, verbose=False, param1=1, param2=2):
@@ -50,6 +51,7 @@ def component(cls: type[T] = None, **default_params):
     ...         self.param2 = param2
 
     With default parameters:
+    
     >>> @component(param1=10, param2=20)
     ... class MyComponent(BaseComponent):
     ...     def __init__(self, model, verbose=False, param1=1, param2=2):
@@ -58,6 +60,7 @@ def component(cls: type[T] = None, **default_params):
     ...         self.param2 = param2
 
     Using the factory:
+    
     >>> # Create with default parameters
     >>> MyComponent.create(model)
     >>> # Create with custom parameters
