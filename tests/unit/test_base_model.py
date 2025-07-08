@@ -1,5 +1,5 @@
 from laser_core import LaserFrame
-from sciris import prettyobj
+from laser_core import PropertySet
 
 import laser_measles as lm
 from laser_measles.base import BaseLaserModel
@@ -13,7 +13,7 @@ def test_laserframe():
     class TestModel(BaseLaserModel):
         def __init__(self, scenario=None, parameters=None, name="test"):
             scenario = lm.base.BaseScenario(lm.scenarios.synthetic.single_patch_scenario())
-            parameters = {'verbose':VERBOSE}
+            parameters = PropertySet({'verbose':VERBOSE, 'start_time':'2000-01'})
             super().__init__(scenario, parameters, name)
             # Create the agent population with max size 1000
             self.population = LaserFrame(capacity=1000, initial_count=0)
@@ -26,6 +26,7 @@ def test_laserframe():
             # Minimal implementation for testing
             pass
 
+    # Initialization test
     model = TestModel()
 
 
