@@ -5,8 +5,8 @@ __all__ = []
 # --------------
 
 # Import parameter classes
-from .process_births import BirthsParams, BirthsProcess
-__all__.extend(["BirthsParams", "BirthsProcess"])
+from .process_vital_dynamics import VitalDynamicsParams, VitalDynamicsProcess
+__all__.extend(["VitalDynamicsParams", "VitalDynamicsProcess"])
 
 from .process_constant_pop import ConstantPopParams, ConstantPopProcess
 __all__.extend(["ConstantPopParams", "ConstantPopProcess"])

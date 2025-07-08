@@ -1,19 +1,19 @@
 import numpy as np
-from pydantic import BaseModel
 from pydantic import Field
 
 from laser_measles.abm.model import ABMModel
-from laser_measles.base import BasePhase
+from laser_measles.components import BaseVitalDynamicsParams
+from laser_measles.components import BaseVitalDynamicsProcess
 from laser_measles.utils import cast_type
 
 
-class ConstantPopParams(BaseModel):
+class ConstantPopParams(BaseVitalDynamicsParams):
     """Parameters specific to the births process component."""
 
-    crute_birth_rate: float = Field(default=20, description="Crude birth rate per 1000 people per year", ge=0.0)
+    crude_birth_rate: float = Field(default=20, description="Crude birth rate per 1000 people per year", ge=0.0)
+    crude_death_rate: float = 0
 
-
-class ConstantPopProcess(BasePhase):
+class ConstantPopProcess(BaseVitalDynamicsProcess):
     """
     A component to handle the birth events in a model with constant population - that is, births == deaths.
 
@@ -49,7 +49,7 @@ class ConstantPopProcess(BasePhase):
 
     def initialize(self, model: ABMModel) -> None:
         """
-        Initialize the constant population process by setting agent birth dates.
+        Simple initializer for ages where birth rate = mortality rate
 
         Args:
             model: The ABM model instance to initialize
@@ -57,14 +57,13 @@ class ConstantPopProcess(BasePhase):
         people = model.people
 
         # Simple initializer for ages where birth rate = mortality rate:
-        daily_mortality_rate = (1 + self.params.crute_birth_rate / 1000) ** (1 / 365 * self.model.params.time_step_days) - 1
         # Initialize ages for existing population
-        people.date_of_birth[0 : people.count] = cast_type(-1 * model.prng.exponential(1 / daily_mortality_rate, people.count), people.date_of_birth.dtype)
+        people.date_of_birth[0 : people.count] = cast_type(-1 * model.prng.exponential(1 / self.mu_death, people.count), people.date_of_birth.dtype)
 
     @property
     def lambda_birth(self) -> float:
         """birth rate per tick"""
-        return (1 + self.params.crute_birth_rate / 1000) ** (1 / 365 * self.model.params.time_step_days) - 1
+        return (1 + self.params.crude_birth_rate / 1000) ** (1 / 365 * self.model.params.time_step_days) - 1
 
     @property
     def mu_death(self) -> float:
@@ -111,3 +110,9 @@ class ConstantPopProcess(BasePhase):
         # Births, set date of birth and state to 0 (susceptible)
         people.date_of_birth[idx] = tick  # set to current tick
         people.state[idx] = model.params.states.index("S")  # set to susceptible
+
+    def calculate_capacity(self, model) -> np.ndarray:
+        """
+        Calculate the capacity of the model.
+        """
+        return model.scenario['pop'].sum()

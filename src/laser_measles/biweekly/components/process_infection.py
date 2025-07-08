@@ -2,7 +2,7 @@ import numpy as np
 from pydantic import Field
 
 from laser_measles.base import BaseLaserModel
-from laser_measles.base_components import BaseInfection, BaseInfectionParams
+from laser_measles.components import BaseInfection, BaseInfectionParams
 from laser_measles.biweekly.mixing import init_gravity_diffusion
 from laser_measles.utils import cast_type
 

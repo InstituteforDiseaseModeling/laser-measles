@@ -1,5 +1,5 @@
 """
-Base classes for laser-measles components and models
+Base classes for laser-measles components and models.
 
 This module contains the base classes for laser-measles components and models.
 
@@ -70,7 +70,7 @@ class BasePeopleLaserFrame(LaserFrame):
     """
 
     @classmethod
-    def create_with_capacity(cls, capacity: int, source_frame: BasePeopleLaserFrame) -> Any:
+    def create_with_capacity(cls, capacity: int, source_frame: BasePeopleLaserFrame, initial_count: int = -1) -> Any:
         """
         Create a new instance of the same type with specified capacity.
 
@@ -78,14 +78,16 @@ class BasePeopleLaserFrame(LaserFrame):
         with the specified capacity, and copies all properties from the source.
 
         Args:
-            capacity: The capacity for the new LaserFrame
-            source_frame: The source LaserFrame to copy properties from
+            capacity: The capacity for the new LaserFrame.
+            source_frame: The source LaserFrame to copy properties from.
+            initial_count: The initial number of "active" agents in the new frame. 
+                If -1, the count is set to the capacity. Defaults to -1.
 
         Returns:
-            A new instance of the same type with copied properties
+            A new instance of the same type with copied properties.
         """
         # Create new instance of the same type
-        new_frame = cls(capacity=capacity)
+        new_frame = cls(capacity=capacity, initial_count=initial_count)
 
         # Copy all properties from source
         new_frame.copy_properties_from(source_frame)
@@ -100,7 +102,7 @@ class BasePeopleLaserFrame(LaserFrame):
         including their data types and default values.
 
         Args:
-            source_frame: The source LaserFrame to copy properties from
+            source_frame: The source LaserFrame to copy properties from.
         """
         from laser_measles.utils import get_laserframe_properties
 
@@ -143,9 +145,9 @@ class BaseLaserModel(ABC, Generic[ScenarioType, ParamsType]):
         Initialize the model with common attributes.
 
         Args:
-            scenario: Scenario data (type varies by model)
-            params: Model parameters (type varies by model)
-            name: Model name
+            scenario: Scenario data (type varies by model).
+            params: Model parameters (type varies by model).
+            name: Model name.
         """
         self.tinit = datetime.now(tz=None)  # noqa: DTZ005
         if params.verbose:
@@ -179,7 +181,7 @@ class BaseLaserModel(ABC, Generic[ScenarioType, ParamsType]):
         Retrieve the list of model components.
 
         Returns:
-            list: A list containing the components.
+            A list containing the components.
         """
         return self._components
 
@@ -189,7 +191,7 @@ class BaseLaserModel(ABC, Generic[ScenarioType, ParamsType]):
         Sets up the components of the model and constructs all instances.
 
         Args:
-            components (list): A list of component classes to be initialized and integrated into the model.
+            components: A list of component classes to be initialized and integrated into the model.
         """
         self._components = components
         self.instances = []
@@ -205,10 +207,12 @@ class BaseLaserModel(ABC, Generic[ScenarioType, ParamsType]):
 
     def add_component(self, component: type[BaseComponent]) -> None:
         """
-        Add the component class and an instance in model.instances. Note that this does not create new instances of othr components.
+        Add the component class and an instance in model.instances.
+
+        Note that this does not create new instances of other components.
 
         Args:
-            component (BaseComponent): A component class to be initialized and integrated into the model.
+            component: A component class to be initialized and integrated into the model.
         """
         self._components.append(component)
         instance = component(self, verbose=getattr(self.params, "verbose", False))
@@ -218,6 +222,12 @@ class BaseLaserModel(ABC, Generic[ScenarioType, ParamsType]):
         self._setup_components()
 
     def prepend_component(self, component: type[BaseComponent]) -> None:
+        """
+        Add a component to the beginning of the component list.
+
+        Args:
+            component: A component class to be initialized and integrated into the model.
+        """
         self._components.insert(0, component)
         instance = component(self, verbose=getattr(self.params, "verbose", False))
         self.instances.insert(0, instance)
@@ -228,6 +238,7 @@ class BaseLaserModel(ABC, Generic[ScenarioType, ParamsType]):
     def _setup_components(self) -> None:
         """
         Hook for subclasses to perform additional component setup.
+
         Override in subclasses as needed.
         """
 
@@ -237,8 +248,8 @@ class BaseLaserModel(ABC, Generic[ScenarioType, ParamsType]):
         Updates the model for a given tick.
 
         Args:
-            model (BaseLaserModel): The model instance
-            tick (int): The current time step or tick
+            model: The model instance.
+            tick: The current time step or tick.
         """
 
     def run(self) -> None:
@@ -271,10 +282,12 @@ class BaseLaserModel(ABC, Generic[ScenarioType, ParamsType]):
 
     def _execute_tick(self, tick: int) -> None:
         """
-        Execute a single tick. Can be overridden by subclasses for custom behavior.
+        Execute a single tick.
+
+        Can be overridden by subclasses for custom behavior.
 
         Args:
-            tick: The current tick number
+            tick: The current tick number.
         """
         timing = [tick]
         for phase in self.phases:
@@ -291,6 +304,15 @@ class BaseLaserModel(ABC, Generic[ScenarioType, ParamsType]):
     def time_elapsed(self, units: str = "days") -> int:
         """
         Return time elapsed since the start of the model.
+
+        Args:
+            units: Time units to return. Currently only supports "days".
+
+        Returns:
+            Time elapsed in the specified units.
+
+        Raises:
+            ValueError: If invalid time units are specified.
         """
         if units == "days":
             return (self.current_date - self.start_time).days
@@ -317,7 +339,10 @@ class BaseLaserModel(ABC, Generic[ScenarioType, ParamsType]):
             import pandas as pd  # noqa: PLC0415
 
             names = [type(phase).__name__ for phase in self.phases]
-            metrics = pd.DataFrame(self.metrics, columns=["tick"] + names)
+            # Fix the pandas DataFrame creation by using proper column specification
+            metrics = pd.DataFrame(self.metrics)
+            if len(names) > 0:
+                metrics.columns = ["tick"] + names
             plot_columns = metrics.columns[1:]
             sum_columns = metrics[plot_columns].sum()
             width = max(map(len, sum_columns.index))
@@ -424,10 +449,10 @@ class BaseLaserModel(ABC, Generic[ScenarioType, ParamsType]):
         Get all instances of a specific component class.
 
         Args:
-            cls: The component class to search for
+            cls: The component class to search for.
 
         Returns:
-            List of instances of the specified class, or None if none found.
+            List of instances of the specified class, or [None] if none found.
             Works with inheritance - subclasses will match parent class searches.
 
         Example:
@@ -443,28 +468,31 @@ class BaseLaserModel(ABC, Generic[ScenarioType, ParamsType]):
 
     def get_component(self, cls: type | str) -> list:
         """
-        Alias for get_instance (instances are instantiated, components are not)
+        Alias for get_instance (instances are instantiated, components are not).
+
+        Args:
+            cls: The component class to search for.
+
+        Returns:
+            List of instances of the specified class, or [None] if none found.
         """
         return self.get_instance(cls)
 
     def visualize(self, pdf: bool = True) -> None:
         """
-        Visualize each compoonent instances either by displaying plots or saving them to a PDF file.
+        Visualize each component instances either by displaying plots or saving them to a PDF file.
 
-        Parameters:
-
-            pdf (bool): If True, save the plots to a PDF file. If False, display the plots interactively. Default is True.
+        Args:
+            pdf: If True, save the plots to a PDF file. If False, display the plots interactively. 
+                Defaults to True.
 
         Returns:
-
             None
         """
-
         if not pdf:
             for instance in self.instances:
                 for _plot in instance.plot():
                     plt.show()
-
         else:
             print("Generating PDF output…")
             pdf_filename = f"{self.name} {self.tstart:%Y-%m-%d %H%M%S}.pdf"
@@ -479,8 +507,55 @@ class BaseLaserModel(ABC, Generic[ScenarioType, ParamsType]):
         return
 
     def plot(self, fig: Figure | None = None):
+        """
+        Placeholder for plotting method.
+
+        Args:
+            fig: Optional matplotlib figure to plot on.
+
+        Raises:
+            NotImplementedError: Subclasses must implement this method.
+        """
         raise NotImplementedError("Subclasses must implement this method")
 
+    def __repr__(self) -> str:
+        """
+        Return a string representation of the model, showing key attributes.
+
+        Returns:
+            str: String representation of the model, including LaserFrame attributes.
+        """
+        attrs = []
+        for attr in dir(self):
+            if attr.startswith("_"):
+                continue
+            value = getattr(self, attr)
+            # Check if the attribute is a LaserFrame
+            if isinstance(value, LaserFrame):
+                attrs.append(f"{attr}=<LaserFrame shape={getattr(value, 'shape', None)}>")
+            else:
+                # Only show simple types to avoid clutter
+                if isinstance(value, (int, float, str, bool, type(None))):
+                    attrs.append(f"{attr}={value!r}")
+        return f"<{self.__class__.__name__}({', '.join(attrs)})>"
+
+    def __str__(self) -> str:
+        """
+        Return a string representation of the model, showing key attributes.
+        """
+        attrs = {}
+        for attr in dir(self):
+            if attr.startswith("_"):
+                continue
+            value = getattr(self, attr)
+            # Check if the attribute is a LaserFrame
+            if isinstance(value, LaserFrame):
+                attrs[attr] ='\n'+value.__str__()
+            else:
+                # Only show simple types to avoid clutter
+                if isinstance(value, (int, float, str, bool, type(None))):
+                    attrs[attr] = value.__str__()
+        return f"<{self.__class__.__name__}:\n{'\n'.join([f'{k}: {v}' for k, v in attrs.items()])}>"
 
 class BaseComponent(ABC, Generic[ModelType]):
     """
@@ -491,6 +566,13 @@ class BaseComponent(ABC, Generic[ModelType]):
     """
 
     def __init__(self, model: BaseLaserModel, verbose: bool = False) -> None:
+        """
+        Initialize the component.
+
+        Args:
+            model: The model instance this component belongs to.
+            verbose: Whether to enable verbose output. Defaults to False.
+        """
         self.model = model
         self.verbose = verbose
         self.initialized = False
@@ -498,10 +580,22 @@ class BaseComponent(ABC, Generic[ModelType]):
             self.name = self.__class__.__name__
 
     def initialize(self, model: BaseLaserModel) -> None:
-        """Initialize component based on other existing components. This is run at the beginning of model.run()."""
+        """
+        Initialize component based on other existing components.
+
+        This is run at the beginning of model.run().
+
+        Args:
+            model: The model instance.
+        """
 
     def __str__(self) -> str:
-        """Return string representation using class docstring."""
+        """
+        Return string representation using class docstring.
+
+        Returns:
+            String representation of the component.
+        """
         # Use child class docstring if available, otherwise parent class
         doc = self.__class__.__doc__ or BaseComponent.__doc__
         return doc.strip() if doc else f"{self.__class__.__name__} component"
@@ -509,6 +603,12 @@ class BaseComponent(ABC, Generic[ModelType]):
     def plot(self, fig: Figure | None = None):
         """
         Placeholder for plotting method.
+
+        Args:
+            fig: Optional matplotlib figure to plot on.
+
+        Yields:
+            None: Placeholder for plot objects.
         """
         yield None
 
@@ -522,31 +622,95 @@ class BasePhase(BaseComponent):
 
     @abstractmethod
     def __call__(self, model, tick: int) -> None:
-        """Execute component logic for a given simulation tick."""
+        """
+        Execute component logic for a given simulation tick.
+
+        Args:
+            model: The model instance.
+            tick: The current simulation tick.
+        """
 
 
 class BaseScenario:
+    """
+    Base class for scenario data wrappers.
+
+    Provides a wrapper around polars DataFrames with additional validation
+    and convenience methods.
+    """
+
     def __init__(self, df: pl.DataFrame):
+        """
+        Initialize the scenario with a DataFrame.
+
+        Args:
+            df: The polars DataFrame containing scenario data.
+        """
         self._df = df
 
     def _validate(self, df: pl.DataFrame):
+        """
+        Validate required columns exist - derive from schema.
+
+        Args:
+            df: The DataFrame to validate.
+
+        Raises:
+            NotImplementedError: Subclasses must implement this method.
+        """
         # Validate required columns exist - derive from schema
         raise NotImplementedError("Subclasses must implement this method")
 
     def __getattr__(self, attr):
+        """
+        Forward attribute access to the underlying DataFrame.
+
+        Args:
+            attr: The attribute name.
+
+        Returns:
+            The attribute value from the underlying DataFrame.
+        """
         # Forward attribute access to the underlying DataFrame
         return getattr(self._df, attr)
 
     def __getitem__(self, key):
+        """
+        Forward item access to the underlying DataFrame.
+
+        Args:
+            key: The key to access.
+
+        Returns:
+            The value from the underlying DataFrame.
+        """
         return self._df[key]
 
     def __repr__(self):
+        """
+        Return string representation of the scenario.
+
+        Returns:
+            String representation of the underlying DataFrame.
+        """
         return repr(self._df)
 
     def __len__(self):
+        """
+        Return the length of the underlying DataFrame.
+
+        Returns:
+            The number of rows in the DataFrame.
+        """
         return len(self._df)
 
     def unwrap(self) -> pl.DataFrame:
+        """
+        Return the underlying polars DataFrame.
+
+        Returns:
+            The underlying polars DataFrame.
+        """
         return self._df
 
     def find_row_number(self, column: str, target_value: str) -> int:
@@ -554,14 +718,14 @@ class BaseScenario:
         Find the row number (0-based index) of a target string in a DataFrame column.
 
         Args:
-            column: Column name to search in
-            target_value: String value to find
+            column: Column name to search in.
+            target_value: String value to find.
 
         Returns:
-            Row number (0-based index) of the target string
+            Row number (0-based index) of the target string.
 
         Raises:
-            ValueError: If the target string is not found
+            ValueError: If the target string is not found.
         """
         # Use arg_max on a boolean mask for maximum efficiency
         mask = self._df[column] == target_value
@@ -571,4 +735,7 @@ class BaseScenario:
             raise ValueError(f"String '{target_value}' not found in column '{column}'")
 
         # arg_max returns the index of the first True value
-        return mask.arg_max()
+        result = mask.arg_max()
+        if result is None:
+            raise ValueError(f"String '{target_value}' not found in column '{column}'")
+        return result

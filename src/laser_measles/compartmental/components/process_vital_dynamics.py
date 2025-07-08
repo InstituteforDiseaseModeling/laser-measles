@@ -1,5 +1,5 @@
-from laser_measles.base_components import BaseVitalDynamicsParams
-from laser_measles.base_components import BaseVitalDynamicsProcess
+from laser_measles.components import BaseVitalDynamicsParams
+from laser_measles.components import BaseVitalDynamicsProcess
 
 
 class VitalDynamicsParams(BaseVitalDynamicsParams):

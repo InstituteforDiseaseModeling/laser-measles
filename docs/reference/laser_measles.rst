@@ -13,9 +13,9 @@ Subpackages
    :maxdepth: 4
 
    laser_measles.abm
-   laser_measles.base_components
    laser_measles.biweekly
    laser_measles.compartmental
+   laser_measles.components
    laser_measles.demographics
    laser_measles.scenarios
 
@@ -42,14 +42,6 @@ laser\_measles.cli module
 -------------------------
 
 .. automodule:: laser_measles.cli
-   :members:
-   :show-inheritance:
-   :undoc-members:
-
-laser\_measles.components module
---------------------------------
-
-.. automodule:: laser_measles.components
    :members:
    :show-inheritance:
    :undoc-members:
