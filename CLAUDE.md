@@ -14,7 +14,7 @@ laser-measles is a spatial measles modeling framework built on the LASER toolkit
 
 ### Testing
 
-Use pytest for writing tests.
+Use pytest for writing tests and assume python 3.10+
 
 ```bash
 # Run all tests
@@ -183,13 +183,6 @@ state_tracker = model.get_instance(StateTracker)[0]
 - Use daily timesteps (365 ticks per year)
 - SEIR dynamics with detailed temporal resolution
 - Recommended for parameter estimation and outbreak modeling
-
-## CLI Commands
-
-The package provides multiple CLI entry points:
-- `cli`: Main laser-measles CLI
-- `nigeria`: Nigeria-specific model CLI
-- `measles`: ABM-specific CLI
 
 ## Dependencies
 
