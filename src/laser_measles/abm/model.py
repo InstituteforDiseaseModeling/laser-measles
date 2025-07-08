@@ -111,7 +111,6 @@ class ABMModel(BaseLaserModel[BaseABMScenario, ABMParams]):
         self.patches.states.E[:] = 0  # No exposed initially
         self.patches.states.I[:] = 0  # No infected initially
         self.patches.states.R[:] = 0  # No recovered initially
-        self.patches.states.D[:] = 0  # No deaths initially
 
         return
 

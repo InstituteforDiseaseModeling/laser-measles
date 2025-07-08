@@ -45,7 +45,7 @@ class ConstantPopProcess(BasePhase):
 
         self.params = params if params is not None else ConstantPopParams()
 
-        model.people.add_scalar_property("dob", dtype=np.int32)
+        model.people.add_scalar_property("dob", dtype=np.int32, default=model.params.num_ticks + 1)
 
         model.patches.add_scalar_property("births", dtype=np.uint32)
 
@@ -91,7 +91,7 @@ class ConstantPopProcess(BasePhase):
 
         patches = model.patches
         people = model.people
-        populations = patches.states[:-1,:].sum(axis=0) # exclude deaths
+        populations = patches.states.sum(axis=0)
 
         # When we get to having birth rate per node, will need to be more clever here, but with constant birth rate across nodes,
         # random selection will be population proportional.  If node id is not contiguous, could be tricky?
