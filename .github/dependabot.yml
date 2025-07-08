@@ -8,9 +8,15 @@ updates:
       day: "monday"
     open-pull-requests-limit: 10
     assignees:
+      - "krosenfeld-IDM"
       - "krosenfeld"
+      - "clorton"
+      - "jonathanhhb"
     reviewers:
+      - "krosenfeld-IDM"
       - "krosenfeld"
+      - "clorton"
+      - "jonathanhhb"
     commit-message:
       prefix: "deps"
       include: "scope"
