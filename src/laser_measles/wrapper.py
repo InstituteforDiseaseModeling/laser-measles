@@ -21,6 +21,7 @@ class PrettyLaserFrameWrapper:
     adding a clean and snazzy print method that displays all properties.
 
     Example:
+
         >>> lf = LaserFrame(capacity=1000)
         >>> lf.add_scalar_property("age", dtype=np.uint8)
         >>> lf.add_vector_property("states", 4)  # S, E, I, R
@@ -196,14 +197,15 @@ def return_pretty_laserframe(func):
     by functions with enhanced printing capabilities.
 
     Example:
-        @wrapper
-        def create_patches():
-            lf = LaserFrame(capacity=1000)
-            lf.add_scalar_property("age", dtype=np.uint32)
-            return lf  # This will be automatically wrapped
 
-        patches = create_patches()
-        print(patches)  # Clean and snazzy output
+        >>> @wrapper
+        ... def create_patches():
+        ...     lf = LaserFrame(capacity=1000)
+        ...     lf.add_scalar_property("age", dtype=np.uint32)
+        ...     return lf  # This will be automatically wrapped
+        ...
+        >>> patches = create_patches()
+        >>> print(patches)  # Clean and snazzy output
     """
 
     def wrapper_func(*args, **kwargs):
@@ -223,16 +225,17 @@ def pretty_laserframe(cls):
     provide enhanced printing capabilities to all instances.
 
     Example:
-        @wrapper_class
-        class PeopleLaserFrame(LaserFrame):
-            patch_id: np.ndarray
-            state: np.ndarray
 
-            def __init__(self, capacity: int, initial_count: int = 0):
-                super().__init__(capacity=capacity, initial_count=initial_count)
-
-        people = PeopleLaserFrame(capacity=1000)
-        print(people)  # Clean and snazzy output
+        >>> @wrapper_class
+        ... class PeopleLaserFrame(LaserFrame):
+        ...     patch_id: np.ndarray
+        ...     state: np.ndarray
+        ...
+        ...     def __init__(self, capacity: int, initial_count: int = 0):
+        ...         super().__init__(capacity=capacity, initial_count=initial_count)
+        ...
+        >>> people = PeopleLaserFrame(capacity=1000)
+        >>> print(people)  # Clean and snazzy output
     """
 
     # Create a new class that inherits from the original class
