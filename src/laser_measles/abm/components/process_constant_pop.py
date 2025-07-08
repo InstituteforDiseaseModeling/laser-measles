@@ -10,7 +10,7 @@ from laser_measles.utils import cast_type
 class ConstantPopParams(BaseModel):
     """Parameters specific to the births process component."""
 
-    cbr: float = Field(default=20, description="Crude birth rate per 1000 people per year", ge=0.0)
+    crute_birth_rate: float = Field(default=20, description="Crude birth rate per 1000 people per year", ge=0.0)
 
 
 class ConstantPopProcess(BasePhase):
@@ -54,22 +54,26 @@ class ConstantPopProcess(BasePhase):
     def initialize(self, model: ABMModel) -> None:
         """
         Initialize the constant population process by setting agent birth dates.
-        
+
         Args:
             model: The ABM model instance to initialize
         """
         people = model.people
 
         # Simple initializer for ages where birth rate = mortality rate:
-        daily_mortality_rate = (1 + self.params.cbr / 1000) ** (1 / 365) - 1
+        daily_mortality_rate = (1 + self.params.crute_birth_rate / 1000) ** (1 / 365 * self.model.params.time_step_days) - 1
         # Initialize ages for existing population
         people.dob[0 : people.count] = cast_type(-1 * model.prng.exponential(1 / daily_mortality_rate, people.count), people.dob.dtype)
 
+    @property
+    def lambda_birth(self) -> float:
+        """birth rate per tick"""
+        return (1 + self.params.crute_birth_rate / 1000) ** (1 / 365 * self.model.params.time_step_days) - 1
 
     @property
-    def mu(self) -> float:
-        """daily mortality rate"""
-        return (1 + self.params.cbr / 1000) ** (1 / 365) - 1
+    def mu_death(self) -> float:
+        """death rate per tick"""
+        return self.lambda_birth
 
     def __call__(self, model, tick) -> None:
         """
@@ -95,13 +99,13 @@ class ConstantPopProcess(BasePhase):
 
         # When we get to having birth rate per node, will need to be more clever here, but with constant birth rate across nodes,
         # random selection will be population proportional.  If node id is not contiguous, could be tricky?
-        births = model.prng.poisson(lam=populations * self.mu, size=populations.shape)
+        births = model.prng.poisson(lam=populations * self.lambda_birth, size=populations.shape)
         idx = model.prng.choice(populations.sum(), size=births.sum(), replace=False)
 
         # Get number of deaths per patch per state
         num_states = len(model.params.states)
         num_patches = len(patches)
-        deaths = np.bincount(people.state[idx]*num_patches + people.patch_id[idx], minlength=num_patches*num_states)
+        deaths = np.bincount(people.state[idx] * num_patches + people.patch_id[idx], minlength=num_patches * num_states)
         deaths = deaths.reshape((num_states, num_patches))
 
         # update state counters
@@ -110,5 +114,4 @@ class ConstantPopProcess(BasePhase):
 
         # Births, set date of birth and state to 0 (susceptible)
         people.dob[idx] = tick  # set to current tick
-        people.state[idx] = model.params.states.index("S") # set to susceptible
-
+        people.state[idx] = model.params.states.index("S")  # set to susceptible
