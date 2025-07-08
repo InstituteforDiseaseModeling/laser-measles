@@ -13,13 +13,17 @@
 # %% [markdown]
 # ## Setting up the scenario
 #
-# First we'll create a scenario with two clusters of 50 spatial nodes each,
+# First we'll load a scenario with two clusters of 50 spatial nodes each,
 # representing different communities around two major population centers.
 # Each node has population, geographic coordinates, and MCV1 vaccination coverage.
 # The nodes are distributed around each center using a Gaussian distribution
 # for radial distance, creating realistic spatial clustering patterns.
 # We will also divide the nodes into clusters using colon convention: (cluster_i:node_j).
 # This is useful for doing spatial aggregation of e.g., case counts.
+#
+# laser-measles comes with a few simple scenarios which you can access
+# from the `scenarios` module (e.g. `from laser_measles import scenarios`).
+# For this demo we will use one of the `synthetic` scenarios.
 
 # %%
 import numpy as np
@@ -35,6 +39,19 @@ plt.xlabel('Longitude')
 plt.ylabel('Latitude')
 plt.title('Population Distribution')
 plt.show()
+scenario_data.head(n=3)
+
+# %% [markdown]
+
+# The scenario data is a polars dataframe with the following columns:
+# - `lat`: latitude
+# - `lon`: longitude
+# - `pop`: population
+# - `mcv1`: MCV1 coverage
+# Each row represents a spatial patch in the model.
+
+# %%
+
 scenario_data.head(n=3)
 
 # %% [markdown]
