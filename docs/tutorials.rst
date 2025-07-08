@@ -19,6 +19,7 @@ These tutorials are designed to highlight specific features of the library.
     :maxdepth: 1
     
     tutorials/tut_random_numbers.ipynb  
+    tutorials/tut_creating_component.ipynb
     tutorials/tut_pydantic_component_parameters.ipynb
 
 AI Assistance

@@ -34,6 +34,60 @@ Core utilities and computation functions:
    :nosignatures:
 
    create_component
+   pretty_laserframe
+
+----
+
+
+ABM Model
+=============
+
+.. currentmodule:: laser_measles.abm
+
+Core Model
+----------
+
+Agent based model
+
+.. autosummary::
+   :toctree: _autosummary
+   :template: custom-function-template.rst
+   :nosignatures:
+
+   model
+   params
+   core
+   utils
+   cli
+
+
+Processes
+---------
+
+Components that modify population states and drive model dynamics:
+
+.. autosummary::
+   :toctree: _autosummary
+   :template: custom-function-template.rst
+   :nosignatures:
+
+   components.InfectionProcess
+   components.ConstantPopProcess
+
+Trackers
+--------
+
+Components that monitor and record model state for analysis:
+
+.. autosummary::
+   :toctree: _autosummary
+   :template: custom-function-template.rst
+   :nosignatures:
+
+   components.StatesTracker
+   components.PopulationTracker
+
+----
 
 Biweekly Model
 ==============
@@ -93,57 +147,6 @@ Biweekly model utilities and mixing functions:
 
    mixing
 
-ABM Model
-=============
-
-.. currentmodule:: laser_measles.abm
-
-Core Model
-----------
-
-Agent based model
-
-.. autosummary::
-   :toctree: _autosummary
-   :template: custom-function-template.rst
-   :nosignatures:
-
-   model
-   params
-   core
-   utils
-   cli
-
-
-Processes
----------
-
-Components that modify population states and drive model dynamics:
-
-.. autosummary::
-   :toctree: _autosummary
-   :template: custom-function-template.rst
-   :nosignatures:
-
-   components.BirthsProcess
-   components.BirthsConstantPopProcess
-   components.DiseaseProcess
-   components.TransmissionProcess
-   components.InfectRandomAgentsProcess
-   components.InfectAgentsInPatchProcess
-
-Trackers
---------
-
-Components that monitor and record model state for analysis:
-
-.. autosummary::
-   :toctree: _autosummary
-   :template: custom-function-template.rst
-   :nosignatures:
-
-   components.StatesTracker
-   components.PopulationTracker
 
 Demographics Package
 ====================
