@@ -8,7 +8,7 @@ selects the largest patch by population for seeding.
 import numpy as np
 from pydantic import BaseModel
 from pydantic import Field
-from pydantic import validator
+from pydantic import field_validator
 
 from laser_measles.base import BaseComponent
 from laser_measles.base import BaseLaserModel
@@ -25,12 +25,13 @@ class InfectionSeedingParams(BaseModel):
     ) | None = Field(default=None, description="Number of infections per patch (single int or list matching target_patches)")
     use_largest_patch: bool = Field(default=True, description="Whether to seed the largest patch by default")
 
-    @validator("infections_per_patch")
-    def validate_infections_per_patch(cls, v, values):
+    @field_validator("infections_per_patch")
+    @classmethod
+    def validate_infections_per_patch(cls, v, info):
         """Validate that infections_per_patch matches target_patches length if both provided."""
-        if v is not None and "target_patches" in values and values["target_patches"] is not None:
+        if v is not None and "target_patches" in info.data and info.data["target_patches"] is not None:
             if isinstance(v, list):
-                if len(v) != len(values["target_patches"]):
+                if len(v) != len(info.data["target_patches"]):
                     raise ValueError("Length of infections_per_patch must match length of target_patches")
                 if any(x < 1 for x in v):
                     raise ValueError("All values in infections_per_patch must be >= 1")
@@ -39,7 +40,8 @@ class InfectionSeedingParams(BaseModel):
                     raise ValueError("infections_per_patch must be >= 1")
         return v
 
-    @validator("target_patches")
+    @field_validator("target_patches")
+    @classmethod
     def validate_target_patches(cls, v):
         """Validate target_patches format."""
         if v is not None:
