@@ -13,6 +13,9 @@ laser-measles is a spatial measles modeling framework built on the LASER toolkit
 ## Common Development Commands
 
 ### Testing
+
+Use pytest for writing tests.
+
 ```bash
 # Run all tests
 pytest
