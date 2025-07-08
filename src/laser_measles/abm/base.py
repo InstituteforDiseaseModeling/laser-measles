@@ -21,7 +21,12 @@ class PeopleLaserFrame(BasePeopleLaserFrame):
 
 
 class PatchLaserFrame(BasePatchLaserFrame):
-    ...
+    """
+    LaserFrame for patch-level properties in ABM models.
+    
+    This class extends BasePatchLaserFrame to provide patch-level data
+    storage and access patterns specific to agent-based models.
+    """
 
 class BaseABMScenarioSchema(pt.Model):
     """

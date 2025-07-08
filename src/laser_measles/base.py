@@ -91,26 +91,6 @@ class BasePeopleLaserFrame(LaserFrame):
         new_frame.copy_properties_from(source_frame)
 
         return new_frame
-        """
-        Create a new instance of the same type with specified capacity.
-        
-        This factory method creates a new instance of the same class as the source_frame,
-        with the specified capacity, and copies all properties from the source.
-        
-        Args:
-            capacity: The capacity for the new LaserFrame
-            source_frame: The source LaserFrame to copy properties from
-            
-        Returns:
-            A new instance of the same type with copied properties
-        """
-        # Create new instance of the same type
-        new_frame = cls(capacity=capacity)
-
-        # Copy all properties from source
-        new_frame.copy_properties_from(source_frame)
-
-        return new_frame
 
     def copy_properties_from(self, source_frame: BasePeopleLaserFrame) -> None:
         """

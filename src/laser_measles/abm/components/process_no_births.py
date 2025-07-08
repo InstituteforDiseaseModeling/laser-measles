@@ -31,6 +31,12 @@ class NoBirthsProcess(BaseComponent[ABMModel]):
         return
 
     def initialize(self, model: ABMModel) -> None:
+        """
+        Initialize the no births process by setting up the population.
+        
+        Args:
+            model: The ABM model instance to initialize
+        """
         # initialize the people laserframe with correct capacity
         model.initialize_people_capacity(self.calculate_capacity(model))
         # people laserframe
@@ -46,5 +52,11 @@ class NoBirthsProcess(BaseComponent[ABMModel]):
     def calculate_capacity(self, model: ABMModel) -> int:
         """
         Calculate the capacity of the people laserframe.
+        
+        Args:
+            model: The ABM model instance
+            
+        Returns:
+            The total population capacity needed across all patches
         """
         return int(model.patches.states.sum())

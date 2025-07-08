@@ -62,10 +62,26 @@ laser\_measles.core module
    :show-inheritance:
    :undoc-members:
 
+laser\_measles.protocols module
+-------------------------------
+
+.. automodule:: laser_measles.protocols
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
 laser\_measles.utils module
 ---------------------------
 
 .. automodule:: laser_measles.utils
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+laser\_measles.wrapper module
+-----------------------------
+
+.. automodule:: laser_measles.wrapper
    :members:
    :show-inheritance:
    :undoc-members:

@@ -52,6 +52,12 @@ class ConstantPopProcess(BasePhase):
         return
 
     def initialize(self, model: ABMModel) -> None:
+        """
+        Initialize the constant population process by setting agent birth dates.
+        
+        Args:
+            model: The ABM model instance to initialize
+        """
         people = model.people
 
         # Simple initializer for ages where birth rate = mortality rate:

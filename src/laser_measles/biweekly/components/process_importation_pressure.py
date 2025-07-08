@@ -55,6 +55,13 @@ class ImportationPressureProcess(BasePhase):
         self.params = params or ImportationPressureParams(crude_importation_rate=1.0, importation_start=0, importation_end=-1)
 
     def __call__(self, model, tick: int) -> None:
+        """
+        Process importation pressure for the current tick.
+        
+        Args:
+            model: The simulation model instance
+            tick: The current simulation tick
+        """
         if tick < self.params.importation_start or (self.params.importation_end != -1 and tick > self.params.importation_end):
             return
 
@@ -74,4 +81,9 @@ class ImportationPressureProcess(BasePhase):
         states.I += imported_cases  # Move to infected state
 
     def initialize(self, model: BaseLaserModel) -> None:
-        pass
+        """
+        Initialize the importation pressure component.
+
+        Args:
+            model: The simulation model instance
+        """
