@@ -1,3 +1,6 @@
+"""
+Component for simulating the SEIR infection process in the compartmental model.
+"""
 import numpy as np
 from pydantic import BaseModel
 from pydantic import Field

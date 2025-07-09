@@ -1,9 +1,11 @@
+"""
+Component defining the VitalDynamicsProcess, which simulates the vital dynamics in the ABM model with MCV1.
+"""
 import numpy as np
 from laser_core import SortedQueue
 from pydantic import Field
 
 from laser_measles.abm.model import ABMModel
-from laser_measles.base import BaseLaserModel
 from laser_measles.components import BaseVitalDynamicsParams
 from laser_measles.components import BaseVitalDynamicsProcess
 from laser_measles.utils import cast_type
@@ -112,4 +114,5 @@ class VitalDynamicsProcess(BaseVitalDynamicsProcess):
 
     def _routine_immunization_delay(self) -> int:
         """ Delay in ticks before routine immunization is administered. """
-        return self.params.routine_immunization_delay * self.model.params.time_step_days
+        params: VitalDynamicsParams = self.params  # type: ignore
+        return params.routine_immunization_delay * self.model.params.time_step_days

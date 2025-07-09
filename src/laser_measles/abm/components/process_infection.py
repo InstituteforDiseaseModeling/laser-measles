@@ -1,10 +1,14 @@
+"""
+Component defining the InfectionProcess, which orchestrates the transmission and disease progression of measles in a population.
+"""
+
 import numpy as np
 from matplotlib.figure import Figure
 from pydantic import BaseModel
 from pydantic import Field
 
+from laser_measles.abm.model import ABMModel
 from laser_measles.base import BaseComponent
-from laser_measles.base import BaseLaserModel
 
 from .process_disease import DiseaseParams
 from .process_disease import DiseaseProcess
@@ -54,7 +58,7 @@ class InfectionProcess(BaseComponent):
     but for agent-based modeling.
     """
 
-    def __init__(self, model: BaseLaserModel, verbose: bool = False, params: InfectionParams | None = None) -> None:
+    def __init__(self, model: ABMModel, verbose: bool = False, params: InfectionParams | None = None) -> None:
         """
         Initialize the combined infection process.
 
@@ -85,11 +89,11 @@ class InfectionProcess(BaseComponent):
         # Then handle transmission (susceptible -> exposed)
         self.transmission(model, tick)
 
-    def initialize(self, model: BaseLaserModel) -> None:
+    def initialize(self, model: ABMModel) -> None:
         self.transmission.initialize(model)
         self.disease.initialize(model)
 
-    def infect(self, model: BaseLaserModel, idx: np.ndarray) -> None:
+    def infect(self, model: ABMModel, idx: np.ndarray) -> None:
         self.transmission.infect(model, idx)
 
     def plot(self, fig: Figure | None = None):

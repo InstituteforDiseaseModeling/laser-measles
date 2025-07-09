@@ -1,3 +1,6 @@
+"""
+Component defining the DiseaseProcess, which simulates the disease progression in the ABM model with MCV1.
+"""
 import numba as nb
 import numpy as np
 from pydantic import BaseModel

@@ -1,3 +1,6 @@
+"""
+Component defining the ConstantPopProcess, which handles the birth events in a model with constant population - that is, births == deaths.
+"""
 import numpy as np
 from pydantic import Field
 
@@ -11,7 +14,11 @@ class ConstantPopParams(BaseVitalDynamicsParams):
     """Parameters specific to the births process component."""
 
     crude_birth_rate: float = Field(default=20, description="Crude birth rate per 1000 people per year", ge=0.0)
-    crude_death_rate: float = 0
+    
+    @property
+    def crude_death_rate(self) -> float:
+        """Death rate is always equal to birth rate to maintain constant population."""
+        return self.crude_birth_rate
 
 class ConstantPopProcess(BaseVitalDynamicsProcess):
     """

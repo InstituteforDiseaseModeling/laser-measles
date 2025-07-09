@@ -1,7 +1,5 @@
 """
-The component initializes the population in each of the model states by
-rough equilibrium of R0.
-
+Component for initializing the population in each of the model states by rough equilibrium of R0.
 """
 
 from pydantic import BaseModel
@@ -16,7 +14,7 @@ class InitializeEquilibriumStatesParams(BaseModel):
     Parameters for the InitializeEquilibriumStatesProcess.
     """
 
-    R0: float = Field(8.0, description="Basic reproduction number", ge=0.0)
+    R0: float = Field(default=8.0, description="Basic reproduction number", ge=0.0)
 
 
 class InitializeEquilibriumStatesProcess(BaseComponent):
@@ -26,9 +24,7 @@ class InitializeEquilibriumStatesProcess(BaseComponent):
 
     def __init__(self, model: BaseLaserModel, verbose: bool = False, params: InitializeEquilibriumStatesParams | None = None):
         super().__init__(model, verbose)
-        if params is None:
-            params = InitializeEquilibriumStatesParams()
-        self.params = params
+        self.params = params or InitializeEquilibriumStatesParams()
 
     def initialize(self, model: BaseLaserModel):
         """

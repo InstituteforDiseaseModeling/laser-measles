@@ -1,3 +1,6 @@
+"""
+Component for tracking the state of the population in the compartmental model.
+"""
 from laser_measles.components import BaseStateTracker
 from laser_measles.components import BaseStateTrackerParams
 

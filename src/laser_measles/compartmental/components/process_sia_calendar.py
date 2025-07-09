@@ -1,3 +1,6 @@
+"""
+Component for implementing Supplementary Immunization Activities (SIAs) based on a calendar schedule.
+"""
 from collections.abc import Callable
 
 import numpy as np

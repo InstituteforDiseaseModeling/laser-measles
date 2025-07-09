@@ -1,8 +1,5 @@
 """
 Component for seeding initial infections in the compartmental model.
-
-This component allows initialization of infections in specific patches or automatically
-selects the largest patch by population for seeding.
 """
 
 import numpy as np
@@ -147,7 +144,7 @@ class InfectionSeedingProcess(BaseComponent):
 
     def _get_specified_patch_seeding(self) -> tuple[list[str], list[int]]:
         """Get specified patches and infection counts."""
-        target_patches = self.params.target_patches.copy()
+        target_patches = self.params.target_patches.copy() if self.params.target_patches is not None else []
 
         if self.params.infections_per_patch is None:
             # Use default num_infections for all patches

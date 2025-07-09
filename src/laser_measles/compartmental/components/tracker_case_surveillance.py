@@ -1,3 +1,6 @@
+"""
+Component for tracking case surveillance in the compartmental model.
+"""
 from collections.abc import Callable
 
 import matplotlib.pyplot as plt
@@ -23,10 +26,10 @@ class CaseSurveillanceParams(BaseModel):
         aggregation_level: Number of levels to use for aggregation (e.g., 2 for country:state:lga).
     """
 
-    detection_rate: float = Field(0.1, description="Probability of detecting an infected case", ge=0.0, le=1.0)
-    filter_fn: Callable[[str], bool] = Field(lambda x: True, description="Function to filter which nodes to include in aggregation")
-    aggregate_cases: bool = Field(True, description="Whether to aggregate cases by geographic level")
-    aggregation_level: int = Field(2, description="Number of levels to use for aggregation (e.g., 2 for country:state:lga)")
+    detection_rate: float = Field(default=0.1, description="Probability of detecting an infected case", ge=0.0, le=1.0)
+    filter_fn: Callable[[str], bool] = Field(default=lambda x: True, description="Function to filter which nodes to include in aggregation")
+    aggregate_cases: bool = Field(default=True, description="Whether to aggregate cases by geographic level")
+    aggregation_level: int = Field(default=2, description="Number of levels to use for aggregation (e.g., 2 for country:state:lga)")
 
 
 class CaseSurveillanceTracker(BasePhase):
@@ -148,7 +151,7 @@ class CaseSurveillanceTracker(BasePhase):
     def initialize(self, model: BaseLaserModel) -> None:
         pass
 
-    def plot(self, fig: Figure = None):
+    def plot(self, fig: Figure | None = None):
         """Create a heatmap visualization of log(cases+1) over time.
 
         Args:
