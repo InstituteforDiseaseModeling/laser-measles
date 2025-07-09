@@ -38,26 +38,10 @@ laser\_measles.base module
    :show-inheritance:
    :undoc-members:
 
-laser\_measles.cli module
--------------------------
-
-.. automodule:: laser_measles.cli
-   :members:
-   :show-inheritance:
-   :undoc-members:
-
 laser\_measles.core module
 --------------------------
 
 .. automodule:: laser_measles.core
-   :members:
-   :show-inheritance:
-   :undoc-members:
-
-laser\_measles.protocols module
--------------------------------
-
-.. automodule:: laser_measles.protocols
    :members:
    :show-inheritance:
    :undoc-members:
