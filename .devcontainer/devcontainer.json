@@ -11,7 +11,8 @@
               "ms-toolsai.jupyter-renderers",
               "charliermarsh.ruff",
               "github.codespace",
-              "vscode-icons-team.vscode-icons"
+              "vscode-icons-team.vscode-icons",
+              "ms-vscode.live-server"
           ]
       }
   },
