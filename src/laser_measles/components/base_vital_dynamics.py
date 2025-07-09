@@ -24,11 +24,8 @@ class BaseVitalDynamicsProcess(BasePhase, ABC):
     """
     Phase for simulating the vital dynamics in the model with MCV1.
 
-    This phase handles the simulation of births and deaths in the population model.
-    It processes:
-    - Births: Both vaccinated and unvaccinated births based on crude birth rate
-    - Deaths: Based on crude death rate
-    - Population updates: Adds births to appropriate compartments and removes deaths
+    This phase handles the simulation of births and deaths in the population model along
+    with routine vaccination (MCV1).
 
     Parameters
     ----------
@@ -42,8 +39,6 @@ class BaseVitalDynamicsProcess(BasePhase, ABC):
     Notes
     -----
     - Birth rates are calculated per tick
-    - Births are split between vaccinated (MCV1) and unvaccinated compartments
-    - Deaths are removed from all compartments proportionally
     """
 
     def __init__(self, model, verbose: bool = False, params: BaseVitalDynamicsParams | None = None) -> None:
@@ -91,4 +86,5 @@ class BaseVitalDynamicsProcess(BasePhase, ABC):
         """
         Calculate the capacity of the model.
         """
-        ...
+        raise NotImplementedError("No capacity for this model")
+        
