@@ -140,7 +140,7 @@ class BaseLaserModel(ABC, Generic[ScenarioType, ParamsType]):
     # Type annotations for attributes that subclasses will set
     patches: BasePatchLaserFrame
 
-    def __init__(self, scenario: ScenarioType, params: ParamsType, name: str) -> None:
+    def __init__(self, scenario: ScenarioType | pl.DataFrame, params: ParamsType, name: str) -> None:
         """
         Initialize the model with common attributes.
 
