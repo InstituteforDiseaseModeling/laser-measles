@@ -90,3 +90,6 @@ tmp/
 docs/reference/
 docs/api/_autosummary/
 docs/tutorials/*.ipynb
+
+# Temp
+examples/

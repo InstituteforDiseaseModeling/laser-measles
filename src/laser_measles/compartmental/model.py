@@ -68,6 +68,9 @@ class CompartmentalModel(BaseLaserModel[BaseCompartmentalScenario | pl.DataFrame
             - I: Infectious individuals
             - R: Recovered/immune individuals
     """
+    
+    # Specify the scenario wrapper class for auto-wrapping DataFrames
+    scenario_wrapper_class = BaseCompartmentalScenario
 
     def __init__(self, scenario: BaseCompartmentalScenario | pl.DataFrame, params: CompartmentalParams, name: str = "compartmental") -> None:
         """

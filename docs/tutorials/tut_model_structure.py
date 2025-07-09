@@ -1,5 +1,6 @@
+# ruff: noqa: I001, E402
 # %% [markdown]
-# # Model Structure: Compartmental vs ABM
+# # Model structure
 #
 # This tutorial compares the structure of compartmental and agent-based models,
 # focusing on their LaserFrame data structures and how they operate.
@@ -14,9 +15,11 @@
 # The key difference lies in their data organization and LaserFrame structures.
 
 # %% [markdown]
-# ## Compartmental Model Structure
+# ## Patches
 #
-# Uses `BasePatchLaserFrame` for population-level aggregates:
+# Patches exist for both the compartmental and ABM models and track the spatial
+# data and aggregates in the model.
+# The `patches` use a `BasePatchLaserFrame` (or child class) for population-level aggregates:
 
 # %%
 from laser_measles.compartmental import CompartmentalModel
@@ -46,16 +49,16 @@ print("Compartmental model 'out of the box':")
 print(comp_model)
 
 # %% [markdown]
-# ### Key Features of BasePatchLaserFrame:
+# ### Key Features of patches (e.g., BasePatchLaserFrame):
 # - **`states` property**: StateArray with shape `(num_states, num_patches)`
 # - **Attribute access**: `states.S`, `states.E`, `states.I`, `states.R`
 # - **Population aggregates**: Each patch contains total counts by disease state
 # - **Spatial organization**: Patches represent geographic locations
 
 # %% [markdown]
-# ## ABM Model Structure
+# ## People
 #
-# Uses `BasePeopleLaserFrame` for individual agents:
+# In addition to a `patch`, the ABM uses `people` (e.g., `BasePeopleLaserFrame`) for individual agents:
 
 # %%
 from laser_measles.abm import ABMModel

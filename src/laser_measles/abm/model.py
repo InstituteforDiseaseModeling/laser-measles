@@ -23,6 +23,9 @@ class ABMModel(BaseLaserModel[BaseABMScenario | pl.DataFrame, ABMParams]):
     """
 
     people: PeopleLaserFrame
+    
+    # Specify the scenario wrapper class for auto-wrapping DataFrames
+    scenario_wrapper_class = BaseABMScenario
 
     def __init__(self, scenario: BaseABMScenario | pl.DataFrame, params: ABMParams, name: str = "abm") -> None:
         """
