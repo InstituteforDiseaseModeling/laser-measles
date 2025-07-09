@@ -32,6 +32,7 @@ Model Class:
 """
 
 import numpy as np
+import polars as pl
 
 from laser_measles.base import BaseLaserModel
 from laser_measles.compartmental.base import BaseCompartmentalScenario
@@ -41,7 +42,7 @@ from laser_measles.utils import StateArray
 from laser_measles.utils import cast_type
 
 
-class CompartmentalModel(BaseLaserModel[BaseCompartmentalScenario, CompartmentalParams]):
+class CompartmentalModel(BaseLaserModel[BaseCompartmentalScenario | pl.DataFrame, CompartmentalParams]):
     """
     A class to represent the compartmental SEIR model with daily timesteps.
 
@@ -68,7 +69,7 @@ class CompartmentalModel(BaseLaserModel[BaseCompartmentalScenario, Compartmental
             - R: Recovered/immune individuals
     """
 
-    def __init__(self, scenario: BaseCompartmentalScenario, params: CompartmentalParams, name: str = "compartmental") -> None:
+    def __init__(self, scenario: BaseCompartmentalScenario | pl.DataFrame, params: CompartmentalParams, name: str = "compartmental") -> None:
         """
         Initialize the disease model with the given scenario and parameters.
 
