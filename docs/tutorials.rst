@@ -9,7 +9,9 @@ These tutorials are designed to get you started with the basics of the library.
     
     tutorials/tut_basic_model.ipynb    
     tutorials/tut_model_structure.ipynb
+    tutorials/tut_abm_intro.ipynb
     tutorials/tut_scenarios.ipynb
+
 
 Feature tutorials
 ------------------
@@ -21,6 +23,7 @@ These tutorials are designed to highlight specific features of the library.
     tutorials/tut_random_numbers.ipynb  
     tutorials/tut_creating_component.ipynb
     tutorials/tut_pydantic_component_parameters.ipynb
+    tutorials/tut_state_arrays.ipynb
 
 AI Assistance
 ------------
