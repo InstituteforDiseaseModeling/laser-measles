@@ -8,3 +8,4 @@ alwaysApply: true
 - Assume python 3.10+
 - Use polars for dataframes
 - Use pytest for tests (in tests/)
+- Use conventional commits specification for git commit messages

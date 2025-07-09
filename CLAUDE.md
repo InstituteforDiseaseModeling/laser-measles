@@ -147,6 +147,8 @@ state_tracker = model.get_instance(StateTracker)[0]
 
 ## Development Guidelines
 
+- Use conventional commits specification for git commit messages
+
 ### Component Development
 1. Inherit from appropriate base class (BaseComponent or BasePhase)
 2. Use Pydantic for parameter validation
