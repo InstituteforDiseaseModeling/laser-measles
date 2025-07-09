@@ -1,37 +1,9 @@
 """
-This module defines the `Model` class for simulation
-
-Classes:
-    Model: A class to represent the simulation model.
-
-Imports:
-
-
-Model Class:
-    Methods:
-        __init__(self, scenario: pd.DataFrame, parameters: PropertySet, name: str = "template") -> None:
-            Initializes the model with the given scenario and parameters.
-
-        components(self) -> list:
-            Gets the list of components in the model.
-
-        components(self, components: list) -> None:
-            Sets the list of components in the model and initializes instances and phases.
-
-        __call__(self, model, tick: int) -> None:
-            Updates the model for a given tick.
-
-        run(self) -> None:
-            Runs the model for the specified number of ticks.
-
-        visualize(self, pdf: bool = True) -> None:
-            Generates visualizations of the model's results, either displaying them or saving to a PDF.
-
-        plot(self, fig: Figure = None):
-            Generates plots for the scenario patches and populations, distribution of day of birth, and update phase times.
+A class to represent the biweekly model.
 """
 
 import numpy as np
+import polars as pl
 
 from laser_measles.base import BaseLaserModel
 from laser_measles.biweekly.base import BaseBiweeklyScenario
@@ -41,7 +13,7 @@ from laser_measles.utils import StateArray
 from laser_measles.utils import cast_type
 
 
-class BiweeklyModel(BaseLaserModel[BaseBiweeklyScenario, BiweeklyParams]):
+class BiweeklyModel(BaseLaserModel[BaseBiweeklyScenario | pl.DataFrame, BiweeklyParams]):
     """
     A class to represent the biweekly model.
 
@@ -64,7 +36,7 @@ class BiweeklyModel(BaseLaserModel[BaseBiweeklyScenario, BiweeklyParams]):
 
     patches: PatchLaserFrame
 
-    def __init__(self, scenario: BaseBiweeklyScenario, params: BiweeklyParams, name: str = "biweekly") -> None:
+    def __init__(self, scenario: BaseBiweeklyScenario | pl.DataFrame, params: BiweeklyParams, name: str = "biweekly") -> None:
         """
         Initialize the disease model with the given scenario and parameters.
 

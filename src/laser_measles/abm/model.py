@@ -1,47 +1,5 @@
 """
-This module defines a `Model` class for simulating classic "generic" disease models (SI, SIS, SIR, SEIR, ...),
-with options for simple demographics (births, deaths, aging) and single or multiple patches with flexible connection structure.
-
-Classes:
-    Model: A general class from which to define specific types of simulation models.
-
-Imports:
-    - datetime: For handling date and time operations.
-    - click: For command-line interface utilities.
-    - numpy as np: For numerical operations.
-    - pandas as pd: For data manipulation and analysis.
-    - laser_core.demographics: For demographic data handling.
-    - laser_core.laserframe: For handling laser frame data structures.
-    - laser_core.migration: For migration modeling.
-    - laser_core.propertyset: For handling property sets.
-    - laser_core.random: For random number generation.
-    - matplotlib.pyplot as plt: For plotting.
-    - matplotlib.backends.backend_pdf: For PDF generation.
-    - matplotlib.figure: For figure handling.
-    - tqdm: For progress bar visualization.
-
-Model Class:
-    Methods:
-        __init__(self, scenario: pd.DataFrame, parameters: PropertySet, name: str) -> None:
-            Initializes the model with the given scenario and parameters.
-
-        components(self) -> list:
-            Gets the list of components in the model.
-
-        components(self, components: list) -> None:
-            Sets the list of components in the model and initializes instances and phases.
-
-        __call__(self, model, tick: int) -> None:
-            Updates the model for a given tick.
-
-        run(self) -> None:
-            Runs the model for the specified number of ticks.
-
-        visualize(self, pdf: bool = True) -> None:
-            Generates visualizations of the model's results, either displaying them or saving to a PDF.
-
-        plot(self, fig: Figure = None):
-            Generates plots for the scenario patches and populations, distribution of day of birth, and update phase times.
+A class to represent the agent-based model.
 """
 
 import numpy as np
@@ -59,14 +17,14 @@ from . import components
 from .params import ABMParams
 
 
-class ABMModel(BaseLaserModel[BaseABMScenario, ABMParams]):
+class ABMModel(BaseLaserModel[BaseABMScenario | pl.DataFrame, ABMParams]):
     """
     A class to represent the agent-based model.
     """
 
     people: PeopleLaserFrame
 
-    def __init__(self, scenario: BaseABMScenario, params: ABMParams, name: str = "abm") -> None:
+    def __init__(self, scenario: BaseABMScenario | pl.DataFrame, params: ABMParams, name: str = "abm") -> None:
         """
         Initialize the disease model with the given scenario and parameters.
 
