@@ -208,3 +208,4 @@ Core dependencies:
 - Tests: `test_*.py` pattern
 - Use snake_case for Python files
 - Use PascalCase for class names
+- Build tutorials using cell formatting and `*.py` files (not `*.ipynb` files).
