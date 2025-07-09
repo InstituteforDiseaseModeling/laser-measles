@@ -1,3 +1,4 @@
+# ruff: noqa: E402
 # %% [markdown]
 # # Creating and running models
 #
@@ -31,15 +32,14 @@ import numpy as np
 
 from laser_measles.scenarios import synthetic
 
-scenario_data = synthetic.two_cluster_scenario(cluster_size_std=1.0)
-plt.figure(figsize=(10, 10))
-plt.scatter(scenario_data["lon"], scenario_data["lat"], c=scenario_data["pop"], cmap="viridis")
+scenario = synthetic.two_cluster_scenario(cluster_size_std=1.0)
+plt.figure(figsize=(6, 5))
+plt.scatter(scenario["lon"], scenario["lat"], c=scenario["pop"], cmap="viridis")
 plt.colorbar(label="Population")
 plt.xlabel("Longitude")
 plt.ylabel("Latitude")
 plt.title("Population Distribution")
 plt.show()
-scenario_data.head(n=3)
 
 # %% [markdown]
 
@@ -52,7 +52,7 @@ scenario_data.head(n=3)
 
 # %%
 
-scenario_data.head(n=3)
+scenario.head(n=3)
 
 # %% [markdown]
 # ## Model selection
@@ -71,21 +71,19 @@ from laser_measles.components import create_component
 # The scenario sets the initial condition for the simulation and is a collection of patches,
 # each with a population, geographic coordinates, and MCV1 vaccination coverage.
 # The BaseScenario class will validate the dataframe to make sure it is in the right format.
+# If you simply pass the dataframe the Scenario is constructed during initialization.
 #
 # This is a pattern that you will see across laser-measles.
 # %%
 
 # Try to create BaseScenario object missing the lat column
 try:
-    scenario = BaseScenario(scenario_data.drop("lat"))
+    scenario = BaseScenario(scenario.drop("lat"))
 except ValueError:
     import traceback
 
     print("Error creating BaseScenario object missing the 'lat' column:")
     traceback.print_exc()
-
-# Create the BaseScenario with all required columns
-scenario = BaseScenario(scenario_data)
 
 # %% [markdown]
 # ## Initialize Model Parameters and Components

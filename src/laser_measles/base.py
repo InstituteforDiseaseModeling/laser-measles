@@ -139,8 +139,11 @@ class BaseLaserModel(ABC, Generic[ScenarioType, ParamsType]):
 
     # Type annotations for attributes that subclasses will set
     patches: BasePatchLaserFrame
+    
+    # Class attribute for subclasses to specify scenario wrapper
+    scenario_wrapper_class: type[BaseScenario] | None = None
 
-    def __init__(self, scenario: ScenarioType | pl.DataFrame, params: ParamsType, name: str) -> None:
+    def __init__(self, scenario: ScenarioType | pl.DataFrame | BaseScenario, params: ParamsType, name: str) -> None:
         """
         Initialize the model with common attributes.
 
@@ -153,6 +156,10 @@ class BaseLaserModel(ABC, Generic[ScenarioType, ParamsType]):
         if params.verbose:
             print(f"{self.tinit}: Creating the {name} model…")
 
+        # Auto-wrap polars DataFrame in appropriate scenario class if needed
+        if isinstance(scenario, pl.DataFrame) and self.scenario_wrapper_class is not None:
+            scenario = self.scenario_wrapper_class(scenario)
+        
         self.scenario = scenario
         self.params = params
         self.name = name

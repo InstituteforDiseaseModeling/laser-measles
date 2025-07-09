@@ -221,10 +221,8 @@ print("Numba reproducible:", np.allclose(result1, result2))
 #
 # Key points for random numbers in laser-measles:
 #
-# 1. **Set `seed` in model parameters** for reproducibility
-# 2. **Use `model.prng`** for component-level random operations
-# 3. **Use `np.random`** in numba-compiled functions
-# 4. **Test reproducibility** by running with same seeds
-# 5. **Set numpy seed** before numba functions for consistency
+# 1. Set `seed` in model parameters for reproducibility
+# 2. Use `model.prng` for component-level random operations
+# 3. Use `np.random`  numba-compiled functions
 #
 # This ensures your models are reproducible and scientifically sound.

@@ -35,6 +35,9 @@ class BiweeklyModel(BaseLaserModel[BaseBiweeklyScenario | pl.DataFrame, Biweekly
     """
 
     patches: PatchLaserFrame
+    
+    # Specify the scenario wrapper class for auto-wrapping DataFrames
+    scenario_wrapper_class = BaseBiweeklyScenario
 
     def __init__(self, scenario: BaseBiweeklyScenario | pl.DataFrame, params: BiweeklyParams, name: str = "biweekly") -> None:
         """
