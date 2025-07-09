@@ -26,18 +26,18 @@
 # For this demo we will use one of the `synthetic` scenarios.
 
 # %%
-import numpy as np
-import polars as pl
 import matplotlib.pyplot as plt
+import numpy as np
+
 from laser_measles.scenarios import synthetic
 
 scenario_data = synthetic.two_cluster_scenario(cluster_size_std=1.0)
 plt.figure(figsize=(10, 10))
-plt.scatter(scenario_data['lon'], scenario_data['lat'], c=scenario_data['pop'], cmap='viridis')
-plt.colorbar(label='Population')
-plt.xlabel('Longitude')
-plt.ylabel('Latitude')
-plt.title('Population Distribution')
+plt.scatter(scenario_data["lon"], scenario_data["lat"], c=scenario_data["pop"], cmap="viridis")
+plt.colorbar(label="Population")
+plt.xlabel("Longitude")
+plt.ylabel("Latitude")
+plt.title("Population Distribution")
 plt.show()
 scenario_data.head(n=3)
 
@@ -60,11 +60,10 @@ scenario_data.head(n=3)
 # This can be done at the import level. For example, we'll start with the fastest model, the biweekly one.
 
 # %%
-from laser_measles.biweekly import (
-    Model, 
-    BaseScenario, 
-    BiweeklyParams, 
-    components)
+from laser_measles.biweekly import BaseScenario
+from laser_measles.biweekly import BiweeklyParams
+from laser_measles.biweekly import Model
+from laser_measles.biweekly import components
 from laser_measles.components import create_component
 
 # %% [markdown]
@@ -79,8 +78,9 @@ from laser_measles.components import create_component
 # Try to create BaseScenario object missing the lat column
 try:
     scenario = BaseScenario(scenario_data.drop("lat"))
-except ValueError as e:
+except ValueError:
     import traceback
+
     print("Error creating BaseScenario object missing the 'lat' column:")
     traceback.print_exc()
 
@@ -91,7 +91,7 @@ scenario = BaseScenario(scenario_data)
 # ## Initialize Model Parameters and Components
 # The Model is passed parameters that set the overall behavior of the simulation.
 # For example, the duration of the simulation (`num_ticks`) and the random seed for
-# reproducibility (`seed`). However, the processes included in the simulation (e.g., 
+# reproducibility (`seed`). However, the processes included in the simulation (e.g.,
 # transmission, vital dynamics, immunization campaigns) will be determined by **selecting
 # and including the relevant components**. Each component has its own associated parameters.
 
@@ -105,7 +105,7 @@ params = BiweeklyParams(
     num_ticks=num_ticks,
     seed=42,
     verbose=True,
-    start_time="2000-01" # YYYY-MM format
+    start_time="2000-01",  # YYYY-MM format
 )
 
 print(f"Model configured for {num_ticks} time steps ({years} years)")
@@ -119,15 +119,16 @@ print(f"Model has {len(biweekly_model.components)} components: {biweekly_model.c
 
 # Create infection parameters with seasonal transmission
 infection_params = components.InfectionParams(
-    seasonality=0.3, # seasonal variation
+    seasonality=0.3,  # seasonal variation
 )
 
 # Create model components
-model_components = [components.InitializeEquilibriumStatesProcess, # Initialize the states
-                    components.ImportationPressureProcess, # Infection seeding
-                    create_component(components.InfectionProcess, params=infection_params), # Infections
-                    components.VitalDynamicsProcess, # Births/deaths
-                    ]
+model_components = [
+    components.InitializeEquilibriumStatesProcess,  # Initialize the states
+    components.ImportationPressureProcess,  # Infection seeding
+    create_component(components.InfectionProcess, params=infection_params),  # Infections
+    components.VitalDynamicsProcess,  # Births/deaths
+]
 biweekly_model.components = model_components
 print(f"Model has {len(biweekly_model.components)} components: {biweekly_model.components}")
 
@@ -169,18 +170,17 @@ print(f"Total Population: {biweekly_model.patches.states.sum():,}")
 # We can use the same syntax to create a compartmental (SEIR, daily time steps) model
 
 # %%
-from laser_measles.compartmental import (
-    Model, 
-    BaseScenario, 
-    CompartmentalParams, 
-    components)
+from laser_measles.compartmental import BaseScenario
+from laser_measles.compartmental import CompartmentalParams
+from laser_measles.compartmental import Model
+from laser_measles.compartmental import components
 
 # Create model parameters
 params = CompartmentalParams(
     num_ticks=years * 365,
     seed=42,
     verbose=True,
-    start_time="2000-01" # YYYY-MM format
+    start_time="2000-01",  # YYYY-MM format
 )
 
 # Create the compartmental model
@@ -192,12 +192,12 @@ infection_params = components.InfectionParams(
 )
 # Create model components
 model_components = [
-              components.InitializeEquilibriumStatesProcess, # Initialize the states
-              components.ImportationPressureProcess, # Infection seeding
-              create_component(components.InfectionProcess, params=infection_params), # Infections
-              components.VitalDynamicsProcess, # Births/deaths
-              components.StateTracker, # State tracking
-              ]
+    components.InitializeEquilibriumStatesProcess,  # Initialize the states
+    components.ImportationPressureProcess,  # Infection seeding
+    create_component(components.InfectionProcess, params=infection_params),  # Infections
+    components.VitalDynamicsProcess,  # Births/deaths
+    components.StateTracker,  # State tracking
+]
 compartmental_model.components = model_components
 
 # Run the simulation
@@ -221,10 +221,10 @@ print(f"Total Population: {compartmental_model.patches.states.sum():,}")
 # %%
 import matplotlib.pyplot as plt
 
-def make_plot(model):
 
+def make_plot(model):
     # Get the state tracker instance from the model
-    state_tracker = model.get_instance('StateTracker')[0]
+    state_tracker = model.get_instance("StateTracker")[0]
     if state_tracker is None:
         raise RuntimeError("StateTracker not found in model instances")
 
@@ -240,37 +240,35 @@ def make_plot(model):
     # Plot 1: Time series of susceptibility fraction
     ax1 = plt.subplot(1, 3, 1)
     time_steps = np.arange(model.params.num_ticks)
-    ax1.plot(time_steps, state_tracker.S / total_population, '-', linewidth=2)
-    ax1.set_xlabel('Time (ticks)')
-    ax1.set_ylabel('Susceptible Fraction')
-    ax1.set_title('Susceptible Fraction Over Time')
+    ax1.plot(time_steps, state_tracker.S / total_population, "-", linewidth=2)
+    ax1.set_xlabel("Time (ticks)")
+    ax1.set_ylabel("Susceptible Fraction")
+    ax1.set_title("Susceptible Fraction Over Time")
     ax1.grid(True, alpha=0.3)
 
     # Plot 2: Spatial distribution of final states
     scenario_data = model.scenario
     coordinates = scenario_data[["lat", "lon"]].to_numpy()
-    final_recovered = model.patches.states[lookup_state_idx(model, 'R')] + model.patches.states[lookup_state_idx(model, 'I')]  # R + I
-    initial_population = scenario_data['pop'].to_numpy()
+    final_recovered = model.patches.states[lookup_state_idx(model, "R")] + model.patches.states[lookup_state_idx(model, "I")]  # R + I
+    initial_population = scenario_data["pop"].to_numpy()
     attack_rates = (final_recovered / initial_population) * 100
     ax2 = plt.subplot(1, 3, 2)
     coords_array = np.array(coordinates)
     # Size points by population, color by attack rate
     # Scale down point sizes for better visualization with many nodes
-    point_sizes = np.array(scenario_data['pop']) / 1000
-    scatter = ax2.scatter(coords_array[:, 1], coords_array[:, 0],
-                        s=point_sizes, c=attack_rates,
-                        cmap='Reds', alpha=0.7, edgecolors='black')
-    ax2.set_xlabel('Longitude')
-    ax2.set_ylabel('Latitude')
-    ax2.set_title('Spatial Attack Rate Distribution')
-    plt.colorbar(scatter, ax=ax2, label='Attack Rate (%)')
+    point_sizes = np.array(scenario_data["pop"]) / 1000
+    scatter = ax2.scatter(coords_array[:, 1], coords_array[:, 0], s=point_sizes, c=attack_rates, cmap="Reds", alpha=0.7, edgecolors="black")
+    ax2.set_xlabel("Longitude")
+    ax2.set_ylabel("Latitude")
+    ax2.set_title("Spatial Attack Rate Distribution")
+    plt.colorbar(scatter, ax=ax2, label="Attack Rate (%)")
 
     # Plot 3: Epidemic curve (infections per time step)
     ax3 = plt.subplot(1, 3, 3)
-    ax3.plot(time_steps, state_tracker.I, 'red', linewidth=1)
-    ax3.set_xlabel('Time (ticks)')
-    ax3.set_ylabel('Infectious')
-    ax3.set_title('Epidemic Curve')
+    ax3.plot(time_steps, state_tracker.I, "red", linewidth=1)
+    ax3.set_xlabel("Time (ticks)")
+    ax3.set_ylabel("Infectious")
+    ax3.set_title("Epidemic Curve")
     ax3.grid(True, alpha=0.3)
 
     plt.tight_layout()

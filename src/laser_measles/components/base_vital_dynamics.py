@@ -87,4 +87,3 @@ class BaseVitalDynamicsProcess(BasePhase, ABC):
         Calculate the capacity of the model.
         """
         raise NotImplementedError("No capacity for this model")
-        

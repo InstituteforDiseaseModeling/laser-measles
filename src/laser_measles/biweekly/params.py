@@ -7,6 +7,7 @@ from pydantic import Field
 TIME_STEP_DAYS = 14
 STATES = ["S", "I", "R"]  # Compartments/states for discrete-time model
 
+
 class BiweeklyParams(BaseModel):
     """
     Parameters for the biweekly model.
@@ -27,5 +28,6 @@ class BiweeklyParams(BaseModel):
 
     def __str__(self) -> str:
         return json.dumps(OrderedDict(sorted(self.model_dump().items())), indent=2)
+
 
 Params = BiweeklyParams

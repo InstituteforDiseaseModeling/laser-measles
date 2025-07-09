@@ -159,9 +159,9 @@ class RoutineImmunization:
         cmcv1 = (mcv[indices] == GET_MCV1).sum()
         cmcv2 = (mcv[indices] == GET_MCV2).sum()
 
-        assert (
-            cindividuals == cunvaccinated + cmcv1 + cmcv2
-        ), f"Mismatch in MCV status counts:\n{cindividuals=:,} != {cunvaccinated=:,} + {cmcv1=:,} + {cmcv2=:,}"
+        assert cindividuals == cunvaccinated + cmcv1 + cmcv2, (
+            f"Mismatch in MCV status counts:\n{cindividuals=:,} != {cunvaccinated=:,} + {cmcv1=:,} + {cmcv2=:,}"
+        )
 
         fig.suptitle(f"Routine Immunization\n{cindividuals:,} individuals")
         pct_none = 100 * cunvaccinated / cindividuals

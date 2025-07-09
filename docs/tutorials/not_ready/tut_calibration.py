@@ -1,23 +1,23 @@
+import os
+
 import numpy as np
 import pandas as pd
 from laser_core.propertyset import PropertySet
-import matplotlib.pyplot as plt
-import os
-from scipy.optimize import fsolve
 
 from laser_measles.abm import Model
-from laser_measles.abm.components import (
-    ExposureProcess, ExposureParams,
-    InfectionProcess, InfectionParams,
-    SusceptibilityProcess, SusceptibilityParams,
-    TransmissionProcess, TransmissionParams,
-    BirthsConstantPopProcess, BirthsParams,
-    InfectAgentsInPatchProcess, ImportationParams
-)
-from laser_measles.components import create_component
-
+from laser_measles.abm.components import BirthsConstantPopProcess
+from laser_measles.abm.components import BirthsParams
+from laser_measles.abm.components import ExposureProcess
+from laser_measles.abm.components import ImportationParams
+from laser_measles.abm.components import InfectAgentsInPatchProcess
+from laser_measles.abm.components import InfectionParams
+from laser_measles.abm.components import InfectionProcess
+from laser_measles.abm.components import SusceptibilityParams
+from laser_measles.abm.components import SusceptibilityProcess
+from laser_measles.abm.components import TransmissionParams
+from laser_measles.abm.components import TransmissionProcess
 from laser_measles.abm.utils import set_initial_susceptibility_in_patch
-from laser_measles.abm.utils import seed_infections_in_patch
+from laser_measles.components import create_component
 
 # %load_ext line_profiler
 
@@ -37,12 +37,12 @@ R0_samples = np.random.uniform(3, 16, nsims)
 infmean_samples = 5 + np.random.gamma(2, 10, nsims)
 cbr_samples = 10 + np.random.gamma(2, 20, nsims)
 i = 0
-outputs = np.zeros((nsims, nticks+1, npatches))
+outputs = np.zeros((nsims, nticks + 1, npatches))
 # Create a folder to store the outputs
 output_folder = os.path.abspath(os.path.join(os.getcwd(), "CCS"))
 if not os.path.exists(output_folder):
     os.makedirs(output_folder)
-for R0, infmean, cbr in zip(R0_samples, infmean_samples, cbr_samples):
+for R0, infmean, cbr in zip(R0_samples, infmean_samples, cbr_samples, strict=False):
     parameters = PropertySet(
         {
             "seed": np.random.randint(0, 1000000),
@@ -71,9 +71,9 @@ for R0, infmean, cbr in zip(R0_samples, infmean_samples, cbr_samples):
         nticks=parameters.nticks,
         importation_period=parameters.importation_period,
         importation_count=1,
-        importation_end=parameters.importation_end
+        importation_end=parameters.importation_end,
     )
-    
+
     model.components = [
         create_component(BirthsConstantPopProcess, params=births_params),
         create_component(SusceptibilityProcess, params=susceptibility_params),

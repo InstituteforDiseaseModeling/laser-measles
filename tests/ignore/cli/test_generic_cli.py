@@ -2,8 +2,8 @@
 Tests for the generic CLI functionality converted from Click to Typer.
 """
 
-import pytest
 from typer.testing import CliRunner
+
 from laser_measles.abm.cli import app
 
 

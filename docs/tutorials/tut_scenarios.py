@@ -14,15 +14,19 @@
 
 # %%
 from pathlib import Path
+
 from IPython.display import display
-from laser_measles.demographics import GADMShapefile, get_shapefile_dataframe, plot_shapefile_dataframe
+
+from laser_measles.demographics import GADMShapefile
+from laser_measles.demographics import get_shapefile_dataframe
+from laser_measles.demographics import plot_shapefile_dataframe
 
 # Name of the shapefile you want to use
 shapefile = Path("ETH/gadm41_ETH_1.shp")
 
 # We will check whether it exists and download it
 if not shapefile.exists():
-    shp = GADMShapefile.download("ETH", admin_level=1 )
+    shp = GADMShapefile.download("ETH", admin_level=1)
     print("Shapefile is now at", shp.shapefile)
 else:
     print("Shapefile already exists")
@@ -33,12 +37,12 @@ else:
 df = get_shapefile_dataframe(shp.shapefile)
 print(df.head(n=2))
 # Plot the shapefile
-plot_shapefile_dataframe(df, plot_kwargs={'facecolor': 'xkcd:sky blue'});
+plot_shapefile_dataframe(df, plot_kwargs={"facecolor": "xkcd:sky blue"})
 
 # %% [markdown]
 # ## Population calculation
 #
-# For the simulation we will want to know the initial number of people in each region. 
+# For the simulation we will want to know the initial number of people in each region.
 # First we'll download our population file (~5.6MB) from worldpop using standard libraries:
 
 # %%
@@ -50,7 +54,7 @@ output_path = Path("ETH/eth_ppp_2010_1km_Aggregated_UNadj.tif")
 if not output_path.exists():
     response = requests.get(url, stream=True)
     if response.status_code == 200:
-        with open(output_path, 'wb') as f:
+        with open(output_path, "wb") as f:
             for chunk in response.iter_content(chunk_size=8192):
                 f.write(chunk)
         print("Download complete.")
@@ -62,8 +66,11 @@ if not output_path.exists():
 # This is saved into a dataframe that we can use to initialize a simulation.
 
 # %%
-from laser_measles.demographics import RasterPatchParams, RasterPatchGenerator
 import sciris as sc
+
+from laser_measles.demographics import RasterPatchGenerator
+from laser_measles.demographics import RasterPatchParams
+
 # Setup demographics generator
 config = RasterPatchParams(
     id="ETH_ADM1",
@@ -77,7 +84,7 @@ generator = RasterPatchGenerator(config)
 with sc.Timer() as t:
     # Generate the demographics (in this case the population per patch)
     generator.generate_demographics()
-    print(f"Total population: {generator.population['pop'].sum()/1e6:.2f} million") # Should be ~90.5M
+    print(f"Total population: {generator.population['pop'].sum() / 1e6:.2f} million")  # Should be ~90.5M
 # the result is stored in a polars dataframe and can be accessed via `population`
 generator.population.head(n=2)
 
@@ -90,7 +97,7 @@ new_generator = RasterPatchGenerator(config)
 with sc.Timer() as t:
     # # Generate the demographics (in this case the population)
     new_generator.generate_demographics()
-    print(f"Total population: {new_generator.population['pop'].sum()/1e6:.2f} million") # Should be ~90.5M
+    print(f"Total population: {new_generator.population['pop'].sum() / 1e6:.2f} million")  # Should be ~90.5M
 
 # Note how the time to run the `generate_demographics` method a second time is greatly improved.
 
@@ -99,6 +106,7 @@ with sc.Timer() as t:
 
 # %%
 from laser_measles.demographics import cache
+
 print(f"Cache directory: {cache.get_cache_dir()}")
 
 # %% [markdown]
@@ -110,7 +118,7 @@ print(f"Cache directory: {cache.get_cache_dir()}")
 # %%
 
 # Set the patch size
-patch_size = 700 # sq km
+patch_size = 700  # sq km
 
 # Create the GADMShapefile using the original shapefile
 new_shp = GADMShapefile(shapefile=shp.shapefile, admin_level=1)
@@ -125,7 +133,8 @@ display(new_df.head(n=2))
 
 # Plot the resulting shapes
 import matplotlib.pyplot as plt
+
 plt.figure()
 ax = plt.gca()
-plot_shapefile_dataframe(new_df, plot_kwargs={'facecolor': 'xkcd:sky blue', 'edgecolor':'gray'}, ax=ax)
-plot_shapefile_dataframe(df, plot_kwargs={'fill': False}, ax=ax);
+plot_shapefile_dataframe(new_df, plot_kwargs={"facecolor": "xkcd:sky blue", "edgecolor": "gray"}, ax=ax)
+plot_shapefile_dataframe(df, plot_kwargs={"fill": False}, ax=ax)

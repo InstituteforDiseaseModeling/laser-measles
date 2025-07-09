@@ -64,7 +64,9 @@ class ImportationPressureProcess(BasePhase):
             model: The simulation model instance
             tick: The current simulation tick
         """
-        if tick < (self.params.importation_start // model.params.time_step_days) or (self.params.importation_end != -1 and tick > (self.params.importation_end // model.params.time_step_days)):
+        if tick < (self.params.importation_start // model.params.time_step_days) or (
+            self.params.importation_end != -1 and tick > (self.params.importation_end // model.params.time_step_days)
+        ):
             return
 
         # state counts

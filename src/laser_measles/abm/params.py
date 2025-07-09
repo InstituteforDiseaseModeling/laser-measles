@@ -1,6 +1,7 @@
 """
 Parameters for the ABM model.
 """
+
 import json
 from collections import OrderedDict
 
@@ -9,6 +10,7 @@ from pydantic import Field
 
 TIME_STEP_DAYS = 1
 STATES = ["S", "E", "I", "R"]
+
 
 class ABMParams(BaseModel):
     """
@@ -30,5 +32,6 @@ class ABMParams(BaseModel):
 
     def __str__(self) -> str:
         return json.dumps(OrderedDict(sorted(self.model_dump().items())), indent=2)
+
 
 Params = ABMParams

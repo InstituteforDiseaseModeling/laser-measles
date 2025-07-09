@@ -7,7 +7,8 @@ import polars as pl
 MAX_DISTANCE = 100000000  # km, used to prevent self-migration
 MIN_DISTANCE = 10  # km, minimum distance to prevent excessive neighbor migration
 
-def pairwise_haversine(df): # TODO: use angular separation formula instead
+
+def pairwise_haversine(df):  # TODO: use angular separation formula instead
     """Pairwise distances for all (lon, lat) points using the Haversine formula.
 
     Args:
@@ -21,7 +22,7 @@ def pairwise_haversine(df): # TODO: use angular separation formula instead
     earth_radius_km = 6367
 
     # convert from degrees to radians using polars
-    data = np.deg2rad(df[['lon', 'lat']].to_numpy())
+    data = np.deg2rad(df[["lon", "lat"]].to_numpy())
     lon = data[:, 0]
     lat = data[:, 1]
 
@@ -33,6 +34,7 @@ def pairwise_haversine(df): # TODO: use angular separation formula instead
     d = np.sin(dlat / 2) ** 2 + np.cos(lat[:, None]) * np.cos(lat) * np.sin(dlon / 2) ** 2
     return 2 * earth_radius_km * np.arcsin(np.sqrt(d))
 
+
 def init_gravity_diffusion(df: pl.DataFrame, scale: float, dist_exp: float) -> np.ndarray:
     if len(df) == 1:
         return np.ones((1, 1))
@@ -40,7 +42,7 @@ def init_gravity_diffusion(df: pl.DataFrame, scale: float, dist_exp: float) -> n
     # Calculate pairwise distances
     distances = pairwise_haversine(df)
 
-    pops = np.array(df['pop'])
+    pops = np.array(df["pop"])
     pops = pops[:, np.newaxis].T
     pops = np.repeat(pops, pops.size, axis=0).astype(np.float64)
 
@@ -56,6 +58,7 @@ def init_gravity_diffusion(df: pl.DataFrame, scale: float, dist_exp: float) -> n
     np.fill_diagonal(diffusion_matrix, diagonal)
 
     return diffusion_matrix
+
 
 def pairwise_haversine_(lon: np.ndarray, lat: np.ndarray) -> np.ndarray:
     """Calculate pairwise distances for all (lon, lat) points using the Haversine formula.

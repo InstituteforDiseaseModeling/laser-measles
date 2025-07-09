@@ -13,7 +13,7 @@ def test_laserframe():
     class TestModel(BaseLaserModel):
         def __init__(self, scenario=None, parameters=None, name="test"):
             scenario = lm.base.BaseScenario(lm.scenarios.synthetic.single_patch_scenario())
-            parameters = PropertySet({'verbose':VERBOSE, 'start_time':'2000-01'})
+            parameters = PropertySet({"verbose": VERBOSE, "start_time": "2000-01"})
             super().__init__(scenario, parameters, name)
             # Create the agent population with max size 1000
             self.population = LaserFrame(capacity=1000, initial_count=0)

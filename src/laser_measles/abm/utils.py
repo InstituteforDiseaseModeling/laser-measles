@@ -48,7 +48,7 @@ def calc_distances(latitudes: np.ndarray, longitudes: np.ndarray, verbose: bool 
     assert longitudes.shape == latitudes.shape, "Latitude and longitude arrays must have the same shape"
     npatches = len(latitudes)
     distances = np.zeros((npatches, npatches), dtype=np.float32)
-    for i, (lat, long) in enumerate(zip(latitudes, longitudes)):
+    for i, (lat, long) in enumerate(zip(latitudes, longitudes, strict=False)):
         distances[i, :] = distance(lat, long, latitudes, longitudes)
 
     if verbose:
@@ -229,5 +229,5 @@ def set_initial_susceptibility_randomly(model, susc_frac: float = 1.0) -> None:
 def add_at(A, indices, B):
     sorted_indices = np.argsort(indices)
     uniques, run_lengths = np.unique(indices[sorted_indices], return_counts=True)
-    for i, length, end in zip(uniques, run_lengths, run_lengths.cumsum()):
+    for i, length, end in zip(uniques, run_lengths, run_lengths.cumsum(), strict=False):
         A[i] += B[sorted_indices[end - length : end]].sum(axis=0)

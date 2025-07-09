@@ -1,6 +1,7 @@
 """
 Component for simulating the importation pressure in the compartmental model.
 """
+
 import numpy as np
 from pydantic import BaseModel
 from pydantic import Field
@@ -59,7 +60,9 @@ class ImportationPressureProcess(BasePhase):
         self.params = params or ImportationPressureParams(crude_importation_rate=1.0, importation_start=0, importation_end=-1)
 
     def __call__(self, model, tick: int) -> None:
-        if tick < (self.params.importation_start // model.params.time_step_days) or (self.params.importation_end != -1 and tick > (self.params.importation_end // model.params.time_step_days)):
+        if tick < (self.params.importation_start // model.params.time_step_days) or (
+            self.params.importation_end != -1 and tick > (self.params.importation_end // model.params.time_step_days)
+        ):
             return
 
         # state counts

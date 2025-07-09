@@ -1,6 +1,6 @@
 """
 Raster patch generator for demographic data.
-You can use this to generate initial conditions (e.g, population, MCV1 coverage) for a 
+You can use this to generate initial conditions (e.g, population, MCV1 coverage) for a
 laser-measles scenario.
 """
 

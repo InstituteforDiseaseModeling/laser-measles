@@ -33,9 +33,9 @@ class InitializeEquilibriumStatesProcess(BaseComponent):
     def initialize(self, model: BaseLaserModel):
         """
         Initialize the population in each of the model states by rough equilibrium of R0.
-        
+
         This is run before model.run() to set initial conditions.
-        
+
         Args:
             model: The model instance to initialize
         """

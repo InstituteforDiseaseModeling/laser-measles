@@ -1,6 +1,7 @@
 """
 Tests for the BaseComponent class and its functionality.
 """
+
 from unittest.mock import Mock
 
 import pytest
@@ -16,22 +17,22 @@ class MockModel:
 class MockComponentWithDocstring(BaseComponent):
     """
     A test component with a custom docstring.
-    
+
     This component is used for testing the __str__ method
     functionality with child class docstrings.
     """
 
     def __call__(self, model, tick: int) -> None:
         return None
+
     def initialize(self, model: BaseLaserModel) -> None:
         pass
 
 
 class MockComponentWithoutDocstring(BaseComponent):
-
     def __call__(self, model, tick: int) -> None:
         return None
-        
+
     def initialize(self, model: BaseLaserModel) -> None:
         pass
 
@@ -72,7 +73,7 @@ class TestBaseComponent:
         component = MockComponentWithoutDocstring(model)
 
         plot_gen = component.plot()
-        assert hasattr(plot_gen, '__next__')  # Is a generator
+        assert hasattr(plot_gen, "__next__")  # Is a generator
 
         # Should yield None
         result = next(plot_gen)
@@ -94,9 +95,11 @@ class TestBaseComponent:
         component = MockComponentWithoutDocstring(model)
 
         str_repr = str(component)
-        expected = ("Base class for all laser-measles components.\n\n"
-                   "Components follow a uniform interface with __call__(model, tick) method\n"
-                   "for execution during simulation loops.")
+        expected = (
+            "Base class for all laser-measles components.\n\n"
+            "Components follow a uniform interface with __call__(model, tick) method\n"
+            "for execution during simulation loops."
+        )
         assert str_repr == expected
 
     def test_str_method_child_class_with_docstring(self):
@@ -105,9 +108,11 @@ class TestBaseComponent:
         component = MockComponentWithDocstring(model)
 
         str_repr = str(component)
-        expected = ("A test component with a custom docstring.\n\n"
-                   "This component is used for testing the __str__ method\n"
-                   "functionality with child class docstrings.")
+        expected = (
+            "A test component with a custom docstring.\n\n"
+            "This component is used for testing the __str__ method\n"
+            "functionality with child class docstrings."
+        )
         assert str_repr == expected
 
     def test_str_method_child_class_without_docstring(self):
@@ -116,9 +121,11 @@ class TestBaseComponent:
         component = MockComponentWithoutDocstring(model)
 
         str_repr = str(component)
-        expected = ("Base class for all laser-measles components.\n\n"
-                   "Components follow a uniform interface with __call__(model, tick) method\n"
-                   "for execution during simulation loops.")
+        expected = (
+            "Base class for all laser-measles components.\n\n"
+            "Components follow a uniform interface with __call__(model, tick) method\n"
+            "for execution during simulation loops."
+        )
         assert str_repr == expected
 
     def test_str_method_no_docstring_fallback(self):
@@ -143,7 +150,6 @@ class TestBaseComponentIntegration:
 
     def test_import_from_new_location(self):
         """Test that BaseComponent can be imported from the new location."""
-        from laser_measles.base import BaseComponent as ImportedBaseComponent
 
         model = MockModel()
         component = MockComponentWithoutDocstring(model)
@@ -159,8 +165,8 @@ class TestBaseComponentIntegration:
             model = MockModel()
 
             # These should not raise import errors
-            assert hasattr(StateTracker, '__init__')
-            assert hasattr(InfectionProcess, '__init__')
+            assert hasattr(StateTracker, "__init__")
+            assert hasattr(InfectionProcess, "__init__")
 
         except ImportError as e:
             pytest.fail(f"Failed to import biweekly components: {e}")

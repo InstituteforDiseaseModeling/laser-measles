@@ -5,8 +5,8 @@ import polars as pl
 from pydantic import BaseModel
 from pydantic import Field
 
-from laser_measles.base import BasePhase
 from laser_measles.base import BaseLaserModel
+from laser_measles.base import BasePhase
 from laser_measles.utils import cast_type
 
 

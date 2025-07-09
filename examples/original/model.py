@@ -115,7 +115,7 @@ class Model:
         if parameters.verbose:
             print(f"Counties: {scenario.name.values[0:4]}...")
             print(f"Populations: {scenario.population.values[0:4]}...")
-            print(f"Lat/longs: {list(zip(scenario.latitude.values, scenario.longitude.values))[0:4]}...")
+            print(f"Lat/longs: {list(zip(scenario.latitude.values, scenario.longitude.values, strict=False))[0:4]}...")
 
         # We need some patches with population data ...
         npatches = len(scenario)
@@ -284,7 +284,7 @@ class Model:
             for key in sum_columns.index:
                 print(f"{key:{width}}: {sum_columns[key]:13,} µs")
             print("=" * (width + 2 + 13 + 3))
-            print(f"{'Total:':{width+1}} {sum_columns.sum():13,} microseconds")
+            print(f"{'Total:':{width + 1}} {sum_columns.sum():13,} microseconds")
 
         return
 

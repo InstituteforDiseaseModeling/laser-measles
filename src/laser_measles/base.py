@@ -80,7 +80,7 @@ class BasePeopleLaserFrame(LaserFrame):
         Args:
             capacity: The capacity for the new LaserFrame.
             source_frame: The source LaserFrame to copy properties from.
-            initial_count: The initial number of "active" agents in the new frame. 
+            initial_count: The initial number of "active" agents in the new frame.
                 If -1, the count is set to the capacity. Defaults to -1.
 
         Returns:
@@ -483,7 +483,7 @@ class BaseLaserModel(ABC, Generic[ScenarioType, ParamsType]):
         Visualize each component instances either by displaying plots or saving them to a PDF file.
 
         Args:
-            pdf: If True, save the plots to a PDF file. If False, display the plots interactively. 
+            pdf: If True, save the plots to a PDF file. If False, display the plots interactively.
                 Defaults to True.
 
         Returns:
@@ -550,12 +550,13 @@ class BaseLaserModel(ABC, Generic[ScenarioType, ParamsType]):
             value = getattr(self, attr)
             # Check if the attribute is a LaserFrame
             if isinstance(value, LaserFrame):
-                attrs[attr] ='\n'+value.__str__()
+                attrs[attr] = "\n" + value.__str__()
             else:
                 # Only show simple types to avoid clutter
                 if isinstance(value, int | float | str | bool | type(None)):
                     attrs[attr] = value.__str__()
         return f"<{self.__class__.__name__}>:\n{'\n'.join([f'{k}: {v}' for k, v in attrs.items()])}>"
+
 
 class BaseComponent(ABC, Generic[ModelType]):
     """

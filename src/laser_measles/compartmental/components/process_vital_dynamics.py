@@ -1,6 +1,7 @@
 """
 Component for simulating the vital dynamics in the compartmental model with MCV1.
 """
+
 from laser_measles.components import BaseVitalDynamicsParams
 from laser_measles.components import BaseVitalDynamicsProcess
 

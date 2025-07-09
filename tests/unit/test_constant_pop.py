@@ -1,6 +1,5 @@
 import importlib
 
-import numpy as np
 import pytest
 
 import laser_measles as lm
@@ -10,29 +9,29 @@ MEASLES_MODULES = [MEASLES_MODULES[-1]]
 VERBOSE = False
 SEED = 42
 
+
 @pytest.mark.parametrize("measles_module", MEASLES_MODULES)
 def test_constant_pop_single_patch(measles_module):
-    """ Test the constant population scenario. """
+    """Test the constant population scenario."""
     MeaslesModel = importlib.import_module(measles_module)
     scenario = MeaslesModel.BaseScenario(lm.scenarios.synthetic.single_patch_scenario())
     model = MeaslesModel.Model(scenario, MeaslesModel.Params(num_ticks=50, verbose=VERBOSE, seed=SEED))
-    model.components = [
-        MeaslesModel.components.ConstantPopProcess]
+    model.components = [MeaslesModel.components.ConstantPopProcess]
     model.run()
-    assert model.patches.states[:-1,:].sum() == scenario["pop"].sum()
+    assert model.patches.states[:-1, :].sum() == scenario["pop"].sum()
     component = model.get_component(MeaslesModel.components.ConstantPopProcess)[0]
     assert component.mu_death == component.lambda_birth
 
+
 @pytest.mark.parametrize("measles_module", MEASLES_MODULES)
 def test_constant_pop_two_patch(measles_module):
-    """ Test the constant population scenario. """
+    """Test the constant population scenario."""
     MeaslesModel = importlib.import_module(measles_module)
     scenario = MeaslesModel.BaseScenario(lm.scenarios.synthetic.two_patch_scenario())
     model = MeaslesModel.Model(scenario, MeaslesModel.Params(num_ticks=50, verbose=VERBOSE, seed=SEED))
-    model.components = [
-        MeaslesModel.components.ConstantPopProcess]
+    model.components = [MeaslesModel.components.ConstantPopProcess]
     model.run()
-    assert model.patches.states[:-1,:].sum() == scenario["pop"].sum()
+    assert model.patches.states[:-1, :].sum() == scenario["pop"].sum()
 
 
 if __name__ == "__main__":

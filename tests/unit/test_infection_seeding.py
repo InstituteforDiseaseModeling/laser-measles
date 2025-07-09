@@ -19,21 +19,27 @@ def test_seed_single_patch(measles_module):
 
     scenario = MeaslesModel.BaseScenario(lm.scenarios.synthetic.single_patch_scenario())
     model = MeaslesModel.Model(scenario, MeaslesModel.Params(num_ticks=0))
-    model.components = [MeaslesModel.components.InfectionSeedingProcess,
-                        MeaslesModel.components.InfectionProcess]  # NB: No disease progression included in the components
+    model.components = [
+        MeaslesModel.components.InfectionSeedingProcess,
+        MeaslesModel.components.InfectionProcess,
+    ]  # NB: No disease progression included in the components
     model.run()
     assert model.patches.states.I.sum() == 1
 
+
 @pytest.mark.parametrize("measles_module", MEASLES_MODULES)
 def test_seed_two_patch(measles_module):
-    """ Test the infection process in two patches. """
+    """Test the infection process in two patches."""
     MeaslesModel = importlib.import_module(measles_module)
     scenario = MeaslesModel.BaseScenario(lm.scenarios.synthetic.two_patch_scenario())
     model = MeaslesModel.Model(scenario, MeaslesModel.Params(num_ticks=0))
-    model.components = [MeaslesModel.components.InfectionSeedingProcess,
-                        MeaslesModel.components.InfectionProcess]  # NB: No disease progression included in the components
+    model.components = [
+        MeaslesModel.components.InfectionSeedingProcess,
+        MeaslesModel.components.InfectionProcess,
+    ]  # NB: No disease progression included in the components
     model.run()
     assert model.patches.states.I.sum() == 1
+
 
 if __name__ == "__main__":
     for module in MEASLES_MODULES:

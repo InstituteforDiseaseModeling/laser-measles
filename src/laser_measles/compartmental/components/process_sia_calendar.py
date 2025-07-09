@@ -1,6 +1,7 @@
 """
 Component for implementing Supplementary Immunization Activities (SIAs) based on a calendar schedule.
 """
+
 from collections.abc import Callable
 
 import numpy as np
@@ -8,9 +9,8 @@ import polars as pl
 from pydantic import BaseModel
 from pydantic import Field
 
-from laser_measles.compartmental.model import CompartmentalModel
 from laser_measles.base import BasePhase
-from laser_measles.base import BaseLaserModel
+from laser_measles.compartmental.model import CompartmentalModel
 from laser_measles.utils import cast_type
 
 

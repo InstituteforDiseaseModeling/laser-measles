@@ -7,6 +7,7 @@ from pydantic import Field
 TIME_STEP_DAYS = 1
 STATES = ["S", "E", "I", "R"]  # Compartments/states for SEIR model
 
+
 class CompartmentalParams(BaseModel):
     """
     Parameters for the compartmental SEIR model with daily timesteps.
@@ -27,5 +28,6 @@ class CompartmentalParams(BaseModel):
 
     def __str__(self) -> str:
         return json.dumps(OrderedDict(sorted(self.model_dump().items())), indent=2)
+
 
 Params = CompartmentalParams

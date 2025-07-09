@@ -46,7 +46,6 @@ Model Class:
 
 import numpy as np
 import polars as pl
-from laser_core.laserframe import LaserFrame
 from matplotlib import pyplot as plt
 from matplotlib.figure import Figure
 
@@ -55,7 +54,6 @@ from laser_measles.abm.base import PatchLaserFrame
 from laser_measles.abm.base import PeopleLaserFrame
 from laser_measles.base import BaseLaserModel
 from laser_measles.utils import StateArray
-from laser_measles.utils import get_laserframe_properties
 
 from . import components
 from .params import ABMParams

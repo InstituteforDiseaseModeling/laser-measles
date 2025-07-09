@@ -13,7 +13,7 @@ def two_patch_scenario(population: int = 100_000, mcv1_coverage: float = 0.0) ->
     df = pl.DataFrame(
         {
             "id": ["patch_1", "patch_2"],
-            "pop": [population, population//2],
+            "pop": [population, population // 2],
             "lat": [40.0, 34.0],
             "lon": [4.0, 10.0],
             "mcv1": [mcv1_coverage, mcv1_coverage],

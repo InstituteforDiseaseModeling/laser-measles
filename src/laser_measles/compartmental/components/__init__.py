@@ -1,4 +1,4 @@
-# ruff: noqa: E402, I001, F401
+# ruff: noqa: E402, F401
 
 __all__ = []
 from .process_infection import InfectionParams

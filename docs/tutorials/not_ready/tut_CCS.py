@@ -1,28 +1,29 @@
 # %% [markdown]
 # # Exploring the critical community size of an SIR model
-# 
+#
 # Use multiple nodes with no connection to identify the critical community size and its dependence on disease and demographic parameters
 
 # %%
+import os
+
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 from laser_core.propertyset import PropertySet
-import matplotlib.pyplot as plt
-import os
-from scipy.optimize import fsolve
 
 from laser_measles.abm import Model
-from laser_measles.abm.components import (
-    InfectionProcess, InfectionParams,
-    SusceptibilityProcess, SusceptibilityParams,
-    TransmissionProcess, TransmissionParams,
-    BirthsConstantPopProcess, BirthsParams,
-    InfectAgentsInPatchProcess, ImportationParams
-)
-from laser_measles.components import create_component
-
+from laser_measles.abm.components import BirthsConstantPopProcess
+from laser_measles.abm.components import BirthsParams
+from laser_measles.abm.components import ImportationParams
+from laser_measles.abm.components import InfectAgentsInPatchProcess
+from laser_measles.abm.components import InfectionParams
+from laser_measles.abm.components import InfectionProcess
+from laser_measles.abm.components import SusceptibilityParams
+from laser_measles.abm.components import SusceptibilityProcess
+from laser_measles.abm.components import TransmissionParams
+from laser_measles.abm.components import TransmissionProcess
 from laser_measles.abm.utils import set_initial_susceptibility_in_patch
-from laser_measles.abm.utils import seed_infections_in_patch
+from laser_measles.components import create_component
 
 # %load_ext line_profiler
 
@@ -47,7 +48,7 @@ outputs = np.zeros((nsims, nticks, npatches))
 output_folder = os.path.abspath(os.path.join(os.getcwd(), "CCSSIRoutputs2"))
 if not os.path.exists(output_folder):
     os.makedirs(output_folder)
-for R0, infmean, cbr in zip(R0_samples, infmean_samples, cbr_samples):
+for R0, infmean, cbr in zip(R0_samples, infmean_samples, cbr_samples, strict=False):
     parameters = PropertySet(
         {
             "seed": np.random.randint(0, 1000000),
@@ -76,16 +77,16 @@ for R0, infmean, cbr in zip(R0_samples, infmean_samples, cbr_samples):
         exp_mu=parameters.exp_mu,
         exp_sigma=parameters.exp_sigma,
         inf_mean=parameters.inf_mean,
-        inf_shape=parameters.inf_shape
+        inf_shape=parameters.inf_shape,
     )
     infection_params = InfectionParams(nticks=parameters.nticks)
     importation_params = ImportationParams(
         nticks=parameters.nticks,
         importation_period=parameters.importation_period,
         importation_count=1,
-        importation_end=parameters.importation_end
+        importation_end=parameters.importation_end,
     )
-    
+
     model.components = [
         create_component(BirthsConstantPopProcess, params=births_params),
         create_component(SusceptibilityProcess, params=susceptibility_params),
@@ -105,13 +106,9 @@ for R0, infmean, cbr in zip(R0_samples, infmean_samples, cbr_samples):
     i += 1
 
 # %%
-params_df = pd.DataFrame({
-    'R0': R0_samples,
-    'infmean': infmean_samples,
-    'cbr': cbr_samples
-})
+params_df = pd.DataFrame({"R0": R0_samples, "infmean": infmean_samples, "cbr": cbr_samples})
 
-params_df.to_csv(os.path.join(output_folder, 'params.csv'), index=False)
+params_df.to_csv(os.path.join(output_folder, "params.csv"), index=False)
 
 # %%
 plt.imshow(outputs[26, 7300:, :].T / pops[:, np.newaxis], aspect="auto", origin="lower")
@@ -205,7 +202,6 @@ plt.tight_layout()
 plt.show()
 
 # %%
-from mpl_toolkits.mplot3d import Axes3D
 
 fig = plt.figure(figsize=(14, 7))
 
@@ -308,12 +304,9 @@ plt.grid(True, which="both", ls="--")
 plt.show()
 
 # %%
-output_folder = "..\..\laser-generic-outputs\CCSSIRoutputs"
+output_folder = r"..\..\laser-generic-outputs\CCSSIRoutputs"
 
 # %%
 
 
 # %%
-
-
-

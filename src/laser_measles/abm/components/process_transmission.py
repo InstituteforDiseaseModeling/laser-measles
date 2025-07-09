@@ -93,7 +93,7 @@ class TransmissionProcess(BasePhase):
         self._mixing = None
 
         # add new properties to the laserframes
-        assert hasattr(model.people, "susceptibility") # susceptibility factor
+        assert hasattr(model.people, "susceptibility")  # susceptibility factor
         model.people.add_scalar_property("etimer", dtype=np.uint16, default=0)  # exposure timer
         model.people.add_scalar_property("itimer", dtype=np.uint16, default=0)  # infection timer
         model.patches.add_scalar_property("incidence", dtype=np.uint32, default=0)  # new infections per time step
@@ -134,7 +134,7 @@ class TransmissionProcess(BasePhase):
         # normalize by the population
         forces /= patches.states.sum(axis=0)
         np.negative(forces, out=forces)
-        np.expm1(forces, out=forces) # exp(x) - 1
+        np.expm1(forces, out=forces)  # exp(x) - 1
         np.negative(forces, out=forces)
 
         # S --> E
@@ -147,7 +147,7 @@ class TransmissionProcess(BasePhase):
             people.count,
             np.float32(self.params.mu_underlying),
             np.float32(self.params.sigma_underlying),
-            model.patches.incidence, # flow
+            model.patches.incidence,  # flow
         )
         # Update susceptible and exposed counters
         patches.states.S -= model.patches.incidence
@@ -167,11 +167,14 @@ class TransmissionProcess(BasePhase):
         self._mixing = mixing
 
     def infect(self, model: ABMModel, idx: np.ndarray | int) -> None:
-        """ Infect a set of agents. The function does not adjust counts in e.g., patches.states """
+        """Infect a set of agents. The function does not adjust counts in e.g., patches.states"""
         if isinstance(idx, int):
             idx = np.array([idx])
         people = model.people
         people.state[idx] = model.params.states.index("E")
         people.susceptibility[idx] = 0.0
-        people.etimer[idx] = cast_type(np.maximum(1, np.round(np.random.lognormal(self.params.mu_underlying, self.params.sigma_underlying, size=len(idx)))), people.etimer.dtype)
+        people.etimer[idx] = cast_type(
+            np.maximum(1, np.round(np.random.lognormal(self.params.mu_underlying, self.params.sigma_underlying, size=len(idx)))),
+            people.etimer.dtype,
+        )
         return

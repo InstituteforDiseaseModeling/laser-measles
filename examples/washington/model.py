@@ -36,7 +36,6 @@ Usage:
 """
 
 import typer
-from typing import List, Optional
 
 from laser_measles import Births
 from laser_measles import Incubation
@@ -47,12 +46,12 @@ from laser_measles import NonDiseaseDeaths
 from laser_measles import RoutineImmunization
 from laser_measles import Susceptibility
 from laser_measles import Transmission
+from laser_measles.utils import seed_infections_in_patch
 from laser_measles.washington import get_parameters
 from laser_measles.washington import get_scenario
-from laser_measles.utils import seed_infections_in_patch
-
 
 app = typer.Typer()
+
 
 @app.command()
 def run(
@@ -61,9 +60,9 @@ def run(
     verbose: bool = typer.Option(False, help="Print verbose output"),
     no_viz: bool = typer.Option(False, "--no-viz", help="Suppress validation visualizations"),
     pdf: bool = typer.Option(False, help="Output visualization results as a PDF"),
-    output: Optional[str] = typer.Option(None, help="Output file for results"),
-    params: Optional[str] = typer.Option(None, help="JSON file with parameters"),
-    param: List[str] = typer.Option([], "-p", "--param", help="Additional parameter overrides (param:value or param=value)")
+    output: str | None = typer.Option(None, help="Output file for results"),
+    params: str | None = typer.Option(None, help="JSON file with parameters"),
+    param: list[str] = typer.Option([], "-p", "--param", help="Additional parameter overrides (param:value or param=value)"),
 ):
     """
     Run the measles model simulation with the given parameters.
@@ -95,7 +94,7 @@ def run(
         "pdf": pdf,
         "output": output,
         "params": params,
-        "param": param
+        "param": param,
     }
     parameters = get_parameters(kwargs)
     scenario = get_scenario(parameters, parameters["verbose"])

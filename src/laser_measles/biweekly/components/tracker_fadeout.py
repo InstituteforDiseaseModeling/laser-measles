@@ -6,10 +6,11 @@ experienced fade-outs (state transitions to 0) at each time tick in the simulati
 The tracker maintains a time series of fade-out counts that can be used for analysis
 and visualization of the model's behavior over time.
 """
+
 import numpy as np
 
-from laser_measles.base import BasePhase
 from laser_measles.base import BaseLaserModel
+from laser_measles.base import BasePhase
 
 
 class FadeOutTracker(BasePhase):

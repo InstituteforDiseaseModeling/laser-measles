@@ -2,15 +2,17 @@ import numpy as np
 from pydantic import Field
 
 from laser_measles.base import BaseLaserModel
-from laser_measles.components import BaseInfection, BaseInfectionParams
 from laser_measles.biweekly.mixing import init_gravity_diffusion
-from laser_measles.utils import cast_type
+from laser_measles.components import BaseInfection
+from laser_measles.components import BaseInfectionParams
 
 
 class InfectionParams(BaseInfectionParams):
     """Parameters specific to the infection process component."""
 
-    beta: float = Field(default=1, description="Base transmission rate (infections per day)", ge=0.0) # beta = R0 / (mean infectious period)
+    beta: float = Field(
+        default=1, description="Base transmission rate (infections per day)", ge=0.0
+    )  # beta = R0 / (mean infectious period)
     seasonality: float = Field(default=0.0, description="Seasonality factor, default is no seasonality", ge=0.0, le=1.0)
     season_start: int = Field(default=0, description="Season start tick (0-25)", ge=0, le=25)
     distance_exponent: float = Field(default=1.5, description="Distance exponent", ge=0.0)
@@ -19,6 +21,7 @@ class InfectionParams(BaseInfectionParams):
     @property
     def beta_per_tick(self) -> float:
         return (self.beta * 365) / 26
+
 
 class InfectionProcess(BaseInfection):
     """
@@ -68,17 +71,16 @@ class InfectionProcess(BaseInfection):
         states = model.patches.states
 
         # prevalence in each patch
-        prevalence = states[1] / states.sum(axis=0)          # I_j / N_j
+        prevalence = states[1] / states.sum(axis=0)  # I_j / N_j
 
         lambda_i = (
             self.params.beta_per_tick
-            * (1 + self.params.seasonality *
-                np.sin(2 * np.pi * (tick - self.params.season_start) / 26.0))
-            * np.matmul(self.mixing, prevalence)              # M @ (I_j / N_j)
+            * (1 + self.params.seasonality * np.sin(2 * np.pi * (tick - self.params.season_start) / 26.0))
+            * np.matmul(self.mixing, prevalence)  # M @ (I_j / N_j)
         )
 
-        prob = 1 - np.exp(-lambda_i)                         # already per-susceptible
-        dI   = model.prng.binomial(states[0], prob).astype(states.dtype)
+        prob = 1 - np.exp(-lambda_i)  # already per-susceptible
+        dI = model.prng.binomial(states[0], prob).astype(states.dtype)
 
         # move all currently infected to recovered (using configurable recovery period)
         states[2] += states[1]
@@ -91,21 +93,17 @@ class InfectionProcess(BaseInfection):
         return
 
     def initialize(self, model: BaseLaserModel) -> None:
-        """ Initializes the mixing component"""
-        self.mixing = init_gravity_diffusion(
-                model.scenario, self.params.mixing_scale, self.params.distance_exponent
-            )
+        """Initializes the mixing component"""
+        self.mixing = init_gravity_diffusion(model.scenario, self.params.mixing_scale, self.params.distance_exponent)
 
     @property
     def mixing(self) -> np.ndarray:
         """Returns the mixing matrix, initializing if necessary"""
         if self._mixing is None:
-            self._mixing = init_gravity_diffusion(
-                self.model.scenario, self.params.mixing_scale, self.params.distance_exponent
-            )
+            self._mixing = init_gravity_diffusion(self.model.scenario, self.params.mixing_scale, self.params.distance_exponent)
         return self._mixing
 
     @mixing.setter
     def mixing(self, mixing: np.ndarray) -> None:
-        """ Sets the mixing matrix"""
+        """Sets the mixing matrix"""
         self._mixing = mixing

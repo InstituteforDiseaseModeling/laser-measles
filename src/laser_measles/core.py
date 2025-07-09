@@ -1,7 +1,7 @@
 """
 Core computational functions for laser-measles.
 
-This module provides core computational utilities, with optional 
+This module provides core computational utilities, with optional
 compiled extensions for performance optimization.
 """
 

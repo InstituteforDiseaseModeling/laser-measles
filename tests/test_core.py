@@ -21,5 +21,6 @@ def test_laserframe():
     # Explicitly add the total population size, in this case the same as our max capacity
     model.population.add(1000)
 
+
 if __name__ == "__main__":
     test_compute()

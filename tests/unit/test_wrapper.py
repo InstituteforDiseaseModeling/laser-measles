@@ -9,9 +9,11 @@ from laser_core.laserframe import LaserFrame
 
 from laser_measles.wrapper import PrettyLaserFrameWrapper
 
+
 class AgesAndStates(Protocol):
     age: np.ndarray
     states: np.ndarray
+
 
 def test_wrapper():
     """Test the LaserFrameWrapper with a sample LaserFrame."""

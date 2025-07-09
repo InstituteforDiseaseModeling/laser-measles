@@ -1,6 +1,7 @@
 """
 Component for tracking case surveillance in the compartmental model.
 """
+
 from collections.abc import Callable
 
 import matplotlib.pyplot as plt
@@ -107,7 +108,9 @@ class CaseSurveillanceTracker(BasePhase):
 
                 if self.params.detection_rate < 1:
                     # Simulate case detection using binomial distribution
-                    detected_cases = cast_type(np.random.binomial(n=group_infected, p=self.params.detection_rate), model.patches.states.dtype)
+                    detected_cases = cast_type(
+                        np.random.binomial(n=group_infected, p=self.params.detection_rate), model.patches.states.dtype
+                    )
                 else:
                     # Otherwise report infections
                     detected_cases = cast_type(group_infected, model.patches.states.dtype)
@@ -141,9 +144,7 @@ class CaseSurveillanceTracker(BasePhase):
             # For each tick and node, add the reported cases
             for tick in range(self.model.params.num_ticks):
                 for node_idx, node_id in enumerate(self.node_indices):
-                    data.append(
-                        {"tick": tick, "node_id": self.model.scenario["id"][node_id], "cases": self.reported_cases[tick, node_idx]}
-                    )
+                    data.append({"tick": tick, "node_id": self.model.scenario["id"][node_id], "cases": self.reported_cases[tick, node_idx]})
 
         # Create DataFrame
         return pl.DataFrame(data)

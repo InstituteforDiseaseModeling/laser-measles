@@ -56,7 +56,9 @@ class ImportationPressureProcess(BasePhase):
         self.params = params or ImportationPressureParams()
 
     def __call__(self, model, tick: int) -> None:
-        if tick < (self.params.importation_start // model.params.time_step_days) or (self.params.importation_end != -1 and tick > (self.params.importation_end // model.params.time_step_days)):
+        if tick < (self.params.importation_start // model.params.time_step_days) or (
+            self.params.importation_end != -1 and tick > (self.params.importation_end // model.params.time_step_days)
+        ):
             print(f"Importation pressure not active at tick {tick}")
             return
 
@@ -91,7 +93,6 @@ class ImportationPressureProcess(BasePhase):
             infection_component.infect(model, idx)
             # update the number of imported cases for the patch after susceptibility filtering
             imported_cases[patch_idx] = len(idx)
-
 
         # update states
         states.S -= imported_cases

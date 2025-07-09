@@ -1,6 +1,7 @@
 """
 Component defining the DiseaseProcess, which simulates the disease progression in the ABM model with MCV1.
 """
+
 import numba as nb
 import numpy as np
 from pydantic import BaseModel
@@ -9,9 +10,7 @@ from pydantic import Field
 from laser_measles.base import BaseComponent
 
 
-@nb.njit(
-    (nb.uint32, nb.uint16[:], nb.uint16[:], nb.uint8[:], nb.float32, nb.float32, nb.uint32[:], nb.uint16[:]), parallel=True
-)
+@nb.njit((nb.uint32, nb.uint16[:], nb.uint16[:], nb.uint8[:], nb.float32, nb.float32, nb.uint32[:], nb.uint16[:]), parallel=True)
 def nb_gamma_update(count, timers_0, timers_1, state, shape, scale, flow, patch_id):  # pragma: no cover
     """Numba compiled function to check and update exposed timers for the population in parallel."""
     max_node_id = np.max(patch_id) + 1
@@ -58,7 +57,7 @@ class DiseaseParams(BaseModel):
 
     @property
     def inf_scale(self) -> float:
-        return self.inf_sigma ** 2 / self.inf_mean
+        return self.inf_sigma**2 / self.inf_mean
 
 
 class DiseaseProcess(BaseComponent):
@@ -77,9 +76,7 @@ class DiseaseProcess(BaseComponent):
         flow = np.zeros(len(model.patches), dtype=np.uint32)
         # Update the infectious timers
         # I --> R
-        nb_state_update(
-            people.count, people.itimer, people.state, np.uint8(model.params.states.index("R")), flow, people.patch_id
-        )
+        nb_state_update(people.count, people.itimer, people.state, np.uint8(model.params.states.index("R")), flow, people.patch_id)
         patches.states.I -= flow
         patches.states.R += flow
 
