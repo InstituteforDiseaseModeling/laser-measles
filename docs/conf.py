@@ -83,7 +83,7 @@ html_theme_options = {
     "footer_end": ["theme-version", "footer_end"],
 }
 html_sidebars = {
-    "**": ["sidebar-nav-bs", "page-toc"],
+    "**": ["page-toc"],
 }
 html_logo = "images/idm-logo-transparent.png"
 html_favicon = "images/favicon.ico"
