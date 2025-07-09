@@ -168,8 +168,8 @@ class BaseLaserModel(ABC, Generic[ScenarioType, ParamsType]):
 
         # Metrics and timing
         self.metrics: list = []
-        self.tstart: datetime | None = None
-        self.tfinish: datetime | None = None
+        self._tstart: datetime | None = None
+        self._tfinish: datetime | None = None
 
         # Time tracking
         self.start_time = datetime.strptime(self.params.start_time, "%Y-%m")  # noqa DTZ007
@@ -265,9 +265,9 @@ class BaseLaserModel(ABC, Generic[ScenarioType, ParamsType]):
 
         # TODO: Check that the model has been initialized
         num_ticks = self.params.num_ticks
-        self.tstart = datetime.now(tz=None)  # noqa: DTZ005
+        self._tstart = datetime.now(tz=None)  # noqa: DTZ005
         if self.params.verbose:
-            print(f"{self.tstart}: Running the {self.name} model for {num_ticks} ticks…")
+            print(f"{self._tstart}: Running the {self.name} model for {num_ticks} ticks…")
 
         self.metrics = []
         with alive_progress.alive_bar(num_ticks) as bar:
@@ -275,9 +275,9 @@ class BaseLaserModel(ABC, Generic[ScenarioType, ParamsType]):
                 self._execute_tick(tick)
                 bar()
 
-        self.tfinish = datetime.now(tz=None)  # noqa: DTZ005
+        self._tfinish = datetime.now(tz=None)  # noqa: DTZ005
         if self.params.verbose:
-            print(f"Completed the {self.name} model at {self.tfinish}…")
+            print(f"Completed the {self.name} model at {self._tfinish}…")
             self._print_timing_summary()
 
     def _execute_tick(self, tick: int) -> None:
@@ -495,7 +495,7 @@ class BaseLaserModel(ABC, Generic[ScenarioType, ParamsType]):
                     plt.show()
         else:
             print("Generating PDF output…")
-            pdf_filename = f"{self.name} {self.tstart:%Y-%m-%d %H%M%S}.pdf"
+            pdf_filename = f"{self.name} {self._tstart:%Y-%m-%d %H%M%S}.pdf"
             with PdfPages(pdf_filename) as pdf_file:
                 for instance in self.instances:
                     for _plot in instance.plot():
@@ -555,7 +555,7 @@ class BaseLaserModel(ABC, Generic[ScenarioType, ParamsType]):
                 # Only show simple types to avoid clutter
                 if isinstance(value, int | float | str | bool | type(None)):
                     attrs[attr] = value.__str__()
-        return f"<{self.__class__.__name__}:\n{'\n'.join([f'{k}: {v}' for k, v in attrs.items()])}>"
+        return f"<{self.__class__.__name__}>:\n{'\n'.join([f'{k}: {v}' for k, v in attrs.items()])}>"
 
 class BaseComponent(ABC, Generic[ModelType]):
     """

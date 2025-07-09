@@ -124,7 +124,7 @@ class ABMModel(BaseLaserModel[BaseABMScenario, ABMParams]):
 
         return
 
-    def initialize_people_capacity(self, capacity: int) -> None:
+    def initialize_people_capacity(self, capacity: int, initial_count: int = -1) -> None:
         """
         Initialize the people LaserFrame with a new capacity while preserving all properties.
 
@@ -139,7 +139,7 @@ class ABMModel(BaseLaserModel[BaseABMScenario, ABMParams]):
             raise RuntimeError("Cannot initialize capacity: people LaserFrame is None")
 
         # Use the factory method to create a new instance with the same type and properties
-        new_people = type(self.people).create_with_capacity(capacity, self.people)
+        new_people = type(self.people).create_with_capacity(capacity, self.people, initial_count=initial_count)
 
         # Update the people laserframe
         self.people = new_people
