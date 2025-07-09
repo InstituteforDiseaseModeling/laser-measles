@@ -15,4 +15,5 @@ sciris
 matplotlib
 scipy
 seaborn
+jupytext
 autodoc_pydantic>=2.0.0
