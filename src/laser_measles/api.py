@@ -29,11 +29,3 @@ __all__.extend(
         "create_component",
     ]
 )
-
-from .wrapper import pretty_laserframe
-
-__all__.extend(
-    [
-        "pretty_laserframe",
-    ]
-)
