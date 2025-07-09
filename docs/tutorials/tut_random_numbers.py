@@ -26,6 +26,28 @@ model = CompartmentalModel(scenario, params)
 print(f"Model PRNG seeded with: {params.seed}")
 
 # %% [markdown]
+# ### How laser_core Handles Seeding
+#
+# Behind the scenes, laser-measles uses `laser_core.random.seed()` to create the random number generator.
+# This function does two important things:
+#
+# 1. **Creates a NumPy Generator**: Returns a `numpy.random.Generator` object seeded with the given value
+# 2. **Seeds global random state**: Also seeds `numpy.random` and numba's random number generator
+#
+# This ensures both `model.prng` and `np.random` operations are reproducible.
+
+# %%
+from laser_core.random import seed as seed_prng
+
+# This is what happens inside BaseLaserModel.__init__
+prng = seed_prng(42)
+print(f"PRNG type: {type(prng)}")
+print(f"Available methods: {len([m for m in dir(prng) if not m.startswith('_')])} methods")
+
+# Some key methods available
+print("Key methods:", ['random', 'binomial', 'poisson', 'normal', 'exponential', 'lognormal'])
+
+# %% [markdown]
 # ### Reproducible Random Numbers
 #
 # The `model.prng` object provides access to the seeded random number generator.
@@ -203,3 +225,6 @@ print("Numba reproducible:", np.allclose(result1, result2))
 # 2. **Use `model.prng`** for component-level random operations
 # 3. **Use `np.random`** in numba-compiled functions
 # 4. **Test reproducibility** by running with same seeds
+# 5. **Set numpy seed** before numba functions for consistency
+#
+# This ensures your models are reproducible and scientifically sound.
