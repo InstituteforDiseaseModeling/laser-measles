@@ -61,10 +61,6 @@ Repository = "https://github.com/InstituteforDiseaseModeling/laser-measles.git"
 Issues = "https://github.com/InstituteforDiseaseModeling/laser-measles/issues"
 Changelog = "https://github.com/InstituteforDiseaseModeling/laser-measles/blob/master/CHANGELOG.md"
 
-[project.scripts]
-lm = "laser_measles.cli:app"
-lm-abm = "laser_measles.abm.cli:app"
-
 [tool.ruff]
 extend-exclude = ["static", "ci/templates"]
 line-length = 140
