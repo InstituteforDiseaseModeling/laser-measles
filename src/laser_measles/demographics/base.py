@@ -1,5 +1,5 @@
-from pathlib import Path
 from collections import defaultdict
+from pathlib import Path
 from typing import Protocol
 
 import polars as pl

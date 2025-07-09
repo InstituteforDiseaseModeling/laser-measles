@@ -12,21 +12,15 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
+   laser_measles.abm
    laser_measles.biweekly
+   laser_measles.compartmental
+   laser_measles.components
    laser_measles.demographics
-   laser_measles.generic
-   laser_measles.nigeria
+   laser_measles.scenarios
 
 Submodules
 ----------
-
-laser\_measles.antibodies module
---------------------------------
-
-.. automodule:: laser_measles.antibodies
-   :members:
-   :show-inheritance:
-   :undoc-members:
 
 laser\_measles.api module
 -------------------------
@@ -36,10 +30,10 @@ laser\_measles.api module
    :show-inheritance:
    :undoc-members:
 
-laser\_measles.births module
-----------------------------
+laser\_measles.base module
+--------------------------
 
-.. automodule:: laser_measles.births
+.. automodule:: laser_measles.base
    :members:
    :show-inheritance:
    :undoc-members:
@@ -60,58 +54,10 @@ laser\_measles.core module
    :show-inheritance:
    :undoc-members:
 
-laser\_measles.incubation module
---------------------------------
-
-.. automodule:: laser_measles.incubation
-   :members:
-   :show-inheritance:
-   :undoc-members:
-
-laser\_measles.infection module
+laser\_measles.protocols module
 -------------------------------
 
-.. automodule:: laser_measles.infection
-   :members:
-   :show-inheritance:
-   :undoc-members:
-
-laser\_measles.model module
----------------------------
-
-.. automodule:: laser_measles.model
-   :members:
-   :show-inheritance:
-   :undoc-members:
-
-laser\_measles.mortality module
--------------------------------
-
-.. automodule:: laser_measles.mortality
-   :members:
-   :show-inheritance:
-   :undoc-members:
-
-laser\_measles.routine module
------------------------------
-
-.. automodule:: laser_measles.routine
-   :members:
-   :show-inheritance:
-   :undoc-members:
-
-laser\_measles.susceptibility module
-------------------------------------
-
-.. automodule:: laser_measles.susceptibility
-   :members:
-   :show-inheritance:
-   :undoc-members:
-
-laser\_measles.transmission module
-----------------------------------
-
-.. automodule:: laser_measles.transmission
+.. automodule:: laser_measles.protocols
    :members:
    :show-inheritance:
    :undoc-members:
@@ -120,6 +66,14 @@ laser\_measles.utils module
 ---------------------------
 
 .. automodule:: laser_measles.utils
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+laser\_measles.wrapper module
+-----------------------------
+
+.. automodule:: laser_measles.wrapper
    :members:
    :show-inheritance:
    :undoc-members:

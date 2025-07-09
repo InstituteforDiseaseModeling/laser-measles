@@ -9,7 +9,7 @@ Why does this file exist, and why __main__? For more info, read:
 - https://docs.python.org/3/using/cmdline.html#cmdoption-m
 """
 
-from laser_measles.generic.model import run
+from laser_measles.abm.cli import app
 
 if __name__ == "__main__":
-    run()
+    app()

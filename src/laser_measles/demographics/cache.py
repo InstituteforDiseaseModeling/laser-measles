@@ -10,7 +10,7 @@ def load_cache(cache_dir: str | None = None) -> diskcache.Cache:
     Load the cache for the application.
 
     Args:
-        cache_dir: The cache directory to use. If None, the default cache directory will be used.
+        cache_dir (str | None): The cache directory to use. If None, the default cache directory will be used.
 
     Returns:
         The cache object.
@@ -44,6 +44,7 @@ def clear_cache_dir(dir: str) -> None:
     resolve_dir = Path(get_cache_dir()) / dir
     if resolve_dir.exists():
         shutil.rmtree(resolve_dir)
+
 
 def get_all_cache_keys() -> list[str]:
     """Get all the cache keys for the application."""

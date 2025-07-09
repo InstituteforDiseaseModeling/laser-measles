@@ -75,3 +75,17 @@ docs/_build
 
 # tmp directory
 tmp/
+
+# Shapefiles
+*.shp
+*.dbf
+*.prj
+*.shx
+*.cpg
+
+# Rasters
+*.tif
+
+# Docs
+docs/reference/
+docs/api/

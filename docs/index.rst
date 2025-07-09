@@ -25,12 +25,13 @@ Learn more
         Details on classes and functions.
 
 .. toctree::
-   :maxdepth: 2
-   installation
-   contributing
-   authors
-   changelog
-   reference/modules
+   :maxdepth: 3
+   :hidden:
+
+   usage
+   tutorials
+   api/index
+
 
 Indices and tables
 ==================

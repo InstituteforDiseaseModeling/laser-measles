@@ -3,18 +3,16 @@ GADM shapefiles
 """
 
 import io
-import os
 import zipfile
 from pathlib import Path
 
 import alive_progress
 import pycountry
 import requests
-import sciris as sc
 from pydantic import model_validator
 
-from laser_measles.demographics.admin_shapefile import AdminShapefile
 from laser_measles.demographics import shapefiles
+from laser_measles.demographics.admin_shapefile import AdminShapefile
 
 VERSION = "4.1"
 VERSION_INT = VERSION.replace(".", "")
@@ -28,7 +26,6 @@ DOTNAME_FIELDS_DICT = {
 
 
 class GADMShapefile(AdminShapefile):
-
     @model_validator(mode="after")
     def check_dotname_fields(self) -> "GADMShapefile":
         """
@@ -51,7 +48,7 @@ class GADMShapefile(AdminShapefile):
             self.add_dotname()
 
         return self
-                
+
     @classmethod
     def _parse_admin_level_from_shapefile(cls, shapefile_path: Path) -> int | None:
         """

@@ -1,0 +1,40 @@
+version: 2
+updates:
+  # Enable version updates for Python dependencies
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 10
+    assignees:
+      - "krosenfeld-IDM"
+      - "krosenfeld"
+      - "clorton"
+      - "jonathanhhb"
+    reviewers:
+      - "krosenfeld-IDM"
+      - "krosenfeld"
+      - "clorton"
+      - "jonathanhhb"
+    commit-message:
+      prefix: "deps"
+      include: "scope"
+    groups:
+      # Group minor and patch updates together
+      minor-and-patch:
+        patterns:
+          - "*"
+        update-types:
+          - "minor"
+          - "patch"
+      # Separate major updates for careful review
+      major-updates:
+        patterns:
+          - "*"
+        update-types:
+          - "major"
+    ignore:
+      # Ignore updates for packages that might break compatibility
+      - dependency-name: "python"
+        versions: [">=4.0.0"]

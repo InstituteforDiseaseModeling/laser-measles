@@ -1,6 +1,6 @@
 from laser_core import LaserFrame
 
-from laser_measles import compute
+from laser_measles.core import compute
 
 
 def test_compute():
@@ -20,6 +20,7 @@ def test_laserframe():
     model.population.add_scalar_property("disease_state")
     # Explicitly add the total population size, in this case the same as our max capacity
     model.population.add(1000)
+
 
 if __name__ == "__main__":
     test_compute()

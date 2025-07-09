@@ -14,4 +14,5 @@ plantweb
 sciris
 matplotlib
 scipy
-git+https://github.com/InstituteforDiseaseModeling/RasterToolkit.git#egg=RasterToolkit
+seaborn
+autodoc_pydantic>=2.0.0

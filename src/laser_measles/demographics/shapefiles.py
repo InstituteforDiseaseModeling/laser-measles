@@ -1,11 +1,13 @@
 from collections import defaultdict
 from pathlib import Path
-from shapefile import Reader, Writer
 
-import polars as pl
 import matplotlib.pyplot as plt
-from matplotlib.patches import Polygon
 import numpy as np
+import polars as pl
+from matplotlib.patches import Polygon
+from shapefile import Reader
+from shapefile import Writer
+
 
 def check_field(path: str | Path, field_name: str) -> bool:
     path = Path(path) if isinstance(path, str) else path
@@ -38,18 +40,13 @@ def add_dotname(
     with Reader(path) as sf:
         fields = [field[0] for field in sf.fields[1:]]
         if not all(field in fields for field in dot_name_fields):
-            raise ValueError(
-                f"Dot name fields {dot_name_fields} not found in shapefile {path}. Choices are {fields}"
-            )
+            raise ValueError(f"Dot name fields {dot_name_fields} not found in shapefile {path}. Choices are {fields}")
 
         if field_name in fields:
             return
 
         dotnames = [
-            dotname_symbol.join(
-                [shaperec.record[field].lower() for field in dot_name_fields]
-            )
-            for shaperec in sf.iterShapeRecords()
+            dotname_symbol.join([shaperec.record[field].lower() for field in dot_name_fields]) for shaperec in sf.iterShapeRecords()
         ]
 
         # check that all dotnames are unique
@@ -68,9 +65,7 @@ def add_dotname(
             record_cnt = 0
 
             for i, shaperec in enumerate(sf.iterShapeRecords()):
-                dotname = dotname_symbol.join(
-                    [shaperec.record[field].lower() for field in dot_name_fields]
-                )
+                dotname = dotname_symbol.join([shaperec.record[field].lower() for field in dot_name_fields])
                 # add the new field
                 w.record(*shaperec.record, dotname)
                 # add the shape
@@ -87,6 +82,7 @@ def add_dotname(
                     target_path.unlink()  # Remove existing file first
                 temp_path.rename(target_path)
 
+
 def get_shapefile_dataframe(shapefile_path: str | Path) -> pl.DataFrame:
     """
     Get a DataFrame containing the shapefile data with DOTNAME and shape columns.
@@ -97,9 +93,7 @@ def get_shapefile_dataframe(shapefile_path: str | Path) -> pl.DataFrame:
     Returns:
         A DataFrame with DOTNAME and shape columns.
     """
-    shapefile_path = (
-        Path(shapefile_path) if isinstance(shapefile_path, str) else shapefile_path
-    )
+    shapefile_path = Path(shapefile_path) if isinstance(shapefile_path, str) else shapefile_path
     if not shapefile_path.exists():
         raise FileNotFoundError(f"Shapefile not found at {shapefile_path}")
 
@@ -124,6 +118,7 @@ def get_shapefile_dataframe(shapefile_path: str | Path) -> pl.DataFrame:
 
         return df
 
+
 def plot_shapefile_dataframe(df: pl.DataFrame, ax: plt.Axes | None = None, plot_kwargs: dict | None = None) -> plt.Figure:
     if ax is None:
         fig, ax = plt.subplots()
@@ -138,16 +133,17 @@ def plot_shapefile_dataframe(df: pl.DataFrame, ax: plt.Axes | None = None, plot_
     }
     default_plot_kwargs.update(plot_kwargs)
     # if "facecolor" in default_plot_kwargs:
-        # default_plot_kwargs["fill"] = True
+    # default_plot_kwargs["fill"] = True
     xlim = [float("inf"), float("-inf")]
     ylim = [float("inf"), float("-inf")]
+
     def get_data(data: list[tuple[float, float]], index: int) -> list[float]:
         return [x[index] for x in data]
- 
+
     for shape in df["shape"]:
         parts = [*shape.parts, len(shape.points)]
-        for part in range(len(parts) - 1): # Only plot first shape?
-            polygon = Polygon(shape.points[parts[part]:parts[part+1]], **default_plot_kwargs)
+        for part in range(len(parts) - 1):  # Only plot first shape?
+            polygon = Polygon(shape.points[parts[part] : parts[part + 1]], **default_plot_kwargs)
             ax.add_patch(polygon)
         xlim[0] = min(xlim[0], min(get_data(shape.points, 0)))
         xlim[1] = max(xlim[1], max(get_data(shape.points, 0)))

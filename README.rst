@@ -23,7 +23,7 @@ Welcome to laser-measles
 
 .. end-badges
 
-laser-measles helps you build and analyze spatial models of measles implemented with the LASER toolkit.
+laser-measles helps you build and analyze spatial models of measles implemented with the `LASER framework <https://github.com/InstituteforDiseaseModeling/laser>`_. 
 
 .. code-block:: bash
 
