@@ -308,12 +308,12 @@ class BaseLaserModel(ABC, Generic[ScenarioType, ParamsType]):
         # Update current date by time_step_days
         self.current_date += timedelta(days=self.params.time_step_days)
 
-    def time_elapsed(self, units: str = "days") -> int:
+    def time_elapsed(self, units: str = "days") -> int | float:
         """
         Return time elapsed since the start of the model.
 
         Args:
-            units: Time units to return. Currently only supports "days".
+            units: Time units to return. Currently only supports "days" and "ticks".
 
         Returns:
             Time elapsed in the specified units.
@@ -321,8 +321,10 @@ class BaseLaserModel(ABC, Generic[ScenarioType, ParamsType]):
         Raises:
             ValueError: If invalid time units are specified.
         """
-        if units == "days":
+        if units.lower() == "days":
             return (self.current_date - self.start_time).days
+        elif units.lower() == "ticks":
+            return (self.current_date - self.start_time).days / self.params.time_step_days
         else:
             raise ValueError(f"Invalid time units: {units}")
 
