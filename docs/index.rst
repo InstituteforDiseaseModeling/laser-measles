@@ -1,40 +1,80 @@
 .. include:: ../README.rst
 
-Learn more
-----------
+Getting Started
+===============
+
+.. grid:: 2
+    :gutter: 4
+
+    .. grid-item-card:: 🚀 Installation
+        :link: installation
+        :link-type: doc
+
+        Quick installation guide and dependency management with pip and optional extras.
+
+    .. grid-item-card:: 📖 Usage Guide
+        :link: usage
+        :link-type: doc
+
+        Get started with laser-measles and learn the basics.
+
+Documentation
+=============
+
+.. grid:: 2
+    :gutter: 4
+
+    .. grid-item-card:: 📚 Tutorials
+        :link: tutorials
+        :link-type: doc
+
+        Step-by-step tutorials covering laser-measles's key features and modeling approaches.
+
+    .. grid-item-card:: 🔧 API Reference
+        :link: api/index
+        :link-type: doc
+
+        Comprehensive reference for all classes, functions, and modules.
+
+Project Information
+==================
 
 .. grid:: 3
     :gutter: 4
 
-    .. grid-item-card:: Getting started
-        :link: usage
+    .. grid-item-card:: 🤝 Contributing
+        :link: contributing
         :link-type: doc
 
-        Get started with laser-measles.
+        Guidelines for contributing to the project, reporting bugs, and development setup.
 
-    .. grid-item-card:: Tutorials
-        :link: tutorials
+    .. grid-item-card:: 👥 Authors
+        :link: authors
         :link-type: doc
 
-        laser-measles's key features.
+        Meet the team behind laser-measles.
 
-    .. grid-item-card:: API reference
-        :link: api/index
+    .. grid-item-card:: 📝 Changelog
+        :link: changelog
         :link-type: doc
 
-        Details on classes and functions.
+        Release history and version changes.
 
 .. toctree::
-   :maxdepth: 3
+   :maxdepth: 2
    :hidden:
 
+   installation
    usage
    tutorials
    api/index
+   contributing
+   authors
+   changelog
 
+----
 
-Indices and tables
-==================
+**Indices and tables**
 
 * :ref:`genindex`
 * :ref:`modindex`
