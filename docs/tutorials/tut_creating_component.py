@@ -120,9 +120,9 @@ def run_simulation(use_piri: bool = True, num_ticks: int = 730) -> tuple:
             lm.compartmental.components.InfectionSeedingProcess, lm.compartmental.components.InfectionSeedingParams(num_infections=50)
         ),
         # Disease transmission
-        lm.compartmental.components.InfectionProcess(model),
+        lm.compartmental.components.InfectionProcess,
         # Track states over time
-        lm.compartmental.components.StateTracker(model),
+        lm.compartmental.components.StateTracker,
     ]
 
     # Add PIRI component if requested
@@ -133,7 +133,7 @@ def run_simulation(use_piri: bool = True, num_ticks: int = 730) -> tuple:
             boost_duration=30,  # Month-long campaigns
             start_day=90,  # Start after 3 months
         )
-        components.append(PIRIProcess(model, piri_params))
+        components.append(lm.create_component(PIRIProcess, piri_params))
 
     model.components = components
 
@@ -142,7 +142,12 @@ def run_simulation(use_piri: bool = True, num_ticks: int = 730) -> tuple:
 
     # Get results
     state_tracker = model.get_instance(lm.compartmental.components.StateTracker)[0]
-    results = state_tracker.get_state_counts()
+    results_df = state_tracker.get_dataframe()
+    
+    # Pivot to get state counts over time (tick, S, E, I, R format)
+    results = results_df.pivot(index="tick", on="state", values="count").with_columns(
+        pl.col("tick").cast(pl.Int32)
+    )
 
     return model, results
 
@@ -189,7 +194,8 @@ attack_rate_with_piri = (final_with_piri["R"][0] / total_pop) * 100
 print("\nAttack Rates:")
 print(f"No PIRI:    {attack_rate_no_piri:.1f}%")
 print(f"With PIRI:  {attack_rate_with_piri:.1f}%")
-print(f"Reduction:     {attack_rate_no_piri - attack_rate_with_piri:.1f} percentage points")
+print(f"Difference:    {attack_rate_with_piri - attack_rate_no_piri:.1f} percentage points")
+print("Note: PIRI vaccinations move people directly to R, so final R includes both\nnatural infections and vaccinations.")
 
 # %%
 # Find peak infections
@@ -213,8 +219,10 @@ print(f"Reduction:     {peak_no_piri - peak_with_piri:,} ({100 * (peak_no_piri -
 # 5. **Stochastic Sampling**: Use binomial distribution for realistic vaccination
 # 6. **Timing Logic**: Implement periodic behavior using modulo arithmetic
 #
-# The PIRI component successfully reduces both peak infections and overall
-# attack rates, demonstrating the public health impact of vaccination campaigns.
+# The PIRI component successfully reduces peak infections, demonstrating the public health
+# impact of vaccination campaigns. While the final recovered population is higher with PIRI
+# (because vaccinated individuals move directly to R), the key benefit is reduced peak
+# infections, which prevents healthcare system overload.
 
 # %% [markdown]
 # ## Best Practices
