@@ -64,13 +64,9 @@ Project Information
    :maxdepth: 2
    :hidden:
 
-   installation
    usage
    tutorials
    api/index
-   contributing
-   authors
-   changelog
 
 ----
 
