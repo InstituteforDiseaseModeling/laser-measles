@@ -11,7 +11,7 @@ def test_compute():
 def test_laserframe():
     # Declare a very simple Model class to house our model pieces.
     class Model:
-        pass
+        population: LaserFrame
 
     model = Model()
     # Create the agent population with max size 1000

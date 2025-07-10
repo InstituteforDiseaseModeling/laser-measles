@@ -125,7 +125,10 @@ def create_component(component_class: type[T], params: BaseModel | None = None) 
                 self.params = params
 
         def __call__(self, model: Any, verbose: bool = False) -> T:
-            return self.component_class(model, params=self.params, verbose=verbose)
+            if hasattr(self, 'params'):
+                return self.component_class(model, params=self.params, verbose=verbose)
+            else:
+                return self.component_class(model, verbose=verbose)
 
         def __str__(self) -> str:
             return f"<{self.component_class.__name__} factory>"

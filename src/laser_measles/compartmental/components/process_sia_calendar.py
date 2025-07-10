@@ -3,6 +3,8 @@ Component for implementing Supplementary Immunization Activities (SIAs) based on
 """
 
 from collections.abc import Callable
+from datetime import datetime
+from datetime import timedelta
 
 import numpy as np
 import polars as pl
@@ -76,6 +78,15 @@ class SIACalendarProcess(BasePhase):
         # Track which SIAs have been implemented
         self.implemented_sias = set()
 
+        # Store start date for compatibility with tests
+        self.start_date = model.start_time
+        
+        # Store a copy of the original schedule for get_sia_schedule method
+        self._original_schedule = self.params.sia_schedule.clone()
+        
+        # Convert string dates in SIA schedule to datetime objects for comparison
+        self._convert_schedule_dates()
+
         if self.verbose:
             print(f"SIACalendar initialized with {len(self.node_mapping)} groups")
 
@@ -89,12 +100,32 @@ class SIACalendarProcess(BasePhase):
         if not all(col in self.params.sia_schedule.columns for col in required_columns):
             raise ValueError(f"sia_schedule must contain columns: {required_columns}")
 
+    def _convert_schedule_dates(self) -> None:
+        """Convert string dates in SIA schedule to datetime objects for comparison."""
+        if len(self.params.sia_schedule) == 0:
+            # For empty DataFrames, ensure the date column has the correct type
+            if self.params.date_column in self.params.sia_schedule.columns:
+                self.params.sia_schedule = self.params.sia_schedule.with_columns(
+                    pl.col(self.params.date_column).cast(pl.Datetime)
+                )
+            return
+            
+        # Convert string dates to datetime objects
+        self.params.sia_schedule = self.params.sia_schedule.with_columns(
+            pl.col(self.params.date_column).str.strptime(pl.Datetime, "%Y-%m-%d")
+        )
+
+    def _tick_to_date(self, tick: int) -> datetime:
+        """Convert tick number to datetime."""
+        return self.start_date + timedelta(days=tick)
+
     def __call__(self, model: CompartmentalModel, tick: int) -> None:
         # Get current state counts
         states = model.patches.states
 
         # Check for SIAs scheduled for dates up to and including the current date
-        current_date = model.current_date
+        # Calculate current date based on tick number and model's time step
+        current_date = model.start_time + timedelta(days=tick * model.params.time_step_days)
         sia_schedule = self.params.sia_schedule.filter(pl.col(self.params.date_column) <= current_date)
 
         # If no SIAs are scheduled, do nothing
@@ -150,4 +181,4 @@ class SIACalendarProcess(BasePhase):
             - {group_column}: Group identifier
             - {date_column}: Scheduled date for SIA
         """
-        return self.params.sia_schedule
+        return self._original_schedule
