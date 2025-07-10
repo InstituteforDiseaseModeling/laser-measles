@@ -8,7 +8,7 @@
 # ## Core Concepts
 #
 # ### Model Seeding
-# 
+#
 # All laser-measles models automatically seed their random number generator from the `seed` parameter.
 # If no seed is provided, the model uses the current microsecond timestamp.
 
@@ -45,7 +45,7 @@ print(f"PRNG type: {type(prng)}")
 print(f"Available methods: {len([m for m in dir(prng) if not m.startswith('_')])} methods")
 
 # Some key methods available
-print("Key methods:", ['random', 'binomial', 'poisson', 'normal', 'exponential', 'lognormal'])
+print("Key methods:", ["random", "binomial", "poisson", "normal", "exponential", "lognormal"])
 
 # %% [markdown]
 # ### Reproducible Random Numbers
@@ -62,7 +62,7 @@ model2 = CompartmentalModel(scenario, CompartmentalParams(seed=123, num_ticks=10
 
 # Draw random numbers from each model
 random1 = model1.prng.random(5)
-random2 = model2.prng.random(5) 
+random2 = model2.prng.random(5)
 
 print("Model 1 random numbers:", random1)
 print("Model 2 random numbers:", random2)
@@ -76,6 +76,7 @@ print("Are they identical?", np.allclose(random1, random2))
 # Components should use `model.prng` for random number generation to maintain reproducibility.
 # This is how the biweekly infection process samples new infections:
 
+
 # %%
 # Example from biweekly infection process
 def simulate_infections(model, susceptible_count, infection_probability):
@@ -83,6 +84,7 @@ def simulate_infections(model, susceptible_count, infection_probability):
     # Use model.prng.binomial for stochastic sampling
     new_infections = model.prng.binomial(susceptible_count, infection_probability)
     return new_infections
+
 
 # Demonstrate with our model
 S = np.array([5000, 3000, 2000])  # Susceptible counts
@@ -100,19 +102,21 @@ print("New infections by patch:", new_infections)
 # %%
 import numba as nb
 
+
 @nb.njit
 def sample_exposure_times(count, mu, sigma):
     """Sample exposure times using lognormal distribution"""
     # Use np.random directly in numba functions
     return np.maximum(1, np.round(np.random.lognormal(mu, sigma, count)))
 
+
 # Example parameters from ABM transmission
 exp_mu = 6.0  # Mean exposure time
 exp_sigma = 2.0  # Standard deviation
 
-# Convert to lognormal parameters  
+# Convert to lognormal parameters
 mu_underlying = np.log(exp_mu**2 / np.sqrt(exp_mu**2 + exp_sigma**2))
-sigma_underlying = np.sqrt(np.log(1 + (exp_sigma / exp_mu)**2))
+sigma_underlying = np.sqrt(np.log(1 + (exp_sigma / exp_mu) ** 2))
 
 # Set numpy seed for reproducibility
 np.random.seed(42)
@@ -124,23 +128,25 @@ print("Exposure times (days):", exposure_times)
 #
 # Real components often combine both approaches. Here's how the ABM transmission process works:
 
+
 # %%
 def transmission_example(model, forces, susceptible_agents):
     """Example showing mixed random number usage"""
-    
+
     # Use model.prng for high-level decisions
     seasonal_factor = 1 + 0.1 * np.sin(2 * np.pi * model.time_elapsed() / 365)
-    
+
     # Simulate infections using model.prng
     infected_mask = model.prng.random(len(susceptible_agents)) < forces[susceptible_agents]
     newly_infected = susceptible_agents[infected_mask]
-    
+
     # Use np.random for detailed parameters (compatible with numba)
     if len(newly_infected) > 0:
         exposure_times = sample_exposure_times(len(newly_infected), mu_underlying, sigma_underlying)
         print(f"Infected {len(newly_infected)} agents with exposure times: {exposure_times}")
-    
+
     return newly_infected
+
 
 # Simulate with dummy data
 susceptible_agents = np.array([0, 1, 2, 3, 4])
@@ -169,28 +175,30 @@ print("Newly infected agents:", infected)
 #
 # Always test that your models produce identical results with the same seed:
 
+
 # %%
 def test_reproducibility():
     """Test that models with same seed produce identical results"""
-    
+
     # Run same model twice with same seed
     results1 = []
     results2 = []
-    
+
     for seed in [42, 123, 456]:
         model_a = CompartmentalModel(scenario, CompartmentalParams(seed=seed, num_ticks=10))
         model_b = CompartmentalModel(scenario, CompartmentalParams(seed=seed, num_ticks=10))
-        
+
         # Sample some random numbers
         result_a = model_a.prng.random(5)
         result_b = model_b.prng.random(5)
-        
+
         results1.append(result_a)
         results2.append(result_b)
-    
+
     # Check all results are identical
-    for i, (r1, r2) in enumerate(zip(results1, results2)):
-        print(f"Seed test {i+1}: {'PASS' if np.allclose(r1, r2) else 'FAIL'}")
+    for i, (r1, r2) in enumerate(zip(results1, results2, strict=False)):
+        print(f"Seed test {i + 1}: {'PASS' if np.allclose(r1, r2) else 'FAIL'}")
+
 
 test_reproducibility()
 
@@ -199,11 +207,13 @@ test_reproducibility()
 #
 # When using numba, set numpy's global seed before calling compiled functions:
 
+
 # %%
 @nb.njit
 def numba_random_example(n):
     """Example numba function using random numbers"""
     return np.random.exponential(2.0, n)
+
 
 # Set seed before calling numba function
 np.random.seed(789)

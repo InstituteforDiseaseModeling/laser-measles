@@ -17,6 +17,7 @@
 
 # %%
 import numpy as np
+
 from laser_measles.utils import StateArray
 
 # %% [markdown]
@@ -32,11 +33,13 @@ num_patches = 3
 num_states = 3
 
 # Create underlying numpy array
-data = np.array([
-    [1000, 800, 1200],  # Susceptible population in each patch
-    [10, 20, 5],        # Infectious population in each patch
-    [0, 0, 0]           # Recovered population in each patch
-])
+data = np.array(
+    [
+        [1000, 800, 1200],  # Susceptible population in each patch
+        [10, 20, 5],  # Infectious population in each patch
+        [0, 0, 0],  # Recovered population in each patch
+    ]
+)
 
 # Wrap with StateArray
 states = StateArray(data, state_names=["S", "I", "R"])

@@ -6,6 +6,7 @@ Solves for the time at which the number of infected individuals is half the popu
 t_2 = 1 / beta * np.log(pop_size / i0 - 1)
 
 """
+
 import importlib
 
 import numpy as np
@@ -28,6 +29,7 @@ def SI_logistic_half_life(pop_size: int, beta: float, i0: int = 1) -> float:
     """
     return 1 / beta * np.log(pop_size / i0 - 1)
 
+
 class ConvertToSI(BasePhase):
     """
     Converts SEIR model to SI by removing E and R compartments.
@@ -45,8 +47,8 @@ class ConvertToSI(BasePhase):
             states.I += states.R  # Move R to I
             states.R = 0
 
-def single_test(MeaslesModel, problem_params, measles_module):
 
+def single_test(MeaslesModel, problem_params, measles_module):
     scenario = pl.DataFrame(
         {
             "id": ["node_0"],

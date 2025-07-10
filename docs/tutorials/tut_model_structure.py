@@ -21,16 +21,13 @@
 # The `patches` use a `BasePatchLaserFrame` (or child class) for population-level aggregates:
 
 # %%
+import polars as pl
+
 from laser_measles.compartmental import CompartmentalModel
 from laser_measles.compartmental.params import CompartmentalParams
-import polars as pl
+
 # Create a simple scenario
-scenario = pl.DataFrame({
-    'patch_id': [1, 2, 3],
-    'pop': [1000, 2000, 1500],
-    'lat': [40.0, 41.0, 42.0],
-    'lon': [-74.0, -73.0, -72.0]
-})
+scenario = pl.DataFrame({"patch_id": [1, 2, 3], "pop": [1000, 2000, 1500], "lat": [40.0, 41.0, 42.0], "lon": [-74.0, -73.0, -72.0]})
 
 # Initialize compartmental model
 params = CompartmentalParams(num_ticks=100)
@@ -61,8 +58,8 @@ print(comp_model)
 
 # %%
 from laser_measles.abm import ABMModel
-from laser_measles.abm.params import ABMParams
 from laser_measles.abm.components import TransmissionProcess
+from laser_measles.abm.params import ABMParams
 
 # Initialize ABM model
 abm_params = ABMParams(num_ticks=100)

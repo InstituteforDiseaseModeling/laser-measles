@@ -23,7 +23,7 @@ class ABMModel(BaseLaserModel[BaseABMScenario | pl.DataFrame, ABMParams]):
     """
 
     people: PeopleLaserFrame
-    
+
     # Specify the scenario wrapper class for auto-wrapping DataFrames
     scenario_wrapper_class = BaseABMScenario
 
