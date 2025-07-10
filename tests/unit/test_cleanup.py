@@ -29,9 +29,11 @@ def create_test_scenario():
 def create_abm_scenario():
     """Create a small test scenario for ABM model."""
     data = {
-        "population": np.random.randint(1000, 5000, 10),
-        "latitude": np.random.uniform(-10, 10, 10),
-        "longitude": np.random.uniform(-10, 10, 10),
+        "id": [f"patch_{i}" for i in range(10)],
+        "pop": np.random.randint(1000, 5000, 10),
+        "lat": np.random.uniform(-10, 10, 10),
+        "lon": np.random.uniform(-10, 10, 10),
+        "mcv1": np.random.uniform(0.5, 0.9, 10),
     }
     return pl.DataFrame(data)
 
@@ -57,7 +59,7 @@ class TestModelCleanup:
     def test_generic_model_has_cleanup(self):
         """Test that Generic Model has cleanup method."""
         scenario = create_abm_scenario()
-        abm_params = ABMParams(seed=42, nticks=4, start_time="2020-01")
+        abm_params = ABMParams(seed=42, num_ticks=4, start_time="2020-01")
 
         model = ABMModel(scenario, abm_params, name="test_generic")
 
@@ -89,7 +91,7 @@ class TestModelCleanup:
     def test_generic_model_cleanup_clears_laserframes(self):
         """Test that cleanup properly clears LaserFrame objects in generic model."""
         scenario = create_abm_scenario()
-        abm_params = ABMParams(seed=42, nticks=4, start_time="2020-01")
+        abm_params = ABMParams(seed=42, num_ticks=4, start_time="2020-01")
 
         model = ABMModel(scenario, abm_params, name="test_cleanup")
 
