@@ -1,4 +1,3 @@
-# ruff: noqa: I001, E402
 # %% [markdown]
 # # Model structure
 #
