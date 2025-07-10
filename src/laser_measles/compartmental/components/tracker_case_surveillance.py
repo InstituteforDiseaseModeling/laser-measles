@@ -7,7 +7,6 @@ from collections.abc import Callable
 import matplotlib.pyplot as plt
 import numpy as np
 import polars as pl
-import seaborn as sns
 from matplotlib.figure import Figure
 from pydantic import BaseModel
 from pydantic import Field
@@ -180,7 +179,16 @@ class CaseSurveillanceTracker(BasePhase):
             ax = fig.gca()
 
         # Create heatmap with log scale
-        sns.heatmap(np.log1p(pivot_df), cmap="viridis", ax=ax, cbar_kws={"label": "log(cases + 1)"})
+        heatmap_data = np.log1p(pivot_df.values)
+        im = ax.imshow(heatmap_data, aspect='auto', cmap="viridis")
+        cbar = fig.colorbar(im, ax=ax)
+        cbar.set_label("log(cases + 1)")
+
+        # Set axis ticks and labels
+        ax.set_xticks(np.arange(pivot_df.shape[1]))
+        ax.set_xticklabels(pivot_df.columns)
+        ax.set_yticks(np.arange(pivot_df.shape[0]))
+        ax.set_yticklabels(pivot_df.index)
 
         # Customize plot
         ax.set_title("Log Cases Heatmap")
@@ -188,7 +196,7 @@ class CaseSurveillanceTracker(BasePhase):
         ax.set_ylabel("Location ID")
 
         # Rotate x-axis labels for better readability
-        plt.xticks(rotation=45)
+        plt.setp(ax.get_xticklabels(), rotation=45, ha="right", rotation_mode="anchor")
 
         # Adjust layout to prevent label cutoff
         plt.tight_layout()
