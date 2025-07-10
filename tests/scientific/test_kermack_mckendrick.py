@@ -8,6 +8,7 @@ z = 1 - exp(-R0 * z)
 This test validates that the model simulations converge to the theoretical
 final outbreak size for epidemic scenarios.
 """
+
 import importlib
 
 import numpy as np
@@ -17,13 +18,8 @@ from laser_core import PropertySet
 from scipy.optimize import fsolve
 
 import laser_measles as lm
-from laser_measles.base import BaseLaserModel
 
-MEASLES_MODULES = [
-    "laser_measles.abm",
-    "laser_measles.biweekly", 
-    "laser_measles.compartmental"
-]
+MEASLES_MODULES = ["laser_measles.abm", "laser_measles.biweekly", "laser_measles.compartmental"]
 SEED = np.random.randint(1000000)
 RNG = np.random.default_rng(SEED)
 
@@ -31,27 +27,27 @@ RNG = np.random.default_rng(SEED)
 def SIR_final_outbreak_size(R0: float) -> float:
     """
     Calculate the theoretical final outbreak size for an SIR epidemic.
-    
+
     Solves the implicit equation: z = 1 - exp(-R0 * z)
     where z is the fraction of the population that gets infected.
-    
+
     Args:
         R0: Basic reproduction number
-        
+
     Returns:
         Final outbreak size as fraction of population
     """
     if R0 <= 1.0:
         return 0.0
-    
+
     # Initial guess for z
     z0 = 1.0 - 1.0 / R0  # Rough approximation
-    
+
     # Solve z = 1 - exp(-R0 * z)
     # Rearranged as: z - 1 + exp(-R0 * z) = 0
     def equation(z):
         return z - 1 + np.exp(-R0 * z)
-    
+
     solution = fsolve(equation, z0)[0]
     return max(0.0, min(1.0, solution))  # Clamp to [0, 1]
 
@@ -76,33 +72,19 @@ def single_test(MeaslesModel, problem_params, measles_module):
     else:
         num_ticks = problem_params["num_days"]
 
-    params = MeaslesModel.Params(
-        num_ticks=num_ticks, 
-        start_time="2001-01", 
-        seed=RNG.integers(1000000)
-    )
+    params = MeaslesModel.Params(num_ticks=num_ticks, start_time="2001-01", seed=RNG.integers(1000000))
 
     # Create model
     model = MeaslesModel.Model(params=params, scenario=scenario)
 
     # Set up components for epidemic simulation
-    transmission_params = MeaslesModel.components.InfectionParams(
-        beta=problem_params["beta"]
-    )
-    seeding_params = MeaslesModel.components.InfectionSeedingParams(
-        num_infections=problem_params["initial_infections"]
-    )
-    
+    transmission_params = MeaslesModel.components.InfectionParams(beta=problem_params["beta"])
+    seeding_params = MeaslesModel.components.InfectionSeedingParams(num_infections=problem_params["initial_infections"])
+
     model.components = [
         MeaslesModel.components.StateTracker,
-        lm.create_component(
-            MeaslesModel.components.InfectionSeedingProcess, 
-            params=seeding_params
-        ),
-        lm.create_component(
-            MeaslesModel.components.InfectionProcess, 
-            params=transmission_params
-        ),
+        lm.create_component(MeaslesModel.components.InfectionSeedingProcess, params=seeding_params),
+        lm.create_component(MeaslesModel.components.InfectionProcess, params=transmission_params),
     ]
 
     # Run model
@@ -129,15 +111,13 @@ def single_test(MeaslesModel, problem_params, measles_module):
 
 
 @pytest.mark.slow
-@pytest.mark.parametrize("measles_module,num_reps", [
-    ("laser_measles.abm", 5),
-    ("laser_measles.biweekly", 5),
-    ("laser_measles.compartmental", 5)
-])
+@pytest.mark.parametrize(
+    "measles_module,num_reps", [("laser_measles.abm", 5), ("laser_measles.biweekly", 5), ("laser_measles.compartmental", 5)]
+)
 def test_final_outbreak_size(measles_module, num_reps):
     """
     Test final outbreak size against Kermack-McKendrick theoretical prediction.
-    
+
     This test simulates a measles-like epidemic and compares the final outbreak
     size with the theoretical prediction from the Kermack-McKendrick model.
     """
@@ -147,7 +127,7 @@ def test_final_outbreak_size(measles_module, num_reps):
     infectious_period = 14  # days
     incubation_period = 10  # days (for SEIR models)
     R0 = 7.0  # typical for measles
-    
+
     # Calculate transmission rate
     # For SIR: beta = R0 / infectious_period
     # For SEIR: beta = R0 / infectious_period (same, gamma handles the rest)
@@ -169,9 +149,9 @@ def test_final_outbreak_size(measles_module, num_reps):
 
     mean_error = np.mean(rel_errors)
     std_error = np.std(rel_errors)
-    
+
     print(f"Relative error: {mean_error:.4f} ± {std_error:.4f}")
-    
+
     # Different error tolerances for different model types
     if "abm" in measles_module:
         assert mean_error < 0.03, f"ABM relative error: {mean_error:.4f} (max 0.03)"
