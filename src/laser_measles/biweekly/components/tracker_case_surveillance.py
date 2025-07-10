@@ -3,7 +3,6 @@ from collections.abc import Callable
 import matplotlib.pyplot as plt
 import numpy as np
 import polars as pl
-import seaborn as sns
 from matplotlib.figure import Figure
 from pydantic import BaseModel
 from pydantic import Field
@@ -139,8 +138,8 @@ class CaseSurveillanceTracker(BasePhase):
         else:
             # For each tick and node, add the reported cases
             for tick in range(self.model.params.num_ticks):
-                for node_idx, node_id in enumerate(self.node_indices):
-                    data.append({"tick": tick, "node_id": self.model.scenario["id"][node_id], "cases": self.reported_cases[tick, node_idx]})
+                for node_pos, node_idx in enumerate(self.node_indices):
+                    data.append({"tick": tick, "node_id": self.model.scenario["id"][node_idx], "cases": self.reported_cases[tick, node_pos]})
 
         # Create DataFrame
         return pl.DataFrame(data)
@@ -148,7 +147,7 @@ class CaseSurveillanceTracker(BasePhase):
     def initialize(self, model: BaseLaserModel) -> None:
         pass
 
-    def plot(self, fig: Figure = None):
+    def plot(self, fig: Figure | None = None):
         """Create a heatmap visualization of log(cases+1) over time.
 
         Args:
@@ -176,7 +175,16 @@ class CaseSurveillanceTracker(BasePhase):
             ax = fig.gca()
 
         # Create heatmap with log scale
-        sns.heatmap(np.log1p(pivot_df), cmap="viridis", ax=ax, cbar_kws={"label": "log(cases + 1)"})
+        heatmap_data = np.log1p(pivot_df.values)
+        im = ax.imshow(heatmap_data, aspect='auto', cmap="viridis")
+        cbar = fig.colorbar(im, ax=ax)
+        cbar.set_label("log(cases + 1)")
+
+        # Set axis ticks and labels
+        ax.set_xticks(np.arange(pivot_df.shape[1]))
+        ax.set_xticklabels(pivot_df.columns)
+        ax.set_yticks(np.arange(pivot_df.shape[0]))
+        ax.set_yticklabels(pivot_df.index)
 
         # Customize plot
         ax.set_title("Log Cases Heatmap")
@@ -184,7 +192,7 @@ class CaseSurveillanceTracker(BasePhase):
         ax.set_ylabel("Location ID")
 
         # Rotate x-axis labels for better readability
-        plt.xticks(rotation=45)
+        plt.setp(ax.get_xticklabels(), rotation=45, ha="right", rotation_mode="anchor")
 
         # Adjust layout to prevent label cutoff
         plt.tight_layout()
