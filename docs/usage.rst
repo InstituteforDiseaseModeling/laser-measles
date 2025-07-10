@@ -37,16 +37,12 @@ For development installation with all dependencies (recommended: use `uv` for fa
     # Alternative: using pip
     pip install -e ".[dev]"
 
-**Dependencies:**
+**Major Dependencies:**
 
 * ``laser-core>=0.5.1``: Core LASER framework
 * ``pydantic>=2.11.5``: Parameter validation and serialization
 * ``polars>=1.30.0``: High-performance data manipulation
 * ``alive-progress>=3.2.0``: Progress bars and status indicators
-* ``typer>=0.12.0``: CLI framework for command-line interfaces
-* ``sciris>=3.2.1``: Scientific computing utilities
-* ``requests>=2.32.3``: HTTP requests for data fetching
-* ``pyarrow>=20.0.0``: Arrow columnar data format
 * ``rastertoolkit>=0.3.11``: Raster data processing utilities
 * ``patito>=0.8.3``: Polars DataFrame validation
 
@@ -244,17 +240,14 @@ laser-measles is optimized for performance through several technical approaches:
 **LaserFrame Architecture:**
     High-performance array-based structure for agent populations, built on the LASER framework
 
-**Cython/C Extensions:**
-    Performance-critical operations implemented in Cython and compiled to C extensions for maximum speed
+**numba JIT Compilation:**
+    Performance-critical operations implemented in numba for maximum speed
 
 **Polars DataFrames:**
     Efficient data manipulation using Polars for biweekly model operations with Arrow backend
 
 **Component Modularity:**
     Modular architecture allows for selective component usage and optimization
-
-**CLI Framework:**
-    Built-in command-line interface using Typer for model execution and configuration
 
 **Progress Tracking:**
     Integrated progress bars using alive-progress for long-running simulations
@@ -302,38 +295,3 @@ The component system provides a uniform interface for disease dynamics with inte
     
     # Add to model
     model.components = [MyInfectionProcess]
-
-Command-Line Interface
-~~~~~~~~~~~~~~~~~~~~~~
-
-laser-measles provides a command-line interface built with Typer for model execution and configuration management.
-
-**Usage:**
-
-.. code-block:: bash
-
-    # Run using Python module
-    python -m laser_measles --help
-    
-    # Direct model execution (if installed)
-    laser-measles --help
-
-**CLI Features:**
-
-* **Model configuration**: Configure model parameters via command-line arguments
-* **Batch execution**: Run multiple scenarios with different parameter sets
-* **Output management**: Control result output formats and locations
-* **Development workflow**: Integrated with development tools for testing and validation
-
-**Common Commands:**
-
-.. code-block:: bash
-
-    # Run a specific model configuration
-    python -m laser_measles run --model abm --config config.json
-    
-    # View available models and parameters
-    python -m laser_measles list-models
-    
-    # Generate example configuration
-    python -m laser_measles generate-config --model biweekly
