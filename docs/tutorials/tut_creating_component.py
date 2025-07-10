@@ -6,12 +6,12 @@
 
 # %%
 import polars as pl
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
+from pydantic import Field
 
 import laser_measles as lm
 from laser_measles.base import BasePhase
 from laser_measles.utils import cast_type
-
 
 # %% [markdown]
 # ## Component Architecture
@@ -142,11 +142,9 @@ def run_simulation(use_piri: bool = True, num_ticks: int = 730) -> tuple:
     # Get results
     state_tracker = model.get_instance(lm.compartmental.components.StateTracker)[0]
     results_df = state_tracker.get_dataframe()
-    
+
     # Pivot to get state counts over time (tick, S, E, I, R format)
-    results = results_df.pivot(index="tick", on="state", values="count").with_columns(
-        pl.col("tick").cast(pl.Int32)
-    )
+    results = results_df.pivot(index="tick", on="state", values="count").with_columns(pl.col("tick").cast(pl.Int32))
 
     return model, results
 
