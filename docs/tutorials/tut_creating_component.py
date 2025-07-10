@@ -114,6 +114,8 @@ class PIRIProcess(BasePhase):
 
 
 # %%
+import numpy as np
+RNG = np.random.default_rng(42)
 def run_simulation(use_piri: bool = True, num_ticks: int = 365*10) -> tuple:
     """Run a simulation with or without the PIRI component."""
 
@@ -121,7 +123,7 @@ def run_simulation(use_piri: bool = True, num_ticks: int = 365*10) -> tuple:
     scenario = lm.compartmental.BaseScenario(lm.scenarios.synthetic.single_patch_scenario(population=1_00_000, mcv1_coverage=0.5))
 
     # Create model parameters
-    params = lm.compartmental.CompartmentalParams(num_ticks=num_ticks, verbose=False, seed=42)
+    params = lm.compartmental.CompartmentalParams(num_ticks=num_ticks, verbose=False, seed=RNG.integers(0, 1000000))
 
     # Create and configure model
     model = lm.compartmental.CompartmentalModel(scenario, params)
@@ -149,9 +151,9 @@ def run_simulation(use_piri: bool = True, num_ticks: int = 365*10) -> tuple:
     # Add PIRI component if requested
     if use_piri:
         piri_params = PIRIParams(
-            mcv1_boost=1.00,  # 20% increase in MCV1 coverage
+            mcv1_boost=0.40,  # 20% increase in MCV1 coverage
             boost_interval=365,  # Annual campaigns
-            boost_duration=300,  # Month-long campaigns
+            boost_duration=90,  # Month-long campaigns
             start_day=0,  # Start at the beginning
         )
         components.append(lm.create_component(PIRIProcess, piri_params))
@@ -199,13 +201,13 @@ final_with_piri = results_with_piri.tail(1)
 print(f"\nFinal Results (Day {final_no_piri['tick'][0]}):")
 print(f"{'Metric':<20} {'No PIRI':<15} {'With PIRI':<15} {'Difference':<15}")
 print("-" * 65)
+no_piri_val = cases_no_piri['cases'].sum()
+with_piri_val = cases_with_piri['cases'].sum()
+difference = with_piri_val - no_piri_val
 
-for state in ["S", "E", "I", "R"]:
-    no_piri_val = final_no_piri[state][0]
-    with_piri_val = final_with_piri[state][0]
-    difference = with_piri_val - no_piri_val
+print(f"{'cases' + ' (final)':<20} {no_piri_val:<15,} {with_piri_val:<15,} {difference:<15,}")
 
-    print(f"{state + ' (final)':<20} {no_piri_val:<15,} {with_piri_val:<15,} {difference:<15,}")
+
 
 # %%
 # Find peak infections
