@@ -14,9 +14,9 @@ from laser_measles.utils import cast_type
 class ImportationPressureParams(BaseModel):
     """Parameters specific to the importation pressure component."""
 
-    crude_importation_rate: float = Field(1.0, description="Yearly crude importation rate per 1k population", ge=0.0)
-    importation_start: int = Field(0, description="Start time for importation (in days)", ge=0)
-    importation_end: int = Field(-1, description="End time for importation (in days)", ge=-1)
+    crude_importation_rate: float = Field(default=1.0, description="Yearly crude importation rate per 1k population", ge=0.0)
+    importation_start: int = Field(default=0, description="Start time for importation (in days)", ge=0)
+    importation_end: int = Field(default=-1, description="End time for importation (in days)", ge=-1)
 
     @field_validator("importation_end")
     @classmethod

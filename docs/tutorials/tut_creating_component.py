@@ -208,19 +208,6 @@ for state in ["S", "E", "I", "R"]:
     print(f"{state + ' (final)':<20} {no_piri_val:<15,} {with_piri_val:<15,} {difference:<15,}")
 
 # %%
-# Calculate attack rates (fraction of population that got infected)
-total_pop = 100_000
-
-attack_rate_no_piri = (final_no_piri["R"][0] / total_pop) * 100
-attack_rate_with_piri = (final_with_piri["R"][0] / total_pop) * 100
-
-print("\nAttack Rates:")
-print(f"No PIRI:    {attack_rate_no_piri:.1f}%")
-print(f"With PIRI:  {attack_rate_with_piri:.1f}%")
-print(f"Difference:    {attack_rate_with_piri - attack_rate_no_piri:.1f} percentage points")
-print("Note: PIRI boosts MCV1 coverage, improving newborn vaccination rates over time.")
-
-# %%
 # Find peak infections
 peak_no_piri = results_no_piri.select(pl.col("I").max()).item()
 peak_with_piri = results_with_piri.select(pl.col("I").max()).item()
