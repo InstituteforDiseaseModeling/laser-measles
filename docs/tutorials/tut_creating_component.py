@@ -1,4 +1,3 @@
-# ruff: noqa: I001
 # %% [markdown]
 # # Creating Custom Components
 #
