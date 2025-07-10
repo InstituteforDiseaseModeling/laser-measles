@@ -11,7 +11,6 @@ from pydantic import Field
 
 import laser_measles as lm
 from laser_measles.base import BasePhase
-from laser_measles.utils import cast_type
 
 # %% [markdown]
 # ## Component Architecture
@@ -25,14 +24,15 @@ from laser_measles.utils import cast_type
 # ## Creating the PIRI Component
 #
 # Let's create a component that implements Periodic Intensification of Routine Immunization (PIRI)
-# to simulate vaccination campaigns that occur every year for one month.
+# to simulate vaccination campaigns that temporarily boost MCV1 coverage for newborn vaccination.
+# Note: This requires VitalDynamicsProcess to be included in the model for births to occur.
 
 
 # %%
 class PIRIParams(BaseModel):
     """Parameters for the PIRI (Periodic Intensification of Routine Immunization) component."""
 
-    boost_strength: float = Field(default=0.15, description="Percentage increase in vaccination coverage during boost", ge=0.0, le=1.0)
+    mcv1_boost: float = Field(default=0.15, description="Temporary increase in MCV1 coverage during boost periods", ge=0.0, le=1.0)
     boost_interval: int = Field(default=365, description="Days between vaccination campaigns", gt=0)
     boost_duration: int = Field(default=30, description="Duration of vaccination campaign in days", gt=0)
     start_day: int = Field(default=90, description="Day to start first vaccination campaign", ge=0)
@@ -43,33 +43,25 @@ class PIRIProcess(BasePhase):
     Component that implements Periodic Intensification of Routine Immunization (PIRI).
 
     This component simulates vaccination campaigns that occur at regular intervals,
-    moving susceptible individuals to the recovered compartment based on boost strength.
+    temporarily boosting MCV1 coverage to improve routine immunization of newborns.
     """
 
-    def __init__(self, model, params: PIRIParams | None = None, verbose: bool = False):
+    def __init__(self, model, verbose: bool = False, params: PIRIParams | None = None):
         super().__init__(model, verbose)
         self.params = params if params is not None else PIRIParams()
+        self.original_mcv1 = None  # Store original MCV1 values
 
     def __call__(self, model, tick: int):
         """Execute vaccination campaign if within boost period."""
-        # Check if we're in a boost period
-        if not self._is_boost_active(tick):
-            return
+        is_boost_active = self._is_boost_active(tick)
 
-        # Get current states
-        states = model.patches.states
+        # If boost should be active and we haven't applied it yet
+        if is_boost_active and self.original_mcv1 is None:
+            self._apply_mcv1_boost(model, tick)
 
-        # Calculate number to vaccinate in each patch
-        # Use binomial sampling for realistic vaccination
-        susceptible_counts = states.S
-        vaccinated = cast_type(model.prng.binomial(susceptible_counts, self.params.boost_strength), states.dtype, round=True)
-
-        # Move vaccinated individuals from S to R
-        states.S -= vaccinated
-        states.R += vaccinated
-
-        if self.verbose and vaccinated.sum() > 0:
-            print(f"Day {tick}: Vaccinated {vaccinated.sum()} individuals")
+        # If boost should not be active and we have an active boost
+        elif not is_boost_active and self.original_mcv1 is not None:
+            self._restore_mcv1(model, tick)
 
     def _is_boost_active(self, tick: int) -> bool:
         """Check if current tick is within an active boost period."""
@@ -82,6 +74,32 @@ class PIRIProcess(BasePhase):
         # Check if we're in a boost period
         cycle_position = days_since_start % self.params.boost_interval
         return cycle_position < self.params.boost_duration
+
+    def _apply_mcv1_boost(self, model, tick: int):
+        """Apply temporary MCV1 boost to scenario."""
+        if "mcv1" not in model.scenario.columns:
+            raise ValueError("MCV1 column not found in scenario")
+
+        # Store original MCV1 values
+        self.original_mcv1 = model.scenario["mcv1"].clone()
+
+        # Apply boost to MCV1 coverage
+        boosted_mcv1 = (self.original_mcv1 + self.params.mcv1_boost).clip(0.0, 1.0)
+        model.scenario = model.scenario.with_columns(mcv1=boosted_mcv1)
+
+        if self.verbose:
+            boost_amount = (boosted_mcv1 - self.original_mcv1).mean()
+            print(f"Day {tick}: Applied MCV1 boost, average increase: {boost_amount:.3f}")
+
+    def _restore_mcv1(self, model, tick: int):
+        """Restore original MCV1 values after boost period."""
+        if self.original_mcv1 is not None:
+            model.scenario = model.scenario.with_columns(mcv1=self.original_mcv1)
+
+            if self.verbose:
+                print(f"Day {tick}: Restored original MCV1 coverage")
+
+            self.original_mcv1 = None
 
     def initialize(self, model):
         """Initialize component (no special initialization needed)."""
@@ -96,11 +114,11 @@ class PIRIProcess(BasePhase):
 
 
 # %%
-def run_simulation(use_piri: bool = True, num_ticks: int = 730) -> tuple:
+def run_simulation(use_piri: bool = True, num_ticks: int = 365*10) -> tuple:
     """Run a simulation with or without the PIRI component."""
 
     # Create scenario with low initial MCV1 coverage
-    scenario = lm.compartmental.BaseScenario(lm.scenarios.synthetic.single_patch_scenario(population=100_000, mcv1_coverage=0.3))
+    scenario = lm.compartmental.BaseScenario(lm.scenarios.synthetic.single_patch_scenario(population=1_00_000, mcv1_coverage=0.5))
 
     # Create model parameters
     params = lm.compartmental.CompartmentalParams(num_ticks=num_ticks, verbose=False, seed=42)
@@ -116,21 +134,25 @@ def run_simulation(use_piri: bool = True, num_ticks: int = 730) -> tuple:
         ),
         # Seed infection to start outbreak
         lm.create_component(
-            lm.compartmental.components.InfectionSeedingProcess, lm.compartmental.components.InfectionSeedingParams(num_infections=50)
+            lm.compartmental.components.ImportationPressureProcess, lm.compartmental.components.ImportationPressureParams()
         ),
+        # Vital dynamics (births/deaths) - needed for MCV1 effects
+        lm.compartmental.components.VitalDynamicsProcess,
         # Disease transmission
         lm.compartmental.components.InfectionProcess,
         # Track states over time
         lm.compartmental.components.StateTracker,
+        # Track cases over time
+        lm.create_component(lm.compartmental.components.CaseSurveillanceTracker, lm.compartmental.components.CaseSurveillanceParams(detection_rate=1.0))
     ]
 
     # Add PIRI component if requested
     if use_piri:
         piri_params = PIRIParams(
-            boost_strength=0.20,  # 20% of susceptibles vaccinated
+            mcv1_boost=1.00,  # 20% increase in MCV1 coverage
             boost_interval=365,  # Annual campaigns
-            boost_duration=30,  # Month-long campaigns
-            start_day=90,  # Start after 3 months
+            boost_duration=300,  # Month-long campaigns
+            start_day=0,  # Start at the beginning
         )
         components.append(lm.create_component(PIRIProcess, piri_params))
 
@@ -146,7 +168,11 @@ def run_simulation(use_piri: bool = True, num_ticks: int = 730) -> tuple:
     # Pivot to get state counts over time (tick, S, E, I, R format)
     results = results_df.pivot(index="tick", on="state", values="count").with_columns(pl.col("tick").cast(pl.Int32))
 
-    return model, results
+    # Get case surveillance data
+    case_tracker = model.get_instance(lm.compartmental.components.CaseSurveillanceTracker)[0]
+    cases_df = case_tracker.get_dataframe()
+
+    return model, results, cases_df
 
 
 # %% [markdown]
@@ -156,10 +182,10 @@ def run_simulation(use_piri: bool = True, num_ticks: int = 730) -> tuple:
 
 # %%
 print("Running simulation without PIRI...")
-model_no_piri, results_no_piri = run_simulation(use_piri=False)
+model_no_piri, results_no_piri, cases_no_piri = run_simulation(use_piri=False)
 
 print("Running simulation with PIRI...")
-model_with_piri, results_with_piri = run_simulation(use_piri=True)
+model_with_piri, results_with_piri, cases_with_piri = run_simulation(use_piri=True)
 
 print("\n" + "=" * 50)
 print("SIMULATION RESULTS COMPARISON")
@@ -192,7 +218,7 @@ print("\nAttack Rates:")
 print(f"No PIRI:    {attack_rate_no_piri:.1f}%")
 print(f"With PIRI:  {attack_rate_with_piri:.1f}%")
 print(f"Difference:    {attack_rate_with_piri - attack_rate_no_piri:.1f} percentage points")
-print("Note: PIRI vaccinations move people directly to R, so final R includes both\nnatural infections and vaccinations.")
+print("Note: PIRI boosts MCV1 coverage, improving newborn vaccination rates over time.")
 
 # %%
 # Find peak infections
@@ -213,13 +239,14 @@ print(f"Reduction:     {peak_no_piri - peak_with_piri:,} ({100 * (peak_no_piri -
 # 2. **Pydantic Validation**: Use Field() with constraints for robust parameter handling
 # 3. **Model Integration**: Components are added to model.components list
 # 4. **State Manipulation**: Direct access to model.patches.states for SEIR compartments
-# 5. **Stochastic Sampling**: Use binomial distribution for realistic vaccination
+# 5. **Scenario Modification**: Direct manipulation of model.scenario for dynamic coverage
 # 6. **Timing Logic**: Implement periodic behavior using modulo arithmetic
 #
-# The PIRI component successfully reduces peak infections, demonstrating the public health
-# impact of vaccination campaigns. While the final recovered population is higher with PIRI
-# (because vaccinated individuals move directly to R), the key benefit is reduced peak
-# infections, which prevents healthcare system overload.
+# The PIRI component successfully reduces peak infections by boosting MCV1 coverage,
+# demonstrating the public health impact of improving routine immunization. The enhanced
+# coverage affects newborn vaccination rates through the VitalDynamicsProcess component,
+# leading to gradual population-level immunity improvements as more immune individuals
+# are born during boost periods.
 
 # %% [markdown]
 # ## Best Practices
@@ -227,7 +254,7 @@ print(f"Reduction:     {peak_no_piri - peak_with_piri:,} ({100 * (peak_no_piri -
 # When creating components:
 # - Use Pydantic BaseModel for parameters with proper validation
 # - Inherit from BasePhase for components that run each tick
-# - Use model.prng for reproducible random number generation
+# - Store original values when making temporary modifications
 # - Include verbose logging for debugging
 # - Follow Google docstring conventions
 # - Test components with simple scenarios first
