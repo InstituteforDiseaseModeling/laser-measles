@@ -1,4 +1,3 @@
-# ruff: noqa: E402
 # %% [markdown]
 # # Creating and running models
 #
