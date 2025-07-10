@@ -6,41 +6,8 @@ API reference
 
 This page lists laser-measles's API.
 
-Core Framework
-==============
-
-Base Classes
-------------
-
-Foundation classes that provide the component architecture:
-
-.. autosummary::
-   :toctree: _autosummary
-   :template: custom-function-template.rst
-   :nosignatures:
-
-   base.BaseComponent
-   base.BaseLaserModel
-
-
-Utilities
----------
-
-Core utilities and computation functions:
-
-.. autosummary::
-   :toctree: _autosummary
-   :template: custom-function-template.rst
-   :nosignatures:
-
-   create_component
-   pretty_laserframe
-
-----
-
-
 ABM Model
-=============
+=========
 
 .. currentmodule:: laser_measles.abm
 
@@ -56,10 +23,9 @@ Agent based model
 
    model
    params
-   core
+   base
    utils
    cli
-
 
 Processes
 ---------
@@ -71,8 +37,16 @@ Components that modify population states and drive model dynamics:
    :template: custom-function-template.rst
    :nosignatures:
 
+   components.VitalDynamicsProcess
+   components.TransmissionProcess
+   components.NoBirthsProcess
+   components.InfectionSeedingProcess
    components.InfectionProcess
+   components.DiseaseProcess
    components.ConstantPopProcess
+   components.ImportationPressureProcess
+   components.InfectRandomAgentsProcess
+   components.InfectAgentsInPatchProcess
 
 Trackers
 --------
@@ -84,18 +58,20 @@ Components that monitor and record model state for analysis:
    :template: custom-function-template.rst
    :nosignatures:
 
-   components.StatesTracker
+   components.StateTracker
    components.PopulationTracker
 
 ----
 
-Biweekly Model
-==============
+Compartmental Model
+===================
 
-.. currentmodule:: laser_measles.biweekly
+.. currentmodule:: laser_measles.compartmental
 
 Core Model
 ----------
+
+Compartmental model with daily timesteps
 
 .. autosummary::
    :toctree: _autosummary
@@ -116,6 +92,59 @@ Components that modify population states and drive model dynamics:
    :template: custom-function-template.rst
    :nosignatures:
 
+   components.InitializeEquilibriumStatesProcess
+   components.InfectionSeedingProcess
+   components.InfectionProcess
+   components.ImportationPressureProcess
+   components.VitalDynamicsProcess
+   components.SIACalendarProcess
+
+Trackers
+--------
+
+Components that monitor and record model state for analysis:
+
+.. autosummary::
+   :toctree: _autosummary
+   :template: custom-function-template.rst
+   :nosignatures:
+
+   components.StateTracker
+   components.CaseSurveillanceTracker
+
+----
+
+Biweekly Model
+==============
+
+.. currentmodule:: laser_measles.biweekly
+
+Core Model
+----------
+
+Compartmental model with 2-week timesteps
+
+.. autosummary::
+   :toctree: _autosummary
+   :template: custom-function-template.rst
+   :nosignatures:
+
+   model
+   params
+   base
+
+Processes
+---------
+
+Components that modify population states and drive model dynamics:
+
+.. autosummary::
+   :toctree: _autosummary
+   :template: custom-function-template.rst
+   :nosignatures:
+
+   components.InitializeEquilibriumStatesProcess
+   components.InfectionSeedingProcess
    components.InfectionProcess
    components.VitalDynamicsProcess
    components.ImportationPressureProcess
@@ -147,6 +176,40 @@ Biweekly model utilities and mixing functions:
 
    mixing
 
+----
+
+Core Framework
+==============
+
+.. currentmodule:: laser_measles
+
+Base Classes
+------------
+
+Foundation classes that provide the component architecture:
+
+.. autosummary::
+   :toctree: _autosummary
+   :template: custom-function-template.rst
+   :nosignatures:
+
+   base.BaseComponent
+   base.BaseLaserModel
+
+Utilities
+---------
+
+Core utilities and computation functions:
+
+.. autosummary::
+   :toctree: _autosummary
+   :template: custom-function-template.rst
+   :nosignatures:
+
+   create_component
+   pretty_laserframe
+
+----
 
 Demographics Package
 ====================
