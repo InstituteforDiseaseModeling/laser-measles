@@ -31,7 +31,7 @@ scenario = pl.DataFrame({"id": ['1', '2', '3'],
                         "pop": [1000, 2000, 1500],
                         "lat": [40.0, 41.0, 42.0],
                         "lon": [-74.0, -73.0, -72.0],
-                        "mcv1": [0,0,0]})
+                        "mcv1": [0.0,0.0,0.0]})
 
 # Initialize compartmental model
 params = CompartmentalParams(num_ticks=100)
