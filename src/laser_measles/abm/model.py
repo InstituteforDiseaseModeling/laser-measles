@@ -10,7 +10,8 @@ from matplotlib.figure import Figure
 from laser_measles.abm.base import BaseABMScenario
 from laser_measles.abm.base import PatchLaserFrame
 from laser_measles.abm.base import PeopleLaserFrame
-from laser_measles.base import BaseLaserModel, BaseScenario
+from laser_measles.base import BaseLaserModel
+from laser_measles.base import BaseScenario
 from laser_measles.utils import StateArray
 
 from . import components

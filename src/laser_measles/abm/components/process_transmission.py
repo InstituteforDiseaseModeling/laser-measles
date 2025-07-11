@@ -179,4 +179,5 @@ class TransmissionProcess(BasePhase):
         )
         return
 
-    def _initialize(self, model: ABMModel) -> None: pass
+    def _initialize(self, model: ABMModel) -> None:
+        pass

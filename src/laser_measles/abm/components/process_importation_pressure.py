@@ -99,4 +99,5 @@ class ImportationPressureProcess(BasePhase):
         states.S -= imported_cases
         states.E += imported_cases  # Move to exposed state
 
-    def _initialize(self, model: ABMModel) -> None: pass
+    def _initialize(self, model: ABMModel) -> None:
+        pass

@@ -98,4 +98,5 @@ class DiseaseProcess(BaseComponent):
         patches.states.I += flow
         return
 
-    def _initialize(self, model: ABMModel) -> None: pass
+    def _initialize(self, model: ABMModel) -> None:
+        pass

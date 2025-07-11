@@ -26,14 +26,16 @@ class MockComponentWithDocstring(BaseComponent):
     def __call__(self, model, tick: int) -> None:
         return None
 
-    def _initialize(self, model: BaseLaserModel) -> None: pass
+    def _initialize(self, model: BaseLaserModel) -> None:
+        pass
 
 
 class MockComponentWithoutDocstring(BaseComponent):
     def __call__(self, model, tick: int) -> None:
         return None
 
-    def _initialize(self, model: BaseLaserModel) -> None: pass
+    def _initialize(self, model: BaseLaserModel) -> None:
+        pass
 
 
 class TestBaseComponent:

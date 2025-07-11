@@ -42,7 +42,8 @@ class NoBirthsProcess(BaseVitalDynamicsProcess):
 
         return
 
-    def __call__(self, model, tick) -> None: pass
+    def __call__(self, model, tick) -> None:
+        pass
 
     def calculate_capacity(self, model: ABMModel) -> int:
         """
@@ -55,7 +56,6 @@ class NoBirthsProcess(BaseVitalDynamicsProcess):
             The total population capacity needed across all patches
         """
         return int(model.patches.states.sum())
-
 
     def _initialize(self, model: ABMModel) -> None:
         """
@@ -76,5 +76,3 @@ class NoBirthsProcess(BaseVitalDynamicsProcess):
             dtype=people.patch_id.dtype,
         )
         return
-
-

@@ -107,7 +107,8 @@ class CompartmentalModel(BaseLaserModel):
 
         return
 
-    def __call__(self, model: BaseLaserModel, tick: int) -> None: return
+    def __call__(self, model: BaseLaserModel, tick: int) -> None:
+        return
 
     def expose(self, indices: int | np.ndarray, num_exposed: int | np.ndarray) -> None:
         """

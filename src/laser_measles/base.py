@@ -568,6 +568,7 @@ class BaseComponent:
     Components follow a uniform interface with __call__(model, tick) method
     for execution during simulation loops.
     """
+
     ModelType = TypeVar("ModelType")
 
     def __init__(self, model: BaseLaserModel, verbose: bool = False) -> None:
@@ -617,6 +618,8 @@ class BaseComponent:
         Args:
             model: The model instance.
         """
+
+
 class BasePhase(BaseComponent):
     """
     Base class for all laser-measles phases.
@@ -635,7 +638,8 @@ class BasePhase(BaseComponent):
         """
 
     @abstractmethod
-    def _initialize(self, model: BaseLaserModel) -> None: pass
+    def _initialize(self, model: BaseLaserModel) -> None:
+        pass
 
 
 class BaseScenario(ABC):

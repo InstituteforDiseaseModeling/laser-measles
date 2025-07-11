@@ -135,6 +135,7 @@ class InfectionProcess(BasePhase):
         states.R += new_recoveries  # R increases
 
         return
+
     @property
     def mixing(self) -> np.ndarray:
         """Returns the mixing matrix, initializing if necessary"""
