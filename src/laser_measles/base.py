@@ -30,6 +30,7 @@ from matplotlib.figure import Figure
 
 from laser_measles.utils import StateArray
 from laser_measles.utils import get_laserframe_properties
+from laser_measles.utils import select_implementation
 from laser_measles.wrapper import pretty_laserframe
 
 
@@ -595,6 +596,29 @@ class BaseComponent:
         # Use child class docstring if available, otherwise parent class
         doc = self.__class__.__doc__ or BaseComponent.__doc__
         return doc.strip() if doc else f"{self.__class__.__name__} component"
+
+    def select_function(self, numpy_func: Any, numba_func: Any) -> Any:
+        """
+        Select between numpy and numba implementations based on model configuration.
+
+        This method provides a convenient way for components to choose between
+        numpy and numba implementations based on model parameters and environment
+        variables.
+
+        Args:
+            numpy_func: The numpy implementation function.
+            numba_func: The numba implementation function.
+
+        Returns:
+            The selected function implementation.
+
+        Example:
+            >>> # In a component's __init__ or _initialize method:
+            >>> self.update_func = self.select_function(numpy_update, numba_update)
+        """
+        # Check if model has use_numba parameter
+        use_numba = getattr(self.model.params, "use_numba", True)
+        return select_implementation(numpy_func, numba_func, use_numba)
 
     def plot(self, fig: Figure | None = None):
         """

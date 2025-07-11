@@ -129,6 +129,26 @@ class MyComponent(BaseComponent):
 component_instance = create_component(ComponentClass, params=ParamsModel())
 ```
 
+### Numpy/Numba Function Selection
+```python
+# In component initialization, select between numpy and numba implementations
+class MyComponent(BaseComponent):
+    def _initialize(self, model):
+        # BaseComponent.select_function() chooses based on model.params.use_numba
+        self.update_func = self.select_function(numpy_update_func, numba_update_func)
+    
+    def __call__(self, model, tick):
+        # Use the selected function
+        self.update_func(model.people.data, model.patches.data)
+
+# Configure numba usage in model parameters
+params = ABMParams(num_ticks=100, use_numba=True)  # Enable numba
+params = ABMParams(num_ticks=100, use_numba=False)  # Force numpy
+
+# Or use environment variable
+export LASER_MEASLES_USE_NUMBA=false  # Force numpy globally
+```
+
 ### Model Execution
 ```python
 # Standard model execution pattern
@@ -155,6 +175,13 @@ state_tracker = model.get_instance(StateTracker)[0]
 3. Implement `initialize()` for setup that depends on other components
 4. Use `__call__(model, tick)` for per-tick execution
 5. Include docstrings following Google style format
+
+### Performance Optimization with Numpy/Numba
+1. **Function Selection Pattern**: Use `self.select_function(numpy_func, numba_func)` in component `_initialize()` method
+2. **Dual Implementation**: Write both numpy and numba versions of performance-critical functions
+3. **Graceful Fallback**: Numba functions automatically fall back to numpy when numba unavailable
+4. **Configuration**: Control via `use_numba` parameter in model params or `LASER_MEASLES_USE_NUMBA` environment variable
+5. **Early Selection**: Function selection happens at component initialization, avoiding JIT compilation overhead when using numpy
 
 ### Testing
 - Unit tests in `tests/unit/`

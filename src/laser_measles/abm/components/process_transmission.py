@@ -2,7 +2,6 @@
 Component defining the TransmissionProcess, which models the transmission of measles in a population.
 """
 
-import numba as nb
 import numpy as np
 from pydantic import BaseModel
 from pydantic import Field
@@ -12,32 +11,89 @@ from laser_measles.base import BasePhase
 from laser_measles.compartmental.mixing import init_gravity_diffusion  # TODO: consolidate spatial mixing into separate module
 from laser_measles.utils import cast_type
 
+# Import numba conditionally for the numba implementation
+try:
+    import numba as nb
+    NUMBA_AVAILABLE = True
+except ImportError:
+    NUMBA_AVAILABLE = False
 
-@nb.njit(
-    (nb.uint8[:], nb.uint16[:], nb.float32[:], nb.float64[:], nb.uint16[:], nb.uint32, nb.float32, nb.float32, nb.uint32[:]),
-    parallel=True,
-    nogil=True,
-)
-def nb_lognormal_update(states, patch_ids, susceptibilties, forces, etimers, count, exp_mu, exp_sigma, flow):  # pragma: no cover
-    """Numba compiled function to stochastically transmit infection to agents in parallel."""
-    max_node_id = np.max(patch_ids)
-    thread_incidences = np.zeros((nb.get_num_threads(), max_node_id + 1), dtype=np.uint32)
 
-    for i in nb.prange(count):
-        state = states[i]
-        if state == 0:
-            patch_id = patch_ids[i]
-            force = forces[patch_id]  # force of infection attenuated by personal susceptibility
-            if (force > 0) and (np.random.random_sample() < force):  # draw random number < force means infection
-                states[i] = 1  # set state to exposed
-                # set exposure timer for newly infected individuals to a draw from a lognormal distribution, must be at least 1 day
-                etimers[i] = np.uint16(np.maximum(1, np.round(np.random.lognormal(exp_mu, exp_sigma))))
-                susceptibilties[i] = 0.0
-                thread_incidences[nb.get_thread_id(), patch_id] += 1
+# Numpy Implementation
+def numpy_lognormal_update(states, patch_ids, susceptibilties, forces, etimers, count, exp_mu, exp_sigma, flow):
+    """Numpy function to stochastically transmit infection to agents."""
+    # Find susceptible individuals (state == 0)
+    susceptible_mask = states[:count] == 0
+    susceptible_indices = np.where(susceptible_mask)[0]
+    
+    if len(susceptible_indices) == 0:
+        return
+    
+    # Get patch IDs and forces for susceptible individuals
+    susceptible_patches = patch_ids[susceptible_indices]
+    susceptible_forces = forces[susceptible_patches]
+    
+    # Find individuals with positive force of infection
+    positive_force_mask = susceptible_forces > 0
+    at_risk_indices = susceptible_indices[positive_force_mask]
+    
+    if len(at_risk_indices) == 0:
+        return
+    
+    # Stochastic transmission: draw random numbers and compare to force
+    random_draws = np.random.random(len(at_risk_indices))
+    infected_mask = random_draws < susceptible_forces[positive_force_mask]
+    newly_infected_indices = at_risk_indices[infected_mask]
+    
+    if len(newly_infected_indices) > 0:
+        # Update states to exposed (1)
+        states[newly_infected_indices] = 1
+        
+        # Set exposure timers using lognormal distribution
+        new_etimers = np.maximum(1, np.round(np.random.lognormal(exp_mu, exp_sigma, len(newly_infected_indices))))
+        etimers[newly_infected_indices] = new_etimers.astype(np.uint16)
+        
+        # Set susceptibility to 0
+        susceptibilties[newly_infected_indices] = 0.0
+        
+        # Update flow counts by patch
+        infected_patches = patch_ids[newly_infected_indices]
+        patch_counts = np.bincount(infected_patches, minlength=len(flow))
+        flow[:] = patch_counts.astype(np.uint32)
+    else:
+        # No new infections
+        flow[:] = 0
 
-    flow[:] = thread_incidences.sum(axis=0)
 
-    return
+# Numba Implementation (if available)
+if NUMBA_AVAILABLE:
+    @nb.njit(
+        (nb.uint8[:], nb.uint16[:], nb.float32[:], nb.float64[:], nb.uint16[:], nb.uint32, nb.float32, nb.float32, nb.uint32[:]),
+        parallel=True,
+        nogil=True,
+    )
+    def nb_lognormal_update(states, patch_ids, susceptibilties, forces, etimers, count, exp_mu, exp_sigma, flow):  # pragma: no cover
+        """Numba compiled function to stochastically transmit infection to agents in parallel."""
+        max_node_id = np.max(patch_ids)
+        thread_incidences = np.zeros((nb.get_num_threads(), max_node_id + 1), dtype=np.uint32)
+
+        for i in nb.prange(count):
+            state = states[i]
+            if state == 0:
+                patch_id = patch_ids[i]
+                force = forces[patch_id]  # force of infection attenuated by personal susceptibility
+                if (force > 0) and (np.random.random_sample() < force):  # draw random number < force means infection
+                    states[i] = 1  # set state to exposed
+                    # set exposure timer for newly infected individuals to a draw from a lognormal distribution, must be at least 1 day
+                    etimers[i] = np.uint16(np.maximum(1, np.round(np.random.lognormal(exp_mu, exp_sigma))))
+                    susceptibilties[i] = 0.0
+                    thread_incidences[nb.get_thread_id(), patch_id] += 1
+
+        flow[:] = thread_incidences.sum(axis=0)
+
+        return
+else:
+    nb_lognormal_update = None
 
 
 class TransmissionParams(BaseModel):
@@ -138,7 +194,7 @@ class TransmissionProcess(BasePhase):
         np.negative(forces, out=forces)
 
         # S --> E
-        nb_lognormal_update(
+        self.lognormal_update_func(
             people.state,
             people.patch_id,
             people.susceptibility,
@@ -180,4 +236,5 @@ class TransmissionProcess(BasePhase):
         return
 
     def _initialize(self, model: ABMModel) -> None:
-        pass
+        # Select function implementation based on model configuration
+        self.lognormal_update_func = self.select_function(numpy_lognormal_update, nb_lognormal_update)

@@ -16,7 +16,18 @@ Functions:
 
     cast_type(a, dtype) -> Any:
         Cast a value to a specified data type.
+
+    select_implementation(numpy_func, numba_func, use_numba: bool = True) -> callable:
+        Select between numpy and numba implementations based on availability and preference.
+
+    dual_implementation(numpy_func: callable, numba_func: callable) -> callable:
+        Decorator to create function selector that chooses between numpy and numba implementations.
 """
+
+import os
+import warnings
+from functools import wraps
+from typing import Any, Callable
 
 import numpy as np
 from laser_core.laserframe import LaserFrame
@@ -229,3 +240,86 @@ def get_laserframe_properties(laserframe: LaserFrame):
         if isinstance(value, np.ndarray) and value.shape[-1] == laserframe._capacity:
             properties.add(key)
     return properties
+
+
+# Function Selection Utilities
+
+def _check_numba_available() -> bool:
+    """
+    Check if numba is available and importable.
+    
+    Returns:
+        bool: True if numba is available, False otherwise.
+    """
+    try:
+        import numba  # noqa: F401
+        return True
+    except ImportError:
+        return False
+
+
+def _get_numba_preference() -> bool:
+    """
+    Get user preference for numba usage from environment variables.
+    
+    Returns:
+        bool: True if numba should be used (default), False otherwise.
+    """
+    env_var = os.environ.get("LASER_MEASLES_USE_NUMBA", "true").lower()
+    return env_var in ("true", "1", "yes", "on")
+
+
+def select_implementation(numpy_func: Callable, numba_func: Callable, use_numba: bool = True) -> Callable:
+    """
+    Select between numpy and numba implementations based on availability and preference.
+    
+    Args:
+        numpy_func: The numpy implementation function.
+        numba_func: The numba implementation function.
+        use_numba: Whether to prefer numba implementation if available.
+        
+    Returns:
+        The selected function implementation.
+    """
+    # Check user preference
+    if not use_numba:
+        return numpy_func
+    
+    # Check environment variable
+    if not _get_numba_preference():
+        return numpy_func
+    
+    # Check numba availability
+    if not _check_numba_available():
+        warnings.warn(
+            "Numba is not available, falling back to numpy implementation. "
+            "Set LASER_MEASLES_USE_NUMBA=false to suppress this warning.",
+            UserWarning,
+            stacklevel=2
+        )
+        return numpy_func
+    
+    return numba_func
+
+
+def dual_implementation(numpy_func: Callable, numba_func: Callable) -> Callable:
+    """
+    Decorator to create function selector that chooses between numpy and numba implementations.
+    
+    Args:
+        numpy_func: The numpy implementation function.
+        numba_func: The numba implementation function.
+        
+    Returns:
+        A wrapper function that selects the appropriate implementation.
+    """
+    @wraps(numpy_func)
+    def wrapper(*args, use_numba: bool = True, **kwargs):
+        selected_func = select_implementation(numpy_func, numba_func, use_numba)
+        return selected_func(*args, **kwargs)
+    
+    # Store both implementations as attributes for direct access
+    wrapper.numpy_func = numpy_func
+    wrapper.numba_func = numba_func
+    
+    return wrapper
