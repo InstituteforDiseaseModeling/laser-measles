@@ -63,7 +63,7 @@ class TestBaseComponentFunctionSelection:
 
         # Mock numba unavailability
         with patch("laser_measles.utils._check_numba_available", return_value=False):
-            with pytest.warns(UserWarning, match="Numba is not available"): # noqa: PT031
+            with pytest.warns(UserWarning, match="Numba is not available"):  # noqa: PT031
                 selected = component.select_function(numpy_test_func, numba_test_func)
                 assert selected == numpy_test_func
 

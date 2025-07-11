@@ -41,7 +41,7 @@ class TestFunctionSelection:
     def test_select_implementation_fallback_to_numpy(self):
         """Test fallback to numpy when numba not available."""
         with patch("laser_measles.utils._check_numba_available", return_value=False):
-            with pytest.warns(UserWarning, match="Numba is not available"): # noqa: PT031
+            with pytest.warns(UserWarning, match="Numba is not available"):  # noqa: PT031
                 selected = select_implementation(numpy_test_func, numba_test_func, use_numba=True)
                 assert selected == numpy_test_func
 
