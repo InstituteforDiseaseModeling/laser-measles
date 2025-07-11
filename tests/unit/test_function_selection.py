@@ -41,7 +41,7 @@ class TestFunctionSelection:
     def test_select_implementation_fallback_to_numpy(self):
         """Test fallback to numpy when numba not available."""
         with patch("laser_measles.utils._check_numba_available", return_value=False):
-            with pytest.warns(UserWarning, match="Numba is not available"):
+            with pytest.warns(UserWarning, match="Numba is not available"): # noqa: PT031
                 selected = select_implementation(numpy_test_func, numba_test_func, use_numba=True)
                 assert selected == numpy_test_func
 
@@ -73,17 +73,17 @@ class TestFunctionSelection:
         """Test environment variable preference detection."""
         # Test default (should be True)
         with patch.dict(os.environ, {}, clear=True):
-            assert _get_numba_preference() == True
+            assert _get_numba_preference()
 
         # Test explicit true values
         for val in ["true", "True", "1", "yes", "on"]:
             with patch.dict(os.environ, {"LASER_MEASLES_USE_NUMBA": val}):
-                assert _get_numba_preference() == True
+                assert _get_numba_preference()
 
         # Test explicit false values
         for val in ["false", "False", "0", "no", "off"]:
             with patch.dict(os.environ, {"LASER_MEASLES_USE_NUMBA": val}):
-                assert _get_numba_preference() == False
+                assert not _get_numba_preference()
 
     def test_environment_variable_override(self):
         """Test that environment variable overrides use_numba parameter."""
