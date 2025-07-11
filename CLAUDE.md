@@ -136,7 +136,7 @@ class MyComponent(BaseComponent):
     def _initialize(self, model):
         # BaseComponent.select_function() chooses based on model.params.use_numba
         self.update_func = self.select_function(numpy_update_func, numba_update_func)
-    
+
     def __call__(self, model, tick):
         # Use the selected function
         self.update_func(model.people.data, model.patches.data)
