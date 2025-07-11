@@ -15,6 +15,7 @@ from pydantic import BaseModel
 from laser_measles.base import BaseComponent
 
 T = TypeVar("T", bound=BaseComponent)
+B = TypeVar("B", bound=BaseModel)
 
 
 def component[T: BaseComponent](cls: type[T], **default_params):
@@ -91,7 +92,7 @@ def component[T: BaseComponent](cls: type[T], **default_params):
     return decorator
 
 
-def create_component(component_class: type[T], params: BaseModel | None = None) -> Callable[[Any, Any], T]:
+def create_component[T: BaseComponent, B: BaseModel](component_class: type[T], params: type[B] | None = None) -> Callable[[Any, Any], T]:
     """
     Helper function to create a component instance with parameters.
 
