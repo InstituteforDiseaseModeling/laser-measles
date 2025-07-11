@@ -1,7 +1,7 @@
 """
 Tests for the BaseComponent class and its functionality.
 """
-
+# ruff: noqa: PLC0415
 from unittest.mock import Mock
 
 import pytest
@@ -159,10 +159,10 @@ class TestBaseComponentIntegration:
         """Test that existing biweekly components still work with refactored BaseComponent."""
         try:
             # Test importing some biweekly components
-            from laser_measles.biweekly.components.process_infection import InfectionProcess
-            from laser_measles.biweekly.components.tracker_state import StateTracker
+            from laser_measles.biweekly.components.process_infection import InfectionProcess 
+            from laser_measles.biweekly.components.tracker_state import StateTracker 
 
-            model = MockModel()
+            MockModel()
 
             # These should not raise import errors
             assert hasattr(StateTracker, "__init__")

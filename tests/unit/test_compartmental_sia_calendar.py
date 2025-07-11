@@ -1,5 +1,5 @@
 """Tests for compartmental SIA calendar component."""
-# ruff: noqa: DTZ001, RUF100, PT012
+# ruff: noqa: DTZ001, RUF100, PT012, PT011
 
 from datetime import datetime
 from datetime import timedelta

@@ -64,7 +64,7 @@ def add_dotname(
 
             record_cnt = 0
 
-            for i, shaperec in enumerate(sf.iterShapeRecords()):
+            for _, shaperec in enumerate(sf.iterShapeRecords()):
                 dotname = dotname_symbol.join([shaperec.record[field].lower() for field in dot_name_fields])
                 # add the new field
                 w.record(*shaperec.record, dotname)

@@ -8,6 +8,7 @@ z = 1 - exp(-R0 * z)
 This test validates that the model simulations converge to the theoretical
 final outbreak size for epidemic scenarios.
 """
+# ruff: noqa: PT006
 
 import importlib
 
@@ -125,7 +126,6 @@ def test_final_outbreak_size(measles_module, num_reps):
 
     # Measles-like epidemic parameters
     infectious_period = 14  # days
-    incubation_period = 10  # days (for SEIR models)
     R0 = 7.0  # typical for measles
 
     # Calculate transmission rate

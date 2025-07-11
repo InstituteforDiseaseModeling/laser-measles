@@ -158,9 +158,9 @@ class PrettyLaserFrameWrapper:
                     val = prop_value[:, i] if prop_value.shape[0] <= 3 else f"[{prop_value.shape[0]} values]"
 
                 # Format the value
-                if isinstance(val, (np.integer, int)):
+                if isinstance(val, np.integer | int):
                     val_str = f"{val}"
-                elif isinstance(val, (np.floating, float)):
+                elif isinstance(val, np.floating | float):
                     val_str = f"{val:.3f}"
                 elif isinstance(val, np.ndarray):
                     val_str = f"[{', '.join(f'{x:.3f}' for x in val[:3])}{'...' if len(val) > 3 else ''}]"
@@ -284,8 +284,6 @@ def pretty_laserframe(cls):
                 new_frame.copy_properties_from(source_frame)
             else:
                 # Fallback: manually copy properties
-                from laser_measles.utils import get_laserframe_properties
-
                 properties = get_laserframe_properties(source_frame)
 
                 for property_name in properties:

@@ -51,7 +51,7 @@ class RasterPatchGenerator:
 
     def _get_file_mtime(self, file_path: str | Path) -> float:
         """Get the modification time of a file."""
-        return os.path.getmtime(file_path)
+        return Path(file_path).stat().st_mtime
 
     def _check_source_files_modified(self, cache_key: str) -> bool:
         """Check if any source files have been modified since cache was created."""

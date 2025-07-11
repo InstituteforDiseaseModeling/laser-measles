@@ -17,7 +17,6 @@ from abc import abstractmethod
 from datetime import datetime
 from datetime import timedelta
 from typing import Any
-from typing import Generic
 from typing import Protocol
 from typing import TypeVar
 
@@ -32,6 +31,7 @@ from matplotlib.figure import Figure
 from laser_measles.utils import StateArray
 from laser_measles.utils import get_laserframe_properties
 from laser_measles.wrapper import pretty_laserframe
+
 
 class ParamsProtocol(Protocol):
     """Protocol defining the expected structure of model parameters."""
@@ -243,6 +243,7 @@ class BaseLaserModel(ABC):
 
         Override in subclasses as needed.
         """
+        raise NotImplementedError("Subclasses must implement this method")
 
     @abstractmethod
     def __call__(self, model: Any, tick: int) -> None:
@@ -562,7 +563,7 @@ class BaseLaserModel(ABC):
         return f"<{self.__class__.__name__}>:\n{'\n'.join([f'{k}: {v}' for k, v in attrs.items()])}>"
 
 
-class BaseComponent(ABC):
+class BaseComponent:
     ModelType = TypeVar("ModelType")
     """
     Base class for all laser-measles components.
@@ -594,6 +595,7 @@ class BaseComponent(ABC):
         Args:
             model: The model instance.
         """
+        raise NotImplementedError("Subclasses must implement this method")
 
     def __str__(self) -> str:
         """
