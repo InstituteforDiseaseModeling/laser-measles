@@ -82,7 +82,7 @@ class BaseVitalDynamicsProcess(BasePhase, ABC):
         np.maximum(states, 0, out=states)
 
     @abstractmethod
-    def calculate_capacity(self, model) -> np.ndarray:
+    def calculate_capacity(self, model) -> int:
         """
         Calculate the capacity of the model.
         """

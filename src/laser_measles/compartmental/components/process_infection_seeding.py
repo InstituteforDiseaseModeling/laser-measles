@@ -100,7 +100,7 @@ class InfectionSeedingProcess(BaseComponent):
         if self.params.target_patches is None and not self.params.use_largest_patch:
             raise ValueError("Either target_patches must be provided or use_largest_patch must be True")
 
-    def initialize(self, model: BaseLaserModel) -> None:
+    def _initialize(self, model: BaseLaserModel) -> None:
         """
         Initialize infections by seeding susceptible individuals.
 

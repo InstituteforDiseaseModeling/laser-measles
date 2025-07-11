@@ -124,8 +124,6 @@ class BaseStateTracker(BasePhase):
                 filtered_states = model.patches.states.sum(axis=1)
             self.state_tracker[:, tick, 0] = filtered_states
 
-    def initialize(self, model: BaseLaserModel) -> None:
-        pass
 
     def plot(self, fig: Figure | None = None):
         """
@@ -247,3 +245,5 @@ class BaseStateTracker(BasePhase):
                     )
 
         return pl.DataFrame(data)
+
+    def _initialize(self, model: BaseLaserModel) -> None: pass

@@ -135,11 +135,6 @@ class InfectionProcess(BasePhase):
         states.R += new_recoveries  # R increases
 
         return
-
-    def initialize(self, model: BaseLaserModel) -> None:
-        """Initializes the mixing component"""
-        self.mixing = init_gravity_diffusion(model.scenario, self.params.mixing_scale, self.params.distance_exponent)
-
     @property
     def mixing(self) -> np.ndarray:
         """Returns the mixing matrix, initializing if necessary"""
@@ -151,3 +146,7 @@ class InfectionProcess(BasePhase):
     def mixing(self, mixing: np.ndarray) -> None:
         """Sets the mixing matrix"""
         self._mixing = mixing
+
+    def _initialize(self, model: BaseLaserModel) -> None:
+        """Initializes the mixing component"""
+        self.mixing = init_gravity_diffusion(model.scenario, self.params.mixing_scale, self.params.distance_exponent)

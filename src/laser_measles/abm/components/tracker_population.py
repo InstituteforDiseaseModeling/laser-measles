@@ -1,5 +1,6 @@
 import numpy as np
 
+from laser_measles.abm.model import ABMModel
 from laser_measles.base import BasePhase
 
 
@@ -14,3 +15,5 @@ class PopulationTracker(BasePhase):
 
     def __call__(self, model, tick: int) -> None:
         self.population_tracker[:, tick] = model.patches.states.sum(axis=0)
+
+    def _initialize(self, model: ABMModel) -> None: pass

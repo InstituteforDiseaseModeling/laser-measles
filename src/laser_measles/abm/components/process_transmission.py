@@ -178,3 +178,5 @@ class TransmissionProcess(BasePhase):
             people.etimer.dtype,
         )
         return
+
+    def _initialize(self, model: ABMModel) -> None: pass

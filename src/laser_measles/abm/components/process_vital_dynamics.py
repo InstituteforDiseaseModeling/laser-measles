@@ -49,19 +49,6 @@ class VitalDynamicsProcess(BaseVitalDynamicsProcess):
         if model.params.num_ticks >= self.null_value:
             raise ValueError("Simulation is too long; birth and vaccination dates must be able to store the number of ticks")
 
-    def initialize(self, model: ABMModel) -> None:
-        # initialize the people laserframe with correct capacity
-        initial_pop = model.scenario["pop"].sum()
-        model.initialize_people_capacity(capacity=self.calculate_capacity(model), initial_count=initial_pop)
-
-        # Activate population
-        model.people.active[0 : model.people.count] = True
-        # Simple initializer for ages where birth rate = mortality rate:
-        # Initialize ages for existing population
-        model.people.date_of_birth[0 : model.people.count] = cast_type(
-            -1 * model.prng.exponential(1 / self.mu_death, model.people.count), model.people.date_of_birth.dtype
-        )
-
     def __call__(self, model, tick: int) -> None:
         """
         Simulate the vital dynamics process.
@@ -119,3 +106,16 @@ class VitalDynamicsProcess(BaseVitalDynamicsProcess):
         """Delay in ticks before routine immunization is administered."""
         params: VitalDynamicsParams = self.params  # type: ignore
         return params.routine_immunization_delay * self.model.params.time_step_days
+
+    def _initialize(self, model: ABMModel) -> None:
+        # initialize the people laserframe with correct capacity
+        initial_pop = model.scenario["pop"].sum()
+        model.initialize_people_capacity(capacity=self.calculate_capacity(model), initial_count=initial_pop)
+
+        # Activate population
+        model.people.active[0 : model.people.count] = True
+        # Simple initializer for ages where birth rate = mortality rate:
+        # Initialize ages for existing population
+        model.people.date_of_birth[0 : model.people.count] = cast_type(
+            -1 * model.prng.exponential(1 / self.mu_death, model.people.count), model.people.date_of_birth.dtype
+        )

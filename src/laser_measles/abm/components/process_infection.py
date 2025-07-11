@@ -89,10 +89,6 @@ class InfectionProcess(BaseComponent):
         # Then handle transmission (susceptible -> exposed)
         self.transmission(model, tick)
 
-    def initialize(self, model: ABMModel) -> None:
-        self.transmission.initialize(model)
-        self.disease.initialize(model)
-
     def infect(self, model: ABMModel, idx: np.ndarray) -> None:
         self.transmission.infect(model, idx)
 
@@ -104,3 +100,7 @@ class InfectionProcess(BaseComponent):
             fig: A Matplotlib Figure object to plot on. If None, a new figure is created.
         """
         yield from self.transmission.plot(fig)
+
+    def _initialize(self, model: ABMModel) -> None:
+        self.transmission._initialize(model)
+        self.disease._initialize(model)

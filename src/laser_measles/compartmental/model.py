@@ -44,7 +44,7 @@ from laser_measles.utils import cast_type
 
 class CompartmentalModel(BaseLaserModel):
     """
-    A class to represent the compartmental SEIR model with daily timesteps.
+    A class to represent the compartmental model with daily timesteps.
 
     Args:
 
@@ -62,7 +62,7 @@ class CompartmentalModel(BaseLaserModel):
             - `lon` (float degrees): The longitude of the patches (e.g., from geographic or population centroid).
             - `mcv1` (float): The MCV1 coverage for the patches.
 
-        The model uses SEIR compartments:
+        The default model uses SEIR compartments:
             - S: Susceptible individuals
             - E: Exposed individuals (infected but not yet infectious)
             - I: Infectious individuals
@@ -107,20 +107,7 @@ class CompartmentalModel(BaseLaserModel):
 
         return
 
-    def __call__(self, model, tick: int) -> None:
-        """
-        Updates the model for the next tick.
-
-        Args:
-
-            model: The model containing the patches and their populations.
-            tick (int): The current time step or tick.
-
-        Returns:
-
-            None
-        """
-        return
+    def __call__(self, model: BaseLaserModel, tick: int) -> None: return
 
     def expose(self, indices: int | np.ndarray, num_exposed: int | np.ndarray) -> None:
         """
@@ -160,6 +147,9 @@ class CompartmentalModel(BaseLaserModel):
         self.patches.states.R[indices] += cast_type(num_recovered, self.patches.states.dtype)  # Add to R
         self.patches.states.I[indices] -= cast_type(num_recovered, self.patches.states.dtype)  # Remove from I
         return
+
+    def _setup_components(self) -> None:
+        pass
 
 
 # Create an alias for CompartmentalModel as Model

@@ -10,7 +10,7 @@ from matplotlib.figure import Figure
 from laser_measles.abm.base import BaseABMScenario
 from laser_measles.abm.base import PatchLaserFrame
 from laser_measles.abm.base import PeopleLaserFrame
-from laser_measles.base import BaseLaserModel
+from laser_measles.base import BaseLaserModel, BaseScenario
 from laser_measles.utils import StateArray
 
 from . import components
@@ -53,10 +53,13 @@ class ABMModel(BaseLaserModel):
 
         return
 
+    def __call__(self, model, tick: int) -> None:
+        pass
+
     def setup_patches(self) -> None:
         """Setup the patches for the model."""
 
-        scenario = self.scenario
+        scenario: BaseScenario = self.scenario
 
         self.patches = PatchLaserFrame(capacity=len(scenario))
         # Create the state vector for each of the patches (4, num_patches) for SEIR
@@ -103,22 +106,6 @@ class ABMModel(BaseLaserModel):
         # Update the people laserframe
         self.people = new_people
 
-    def initialize(self) -> None:
-        """
-        Setup birth component registration for generic model.
-        """
-
-        # This will re-run all instantiaion
-        if len(self.people) != self.patches.states.sum():
-            if self.params.verbose:
-                print("No vital dynamics provided. Creating a new people laserframe with the same properties as the patches.")
-            self.prepend_component(components.NoBirthsProcess)
-
-        super().initialize()
-
-    def __call__(self, model, tick: int) -> None:
-        return
-
     def plot(self, fig: Figure | None = None):
         """
         Plots various visualizations related to the scenario and population data.
@@ -139,32 +126,6 @@ class ABMModel(BaseLaserModel):
         """
 
         _fig = plt.figure(figsize=(12, 9), dpi=128) if fig is None else fig
-        _fig.suptitle("Scenario Patches and Populations")
-        if "geometry" in self.scenario.columns:
-            ax = plt.gca()
-            self.scenario.plot(ax=ax)
-        scatter = plt.scatter(
-            self.scenario.lat,
-            self.scenario.lon,
-            s=self.scenario.pop / 1000,
-            c=self.scenario.pop,
-            cmap="inferno",
-        )
-        plt.colorbar(scatter, label="Population")
-
-        yield
-
-        _fig = plt.figure(figsize=(12, 9), dpi=128) if fig is None else fig
-        _fig.suptitle("Distribution of Day of Birth for Initial Population")
-
-        count = self.patches.populations[0, :].sum()  # just the initial population
-        dobs = self.people.dob[0:count]
-        plt.hist(dobs, bins=100)
-        plt.xlabel("Day of Birth")
-
-        yield
-
-        _fig = plt.figure(figsize=(12, 9), dpi=128) if fig is None else fig
         column_names = ["tick"] + [type(phase).__name__ for phase in self.phases]
         metrics = pl.DataFrame(self.metrics, schema=column_names)
         sum_columns = metrics.select([pl.sum(col).alias(col) for col in metrics.columns[1:]]).to_dict(as_series=False)
@@ -183,6 +144,24 @@ class ABMModel(BaseLaserModel):
         plt.title("Update Phase Times")
 
         yield
+        return
+
+    def _setup_components(self) -> None:
+        pass
+
+    def _initialize(self) -> None:
+        """
+        Setup birth component registration for generic model.
+        """
+
+        # This will re-run all instantiaion
+        if len(self.people) != self.patches.states.sum():
+            if self.params.verbose:
+                print("No vital dynamics provided. Creating a new people laserframe with the same properties as the patches.")
+            self.prepend_component(components.NoBirthsProcess)
+
+        super()._initialize()
+
         return
 
 

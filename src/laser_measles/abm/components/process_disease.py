@@ -7,6 +7,7 @@ import numpy as np
 from pydantic import BaseModel
 from pydantic import Field
 
+from laser_measles.abm.model import ABMModel
 from laser_measles.base import BaseComponent
 
 
@@ -96,3 +97,5 @@ class DiseaseProcess(BaseComponent):
         patches.states.E -= flow
         patches.states.I += flow
         return
+
+    def _initialize(self, model: ABMModel) -> None: pass
