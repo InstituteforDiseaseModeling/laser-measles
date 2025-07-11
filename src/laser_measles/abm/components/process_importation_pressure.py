@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from pydantic import Field
 from pydantic import field_validator
 
+from laser_measles.abm.model import ABMModel
 from laser_measles.base import BasePhase
 from laser_measles.utils import cast_type
 
@@ -97,3 +98,5 @@ class ImportationPressureProcess(BasePhase):
         # update states
         states.S -= imported_cases
         states.E += imported_cases  # Move to exposed state
+
+    def _initialize(self, model: ABMModel) -> None: pass

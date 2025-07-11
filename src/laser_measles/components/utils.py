@@ -91,7 +91,7 @@ def component[T: BaseComponent](cls: type[T], **default_params):
     return decorator
 
 
-def create_component[T: BaseComponent](component_class: type[T], params: BaseModel | None = None) -> Callable[[Any, Any], T]:
+def create_component(component_class: type[T], params: BaseModel | None = None) -> Callable[[Any, Any], T]:
     """
     Helper function to create a component instance with parameters.
 
@@ -123,12 +123,11 @@ def create_component[T: BaseComponent](component_class: type[T], params: BaseMod
             self.component_class = component_class
             if params is not None:
                 self.params = params
+            else:
+                self.params = None
 
         def __call__(self, model: Any, verbose: bool = False) -> T:
-            if hasattr(self, "params"):
-                return self.component_class(model, verbose=verbose, **self.params.model_dump())
-            else:
-                return self.component_class(model, verbose=verbose)
+            return self.component_class(model, params=self.params, verbose=verbose)
 
         def __str__(self) -> str:
             return f"<{self.component_class.__name__} factory>"

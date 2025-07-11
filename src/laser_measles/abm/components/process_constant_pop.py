@@ -56,31 +56,6 @@ class ConstantPopProcess(BaseVitalDynamicsProcess):
 
         return
 
-    def initialize(self, model: ABMModel) -> None:
-        """
-        Simple initializer for ages where birth rate = mortality rate
-
-        Args:
-            model: The ABM model instance to initialize
-        """
-        people = model.people
-
-        # Simple initializer for ages where birth rate = mortality rate:
-        # Initialize ages for existing population
-        people.date_of_birth[0 : people.count] = cast_type(
-            -1 * model.prng.exponential(1 / self.mu_death, people.count), people.date_of_birth.dtype
-        )
-
-    @property
-    def lambda_birth(self) -> float:
-        """birth rate per tick"""
-        return (1 + self.params.crude_birth_rate / 1000) ** (1 / 365 * self.model.params.time_step_days) - 1
-
-    @property
-    def mu_death(self) -> float:
-        """death rate per tick"""
-        return self.lambda_birth
-
     def __call__(self, model, tick) -> None:
         """
         Adds new agents to each patch based on expected daily births calculated from CBR. Calls each of the registered initializers for the newborns.
@@ -122,8 +97,33 @@ class ConstantPopProcess(BaseVitalDynamicsProcess):
         people.date_of_birth[idx] = tick  # set to current tick
         people.state[idx] = model.params.states.index("S")  # set to susceptible
 
+    @property
+    def lambda_birth(self) -> float:
+        """birth rate per tick"""
+        return (1 + self.params.crude_birth_rate / 1000) ** (1 / 365 * self.model.params.time_step_days) - 1
+
+    @property
+    def mu_death(self) -> float:
+        """death rate per tick"""
+        return self.lambda_birth
+
     def calculate_capacity(self, model) -> np.ndarray:
         """
         Calculate the capacity of the model.
         """
         return model.scenario["pop"].sum()
+
+    def _initialize(self, model: ABMModel) -> None:
+        """
+        Simple initializer for ages where birth rate = mortality rate
+
+        Args:
+            model: The ABM model instance to initialize
+        """
+        people = model.people
+
+        # Simple initializer for ages where birth rate = mortality rate:
+        # Initialize ages for existing population
+        people.date_of_birth[0 : people.count] = cast_type(
+            -1 * model.prng.exponential(1 / self.mu_death, people.count), people.date_of_birth.dtype
+        )

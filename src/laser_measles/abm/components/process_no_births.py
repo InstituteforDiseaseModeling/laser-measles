@@ -42,7 +42,22 @@ class NoBirthsProcess(BaseVitalDynamicsProcess):
 
         return
 
-    def initialize(self, model: ABMModel) -> None:
+    def __call__(self, model, tick) -> None: pass
+
+    def calculate_capacity(self, model: ABMModel) -> int:
+        """
+        Calculate the capacity of the people laserframe.
+
+        Args:
+            model: The ABM model instance
+
+        Returns:
+            The total population capacity needed across all patches
+        """
+        return int(model.patches.states.sum())
+
+
+    def _initialize(self, model: ABMModel) -> None:
         """
         Initialize the no births process by setting up the population.
 
@@ -62,17 +77,4 @@ class NoBirthsProcess(BaseVitalDynamicsProcess):
         )
         return
 
-    def calculate_capacity(self, model: ABMModel) -> int:
-        """
-        Calculate the capacity of the people laserframe.
 
-        Args:
-            model: The ABM model instance
-
-        Returns:
-            The total population capacity needed across all patches
-        """
-        return int(model.patches.states.sum())
-
-    def __call__(self, model, tick) -> None:
-        pass

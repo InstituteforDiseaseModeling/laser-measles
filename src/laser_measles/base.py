@@ -237,23 +237,54 @@ class BaseLaserModel(ABC):
             self.phases.insert(0, instance)
         self._setup_components()
 
-    def _setup_components(self) -> None:
-        """
-        Hook for subclasses to perform additional component setup.
-
-        Override in subclasses as needed.
-        """
-        raise NotImplementedError("Subclasses must implement this method")
-
     @abstractmethod
-    def __call__(self, model: Any, tick: int) -> None:
+    def __call__(self, model: BaseLaserModel, tick: int) -> None:
         """
-        Updates the model for a given tick.
+        Hook for subclasses to update the model for a given tick.
 
         Args:
             model: The model instance.
             tick: The current time step or tick.
         """
+
+    def __repr__(self) -> str:
+        """
+        Return a string representation of the model, showing key attributes.
+
+        Returns:
+            str: String representation of the model, including LaserFrame attributes.
+        """
+        attrs = []
+        for attr in dir(self):
+            if attr.startswith("_"):
+                continue
+            value = getattr(self, attr)
+            # Check if the attribute is a LaserFrame
+            if isinstance(value, LaserFrame):
+                attrs.append(f"{attr}=<LaserFrame shape={getattr(value, 'shape', None)}>")
+            else:
+                # Only show simple types to avoid clutter
+                if isinstance(value, int | float | str | bool | type(None)):
+                    attrs.append(f"{attr}={value!r}")
+        return f"<{self.__class__.__name__}({', '.join(attrs)})>"
+
+    def __str__(self) -> str:
+        """
+        Return a string representation of the model, showing key attributes.
+        """
+        attrs = {}
+        for attr in dir(self):
+            if attr.startswith("_"):
+                continue
+            value = getattr(self, attr)
+            # Check if the attribute is a LaserFrame
+            if isinstance(value, LaserFrame):
+                attrs[attr] = "\n" + value.__str__()
+            else:
+                # Only show simple types to avoid clutter
+                if isinstance(value, int | float | str | bool | type(None)):
+                    attrs[attr] = value.__str__()
+        return f"<{self.__class__.__name__}>:\n{'\n'.join([f'{k}: {v}' for k, v in attrs.items()])}>"
 
     def run(self) -> None:
         """
@@ -264,7 +295,7 @@ class BaseLaserModel(ABC):
             raise RuntimeError("No components have been added to the model")
 
         # Initialize all component instances
-        self.initialize()
+        self._initialize()
 
         # TODO: Check that the model has been initialized
         num_ticks = self.params.num_ticks
@@ -282,27 +313,6 @@ class BaseLaserModel(ABC):
         if self.params.verbose:
             print(f"Completed the {self.name} model at {self._tfinish}…")
             self._print_timing_summary()
-
-    def _execute_tick(self, tick: int) -> None:
-        """
-        Execute a single tick.
-
-        Can be overridden by subclasses for custom behavior.
-
-        Args:
-            tick: The current tick number.
-        """
-        timing = [tick]
-        for phase in self.phases:
-            tstart = datetime.now(tz=None)  # noqa: DTZ005
-            phase(self, tick)
-            tfinish = datetime.now(tz=None)  # noqa: DTZ005
-            delta = tfinish - tstart
-            timing.append(delta.seconds * 1_000_000 + delta.microseconds)
-        self.metrics.append(timing)
-
-        # Update current date by time_step_days
-        self.current_date += timedelta(days=self.params.time_step_days)
 
     def time_elapsed(self, units: str = "days") -> int | float:
         """
@@ -324,7 +334,7 @@ class BaseLaserModel(ABC):
         else:
             raise ValueError(f"Invalid time units: {units}")
 
-    def initialize(self) -> None:
+    def _initialize(self) -> None:
         """
         Initialize all component instances in the model.
 
@@ -332,41 +342,9 @@ class BaseLaserModel(ABC):
         their initialized flag to True after successful initialization.
         """
         for instance in self.instances:
-            if hasattr(instance, "initialize") and hasattr(instance, "initialized"):
-                instance.initialize(self)
+            if hasattr(instance, "_initialize") and hasattr(instance, "initialized"):
+                instance._initialize(self)
                 instance.initialized = True
-
-    def _print_timing_summary(self) -> None:
-        """
-        Print timing summary for verbose mode.
-        """
-        try:
-            import pandas as pd  # noqa: PLC0415
-
-            names = [type(phase).__name__ for phase in self.phases]
-            # Fix the pandas DataFrame creation by using proper column specification
-            metrics = pd.DataFrame(self.metrics)
-            if len(names) > 0:
-                metrics.columns = ["tick", *names]
-            plot_columns = metrics.columns[1:]
-            sum_columns = metrics[plot_columns].sum()
-            width = max(map(len, sum_columns.index))
-            for key in sum_columns.index:
-                print(f"{key:{width}}: {sum_columns[key]:13,} µs")
-            print("=" * (width + 2 + 13 + 3))
-            print(f"{'Total:':{width + 1}} {sum_columns.sum():13,} microseconds")
-        except ImportError:
-            try:
-                import polars as pl  # noqa: PLC0415
-
-                names = [type(phase).__name__ for phase in self.phases]
-                metrics = pl.DataFrame(self.metrics, schema=["tick", *names])
-                plot_columns = metrics.columns[1:]
-                sum_columns = metrics.select(plot_columns).sum()
-                # Handle polars DataFrame differently
-                print("Timing summary available but detailed formatting requires pandas")
-            except ImportError:
-                print("Timing summary requires pandas or polars")
 
     def cleanup(self) -> None:
         """
@@ -523,54 +501,74 @@ class BaseLaserModel(ABC):
         """
         raise NotImplementedError("Subclasses must implement this method")
 
-    def __repr__(self) -> str:
+    def _execute_tick(self, tick: int) -> None:
         """
-        Return a string representation of the model, showing key attributes.
+        Execute a single tick.
 
-        Returns:
-            str: String representation of the model, including LaserFrame attributes.
-        """
-        attrs = []
-        for attr in dir(self):
-            if attr.startswith("_"):
-                continue
-            value = getattr(self, attr)
-            # Check if the attribute is a LaserFrame
-            if isinstance(value, LaserFrame):
-                attrs.append(f"{attr}=<LaserFrame shape={getattr(value, 'shape', None)}>")
-            else:
-                # Only show simple types to avoid clutter
-                if isinstance(value, int | float | str | bool | type(None)):
-                    attrs.append(f"{attr}={value!r}")
-        return f"<{self.__class__.__name__}({', '.join(attrs)})>"
+        Can be overridden by subclasses for custom behavior.
 
-    def __str__(self) -> str:
+        Args:
+            tick: The current tick number.
         """
-        Return a string representation of the model, showing key attributes.
+        timing = [tick]
+        for phase in self.phases:
+            tstart = datetime.now(tz=None)  # noqa: DTZ005
+            phase(self, tick)
+            tfinish = datetime.now(tz=None)  # noqa: DTZ005
+            delta = tfinish - tstart
+            timing.append(delta.seconds * 1_000_000 + delta.microseconds)
+        self.metrics.append(timing)
+
+        # Update current date by time_step_days
+        self.current_date += timedelta(days=self.params.time_step_days)
+
+    def _print_timing_summary(self) -> None:
         """
-        attrs = {}
-        for attr in dir(self):
-            if attr.startswith("_"):
-                continue
-            value = getattr(self, attr)
-            # Check if the attribute is a LaserFrame
-            if isinstance(value, LaserFrame):
-                attrs[attr] = "\n" + value.__str__()
-            else:
-                # Only show simple types to avoid clutter
-                if isinstance(value, int | float | str | bool | type(None)):
-                    attrs[attr] = value.__str__()
-        return f"<{self.__class__.__name__}>:\n{'\n'.join([f'{k}: {v}' for k, v in attrs.items()])}>"
+        Print timing summary for verbose mode.
+        """
+        try:
+            import pandas as pd  # noqa: PLC0415
+
+            names = [type(phase).__name__ for phase in self.phases]
+            # Fix the pandas DataFrame creation by using proper column specification
+            metrics = pd.DataFrame(self.metrics)
+            if len(names) > 0:
+                metrics.columns = ["tick", *names]
+            plot_columns = metrics.columns[1:]
+            sum_columns = metrics[plot_columns].sum()
+            width = max(map(len, sum_columns.index))
+            for key in sum_columns.index:
+                print(f"{key:{width}}: {sum_columns[key]:13,} µs")
+            print("=" * (width + 2 + 13 + 3))
+            print(f"{'Total:':{width + 1}} {sum_columns.sum():13,} microseconds")
+        except ImportError:
+            try:
+                import polars as pl  # noqa: PLC0415
+
+                names = [type(phase).__name__ for phase in self.phases]
+                metrics = pl.DataFrame(self.metrics, schema=["tick", *names])
+                plot_columns = metrics.columns[1:]
+                sum_columns = metrics.select(plot_columns).sum()
+                # Handle polars DataFrame differently
+                print("Timing summary available but detailed formatting requires pandas")
+            except ImportError:
+                print("Timing summary requires pandas or polars")
+
+    @abstractmethod
+    def _setup_components(self) -> None:
+        """
+        Hook for subclasses to perform additional component setup.
+        """
 
 
 class BaseComponent:
-    ModelType = TypeVar("ModelType")
     """
     Base class for all laser-measles components.
 
     Components follow a uniform interface with __call__(model, tick) method
     for execution during simulation loops.
     """
+    ModelType = TypeVar("ModelType")
 
     def __init__(self, model: BaseLaserModel, verbose: bool = False) -> None:
         """
@@ -585,17 +583,6 @@ class BaseComponent:
         self.initialized = False
         if not hasattr(self, "name"):
             self.name = self.__class__.__name__
-
-    def initialize(self, model: BaseLaserModel) -> None:
-        """
-        Initialize component based on other existing components.
-
-        This is run at the beginning of model.run().
-
-        Args:
-            model: The model instance.
-        """
-        raise NotImplementedError("Subclasses must implement this method")
 
     def __str__(self) -> str:
         """
@@ -620,7 +607,16 @@ class BaseComponent:
         """
         yield None
 
+    @abstractmethod
+    def _initialize(self, model: BaseLaserModel) -> None:
+        """
+        Hook for subclasses to initialize the component based on other existing components.
 
+        This is run at the beginning of model.run().
+
+        Args:
+            model: The model instance.
+        """
 class BasePhase(BaseComponent):
     """
     Base class for all laser-measles phases.
@@ -638,8 +634,11 @@ class BasePhase(BaseComponent):
             tick: The current simulation tick.
         """
 
+    @abstractmethod
+    def _initialize(self, model: BaseLaserModel) -> None: pass
 
-class BaseScenario:
+
+class BaseScenario(ABC):
     """
     Base class for scenario data wrappers.
 
@@ -655,19 +654,6 @@ class BaseScenario:
             df: The polars DataFrame containing scenario data.
         """
         self._df = df
-
-    def _validate(self, df: pl.DataFrame):
-        """
-        Validate required columns exist - derive from schema.
-
-        Args:
-            df: The DataFrame to validate.
-
-        Raises:
-            NotImplementedError: Subclasses must implement this method.
-        """
-        # Validate required columns exist - derive from schema
-        raise NotImplementedError("Subclasses must implement this method")
 
     def __getattr__(self, attr):
         """
@@ -747,3 +733,17 @@ class BaseScenario:
         if result is None:
             raise ValueError(f"String '{target_value}' not found in column '{column}'")
         return result
+
+    @abstractmethod
+    def _validate(self, df: pl.DataFrame):
+        """
+        Validate required columns exist - derive from schema.
+
+        Args:
+            df: The DataFrame to validate.
+
+        Raises:
+            NotImplementedError: Subclasses must implement this method.
+        """
+        # Validate required columns exist - derive from schema
+        raise NotImplementedError("Subclasses must implement this method")

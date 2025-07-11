@@ -84,8 +84,6 @@ class BiweeklyModel(BaseLaserModel):
         """
         return
 
-    def _setup_components(self) -> None: pass
-
     def infect(self, indices: int | np.ndarray, num_infected: int | np.ndarray) -> None:
         """
         Infects the given nodes with the given number of infected individuals.
@@ -111,6 +109,10 @@ class BiweeklyModel(BaseLaserModel):
         self.patches.states.R[indices] += cast_type(num_recovered, self.patches.states.dtype)  # Add to R
         self.patches.states.I[indices] -= cast_type(num_recovered, self.patches.states.dtype)  # Remove from I
         return
+
+    def _setup_components(self) -> None:
+        pass
+
 
 # Create an alias for BiweeklyModel as Model
 Model = BiweeklyModel
