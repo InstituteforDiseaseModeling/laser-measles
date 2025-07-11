@@ -11,6 +11,9 @@ __all__ = [
     "GADMShapefile",
     "RasterPatchGenerator",
     "RasterPatchParams",
+    "base",
+    "gadm",
     "get_shapefile_dataframe",
     "plot_shapefile_dataframe",
+    "raster_patch",
 ]

@@ -27,7 +27,7 @@ def test_laserframe():
             pass
 
     # Initialization test
-    model = TestModel()
+    TestModel()
 
 
 if __name__ == "__main__":

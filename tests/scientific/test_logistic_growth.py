@@ -6,6 +6,7 @@ Solves for the time at which the number of infected individuals is half the popu
 t_2 = 1 / beta * np.log(pop_size / i0 - 1)
 
 """
+# ruff: noqa: PT006
 
 import importlib
 
