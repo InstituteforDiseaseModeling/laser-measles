@@ -25,6 +25,15 @@ These tutorials are designed to highlight specific features of the library.
     tutorials/tut_pydantic_component_parameters.ipynb
     tutorials/tut_state_arrays.ipynb
 
+End-to-end tutorials
+---------------------
+These tutorials are designed to show you how to use the library to solve a problem.
+
+.. toctree::
+    :maxdepth: 1
+    
+    tutorials/tut_traveling_waves.ipynb
+
 AI Assistance
 ------------
 

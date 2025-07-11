@@ -653,9 +653,3 @@ print("  • Spatial structure strongly influences epidemic dynamics")
 #
 # 5. **Real Data**: Apply this framework to analyze real measles outbreak data with
 #    known spatial and temporal patterns.
-
-print("\n" + "=" * 60)
-print("TUTORIAL COMPLETE")
-print("=" * 60)
-print("Successfully demonstrated traveling wave analysis in measles epidemics!")
-
