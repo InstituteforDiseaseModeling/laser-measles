@@ -89,7 +89,7 @@ tmp/
 # Docs
 docs/reference/
 docs/api/_autosummary/
-# docs/tutorials/*.ipynb
+docs/tutorials/*.ipynb
 
 # Temp
 examples/

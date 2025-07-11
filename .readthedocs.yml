@@ -7,9 +7,9 @@ build:
   os: ubuntu-22.04
   tools:
     python: "3.12"
-  # jobs:
-    # post_install:
-    #   - python docs/tutorials/convert_tutorials.py
+  jobs:
+    post_install:
+      - python docs/tutorials/convert_tutorials.py
 python:
   install:
     - requirements: docs/requirements.txt
