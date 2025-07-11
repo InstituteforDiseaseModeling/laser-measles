@@ -168,4 +168,5 @@ class TestStateArray:
 
         # Test prevalence calculation
         prevalence = states.I / np.maximum(total_pop, 1)
-        assert np.all(prevalence >= 0) and np.all(prevalence <= 1)
+        assert np.all(prevalence >= 0)
+        assert np.all(prevalence <= 1)
