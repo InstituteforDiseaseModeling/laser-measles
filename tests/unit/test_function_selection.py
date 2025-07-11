@@ -3,11 +3,14 @@ Unit tests for function selection utilities.
 """
 
 import os
-import pytest
-import numpy as np
 from unittest.mock import patch
 
-from laser_measles.utils import select_implementation, dual_implementation, _check_numba_available, _get_numba_preference
+import pytest
+
+from laser_measles.utils import _check_numba_available
+from laser_measles.utils import _get_numba_preference
+from laser_measles.utils import dual_implementation
+from laser_measles.utils import select_implementation
 
 
 def numpy_test_func(x, y):
@@ -30,14 +33,14 @@ class TestFunctionSelection:
 
     def test_select_implementation_prefer_numba(self):
         """Test selecting numba implementation when use_numba=True and numba available."""
-        with patch('laser_measles.utils._check_numba_available', return_value=True):
-            with patch('laser_measles.utils._get_numba_preference', return_value=True):
+        with patch("laser_measles.utils._check_numba_available", return_value=True):
+            with patch("laser_measles.utils._get_numba_preference", return_value=True):
                 selected = select_implementation(numpy_test_func, numba_test_func, use_numba=True)
                 assert selected == numba_test_func
 
     def test_select_implementation_fallback_to_numpy(self):
         """Test fallback to numpy when numba not available."""
-        with patch('laser_measles.utils._check_numba_available', return_value=False):
+        with patch("laser_measles.utils._check_numba_available", return_value=False):
             with pytest.warns(UserWarning, match="Numba is not available"):
                 selected = select_implementation(numpy_test_func, numba_test_func, use_numba=True)
                 assert selected == numpy_test_func
@@ -45,18 +48,18 @@ class TestFunctionSelection:
     def test_dual_implementation_decorator(self):
         """Test the dual implementation decorator."""
         test_func = dual_implementation(numpy_test_func, numba_test_func)
-        
+
         # Test that both implementations are stored
         assert test_func.numpy_func == numpy_test_func
         assert test_func.numba_func == numba_test_func
-        
+
         # Test calling with explicit use_numba=False
         result = test_func(2, 3, use_numba=False)
         assert result == 5  # numpy: 2 + 3
-        
+
         # Test calling with use_numba=True and mocked numba availability
-        with patch('laser_measles.utils._check_numba_available', return_value=True):
-            with patch('laser_measles.utils._get_numba_preference', return_value=True):
+        with patch("laser_measles.utils._check_numba_available", return_value=True):
+            with patch("laser_measles.utils._get_numba_preference", return_value=True):
                 result = test_func(2, 3, use_numba=True)
                 assert result == 6  # numba: 2 * 3
 
@@ -71,12 +74,12 @@ class TestFunctionSelection:
         # Test default (should be True)
         with patch.dict(os.environ, {}, clear=True):
             assert _get_numba_preference() == True
-        
+
         # Test explicit true values
         for val in ["true", "True", "1", "yes", "on"]:
             with patch.dict(os.environ, {"LASER_MEASLES_USE_NUMBA": val}):
                 assert _get_numba_preference() == True
-        
+
         # Test explicit false values
         for val in ["false", "False", "0", "no", "off"]:
             with patch.dict(os.environ, {"LASER_MEASLES_USE_NUMBA": val}):

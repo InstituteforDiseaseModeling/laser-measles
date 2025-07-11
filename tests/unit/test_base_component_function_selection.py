@@ -2,11 +2,13 @@
 Unit tests for BaseComponent function selection integration.
 """
 
-import pytest
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
+from unittest.mock import patch
 
-from laser_measles.base import BaseComponent
+import pytest
+
 from laser_measles.abm.params import ABMParams
+from laser_measles.base import BaseComponent
 
 
 def numpy_test_func(x, y):
@@ -27,10 +29,10 @@ class TestBaseComponentFunctionSelection:
         # Create mock model with parameters
         mock_model = MagicMock()
         mock_model.params = ABMParams(num_ticks=100, use_numba=False)
-        
+
         # Create component
         component = BaseComponent(mock_model)
-        
+
         # Test function selection
         selected = component.select_function(numpy_test_func, numba_test_func)
         assert selected == numpy_test_func
@@ -40,13 +42,13 @@ class TestBaseComponentFunctionSelection:
         # Create mock model with numba enabled
         mock_model = MagicMock()
         mock_model.params = ABMParams(num_ticks=100, use_numba=True)
-        
+
         # Create component
         component = BaseComponent(mock_model)
-        
+
         # Mock numba availability
-        with patch('laser_measles.utils._check_numba_available', return_value=True):
-            with patch('laser_measles.utils._get_numba_preference', return_value=True):
+        with patch("laser_measles.utils._check_numba_available", return_value=True):
+            with patch("laser_measles.utils._get_numba_preference", return_value=True):
                 selected = component.select_function(numpy_test_func, numba_test_func)
                 assert selected == numba_test_func
 
@@ -55,12 +57,12 @@ class TestBaseComponentFunctionSelection:
         # Create mock model with numba enabled
         mock_model = MagicMock()
         mock_model.params = ABMParams(num_ticks=100, use_numba=True)
-        
+
         # Create component
         component = BaseComponent(mock_model)
-        
+
         # Mock numba unavailability
-        with patch('laser_measles.utils._check_numba_available', return_value=False):
+        with patch("laser_measles.utils._check_numba_available", return_value=False):
             with pytest.warns(UserWarning, match="Numba is not available"):
                 selected = component.select_function(numpy_test_func, numba_test_func)
                 assert selected == numpy_test_func
@@ -71,12 +73,12 @@ class TestBaseComponentFunctionSelection:
         mock_model = MagicMock()
         mock_model.params = MagicMock()
         del mock_model.params.use_numba  # Remove the attribute
-        
+
         # Create component
         component = BaseComponent(mock_model)
-        
+
         # Test function selection (should default to True)
-        with patch('laser_measles.utils._check_numba_available', return_value=True):
-            with patch('laser_measles.utils._get_numba_preference', return_value=True):
+        with patch("laser_measles.utils._check_numba_available", return_value=True):
+            with patch("laser_measles.utils._get_numba_preference", return_value=True):
                 selected = component.select_function(numpy_test_func, numba_test_func)
                 assert selected == numba_test_func
