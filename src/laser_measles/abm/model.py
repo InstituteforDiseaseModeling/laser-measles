@@ -17,7 +17,7 @@ from . import components
 from .params import ABMParams
 
 
-class ABMModel(BaseLaserModel[BaseABMScenario | pl.DataFrame, ABMParams]):
+class ABMModel(BaseLaserModel):
     """
     A class to represent the agent-based model.
     """

@@ -17,7 +17,7 @@ from laser_measles.base import BaseComponent
 T = TypeVar("T", bound=BaseComponent)
 
 
-def component(cls: type[T] = None, **default_params):
+def component[T: BaseComponent](cls: type[T], **default_params):
     """
     Decorator for creating components with default parameters.
 
@@ -69,7 +69,7 @@ def component(cls: type[T] = None, **default_params):
 
     def decorator(component_cls: type[T]) -> type[T]:
         # Store the default parameters
-        component_cls._default_params = default_params
+        component_cls._default_params = default_params  # type: ignore
 
         # Create a factory function for creating instances
         @wraps(component_cls)
@@ -79,7 +79,7 @@ def component(cls: type[T] = None, **default_params):
             return component_cls(model, **params)
 
         # Add the factory function to the class
-        component_cls.create = staticmethod(create)
+        component_cls.create = staticmethod(create)  # type: ignore
 
         return component_cls
 
@@ -91,7 +91,7 @@ def component(cls: type[T] = None, **default_params):
     return decorator
 
 
-def create_component(component_class: type[T], params: BaseModel | None = None) -> Callable[[Any, Any], T]:
+def create_component[T: BaseComponent](component_class: type[T], params: BaseModel | None = None) -> Callable[[Any, Any], T]:
     """
     Helper function to create a component instance with parameters.
 
@@ -126,7 +126,7 @@ def create_component(component_class: type[T], params: BaseModel | None = None) 
 
         def __call__(self, model: Any, verbose: bool = False) -> T:
             if hasattr(self, "params"):
-                return self.component_class(model, params=self.params, verbose=verbose)
+                return self.component_class(model, verbose=verbose, **self.params.model_dump())
             else:
                 return self.component_class(model, verbose=verbose)
 

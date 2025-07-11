@@ -13,7 +13,7 @@ from laser_measles.utils import StateArray
 from laser_measles.utils import cast_type
 
 
-class BiweeklyModel(BaseLaserModel[BaseBiweeklyScenario | pl.DataFrame, BiweeklyParams]):
+class BiweeklyModel(BaseLaserModel):
     """
     A class to represent the biweekly model.
 
