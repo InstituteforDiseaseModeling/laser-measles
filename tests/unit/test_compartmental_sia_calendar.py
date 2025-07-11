@@ -1,4 +1,5 @@
 """Tests for compartmental SIA calendar component."""
+# ruff: noqa: DTZ001, RUF100, PT012
 
 from datetime import datetime
 from datetime import timedelta
@@ -215,8 +216,11 @@ class TestSIACalendarProcess:
 
     def test_filtering_function(self, mock_model, mock_sia_schedule):
         """Test custom filtering function."""
+
         # Filter to only include KN nodes
-        filter_fn = lambda x: "KN" in x
+        def filter_fn(x: str) -> bool:
+            return "KN" in x
+
         params = SIACalendarParams(sia_schedule=mock_sia_schedule, filter_fn=filter_fn, aggregation_level=2)
         component = SIACalendarProcess(mock_model, params=params)
 
