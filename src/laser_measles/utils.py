@@ -253,7 +253,7 @@ def _check_numba_available() -> bool:
         bool: True if numba is available, False otherwise.
     """
     try:
-        import numba  # noqa: F401
+        import numba  # noqa: PLC0415
 
         return True
     except ImportError:
