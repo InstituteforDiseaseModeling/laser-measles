@@ -42,7 +42,7 @@ from laser_measles.utils import StateArray
 from laser_measles.utils import cast_type
 
 
-class CompartmentalModel(BaseLaserModel[BaseCompartmentalScenario | pl.DataFrame, CompartmentalParams]):
+class CompartmentalModel(BaseLaserModel):
     """
     A class to represent the compartmental SEIR model with daily timesteps.
 

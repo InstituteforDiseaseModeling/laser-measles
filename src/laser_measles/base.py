@@ -30,11 +30,8 @@ from matplotlib.backends.backend_pdf import PdfPages
 from matplotlib.figure import Figure
 
 from laser_measles.utils import StateArray
+from laser_measles.utils import get_laserframe_properties
 from laser_measles.wrapper import pretty_laserframe
-
-ScenarioType = TypeVar("ScenarioType")
-ModelType = TypeVar("ModelType")
-
 
 class ParamsProtocol(Protocol):
     """Protocol defining the expected structure of model parameters."""
@@ -48,9 +45,6 @@ class ParamsProtocol(Protocol):
     def time_step_days(self) -> int: ...
     @property
     def states(self) -> list[str]: ...
-
-
-ParamsType = TypeVar("ParamsType", bound=ParamsProtocol)
 
 
 @pretty_laserframe
@@ -104,7 +98,6 @@ class BasePeopleLaserFrame(LaserFrame):
         Args:
             source_frame: The source LaserFrame to copy properties from.
         """
-        from laser_measles.utils import get_laserframe_properties
 
         properties = get_laserframe_properties(source_frame)
 
@@ -129,7 +122,9 @@ class BasePeopleLaserFrame(LaserFrame):
                 raise NotImplementedError(f"Property {property_name} has {source_property.ndim} dimensions, not supported")
 
 
-class BaseLaserModel(ABC, Generic[ScenarioType, ParamsType]):
+class BaseLaserModel(ABC):
+    ScenarioType = TypeVar("ScenarioType")
+    ParamsType = TypeVar("ParamsType", bound=ParamsProtocol)
     """
     Base class for laser-measles simulation models.
 
@@ -351,7 +346,7 @@ class BaseLaserModel(ABC, Generic[ScenarioType, ParamsType]):
             # Fix the pandas DataFrame creation by using proper column specification
             metrics = pd.DataFrame(self.metrics)
             if len(names) > 0:
-                metrics.columns = ["tick"] + names
+                metrics.columns = ["tick", *names]
             plot_columns = metrics.columns[1:]
             sum_columns = metrics[plot_columns].sum()
             width = max(map(len, sum_columns.index))
@@ -364,7 +359,7 @@ class BaseLaserModel(ABC, Generic[ScenarioType, ParamsType]):
                 import polars as pl  # noqa: PLC0415
 
                 names = [type(phase).__name__ for phase in self.phases]
-                metrics = pl.DataFrame(self.metrics, schema=["tick"] + names)
+                metrics = pl.DataFrame(self.metrics, schema=["tick", *names])
                 plot_columns = metrics.columns[1:]
                 sum_columns = metrics.select(plot_columns).sum()
                 # Handle polars DataFrame differently
@@ -567,7 +562,8 @@ class BaseLaserModel(ABC, Generic[ScenarioType, ParamsType]):
         return f"<{self.__class__.__name__}>:\n{'\n'.join([f'{k}: {v}' for k, v in attrs.items()])}>"
 
 
-class BaseComponent(ABC, Generic[ModelType]):
+class BaseComponent(ABC):
+    ModelType = TypeVar("ModelType")
     """
     Base class for all laser-measles components.
 

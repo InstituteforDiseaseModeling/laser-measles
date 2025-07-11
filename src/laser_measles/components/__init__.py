@@ -2,14 +2,6 @@
 
 __all__ = []
 
-from .base import BaseVitalDynamicsProcess
-
-__all__.extend(
-    [
-        "BaseVitalDynamicsProcess",
-    ]
-)
-
 from .base_infection import BaseInfection
 from .base_infection import BaseInfectionParams
 
