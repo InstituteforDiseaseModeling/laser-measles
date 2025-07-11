@@ -4,7 +4,6 @@ You can use this to generate initial conditions (e.g, population, MCV1 coverage)
 laser-measles scenario.
 """
 
-import os
 from datetime import UTC
 from datetime import datetime
 from pathlib import Path

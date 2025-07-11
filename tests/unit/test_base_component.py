@@ -1,6 +1,7 @@
 """
 Tests for the BaseComponent class and its functionality.
 """
+
 # ruff: noqa: PLC0415
 from unittest.mock import Mock
 
@@ -159,8 +160,8 @@ class TestBaseComponentIntegration:
         """Test that existing biweekly components still work with refactored BaseComponent."""
         try:
             # Test importing some biweekly components
-            from laser_measles.biweekly.components.process_infection import InfectionProcess 
-            from laser_measles.biweekly.components.tracker_state import StateTracker 
+            from laser_measles.biweekly.components.process_infection import InfectionProcess
+            from laser_measles.biweekly.components.tracker_state import StateTracker
 
             MockModel()
 
@@ -174,7 +175,6 @@ class TestBaseComponentIntegration:
     def test_components_utility_still_works(self):
         """Test that the components utility module still works with the refactored BaseComponent."""
         try:
-            from laser_measles.base import BaseComponent
             from laser_measles.components import component
             from laser_measles.components import create_component
 
