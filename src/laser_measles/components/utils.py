@@ -125,7 +125,7 @@ def create_component(component_class: type[T], params: BaseModel | None = None) 
                 self.params = params
 
         def __call__(self, model: Any, verbose: bool = False) -> T:
-            if hasattr(self, 'params'):
+            if hasattr(self, "params"):
                 return self.component_class(model, params=self.params, verbose=verbose)
             else:
                 return self.component_class(model, verbose=verbose)

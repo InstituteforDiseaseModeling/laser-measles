@@ -75,7 +75,7 @@ for instance in model.instances:
         # Plot SEIR dynamics
         for _ in instance.plot_combined():
             plt.show()
-        
+
         # Access individual compartments
         print(f"Final susceptible: {instance.S[-1]}")
         print(f"Peak infections: {instance.I.max()}")

@@ -80,10 +80,10 @@ class SIACalendarProcess(BasePhase):
 
         # Store start date for compatibility with tests
         self.start_date = model.start_time
-        
+
         # Store a copy of the original schedule for get_sia_schedule method
         self._original_schedule = self.params.sia_schedule.clone()
-        
+
         # Convert string dates in SIA schedule to datetime objects for comparison
         self._convert_schedule_dates()
 
@@ -105,11 +105,9 @@ class SIACalendarProcess(BasePhase):
         if len(self.params.sia_schedule) == 0:
             # For empty DataFrames, ensure the date column has the correct type
             if self.params.date_column in self.params.sia_schedule.columns:
-                self.params.sia_schedule = self.params.sia_schedule.with_columns(
-                    pl.col(self.params.date_column).cast(pl.Datetime)
-                )
+                self.params.sia_schedule = self.params.sia_schedule.with_columns(pl.col(self.params.date_column).cast(pl.Datetime))
             return
-            
+
         # Convert string dates to datetime objects
         self.params.sia_schedule = self.params.sia_schedule.with_columns(
             pl.col(self.params.date_column).str.strptime(pl.Datetime, "%Y-%m-%d")

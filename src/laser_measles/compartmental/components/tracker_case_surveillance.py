@@ -180,7 +180,7 @@ class CaseSurveillanceTracker(BasePhase):
 
         # Create heatmap with log scale
         heatmap_data = np.log1p(pivot_df.values)
-        im = ax.imshow(heatmap_data, aspect='auto', cmap="viridis")
+        im = ax.imshow(heatmap_data, aspect="auto", cmap="viridis")
         cbar = fig.colorbar(im, ax=ax)
         cbar.set_label("log(cases + 1)")
 

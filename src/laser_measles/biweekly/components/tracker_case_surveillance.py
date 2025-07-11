@@ -139,7 +139,9 @@ class CaseSurveillanceTracker(BasePhase):
             # For each tick and node, add the reported cases
             for tick in range(self.model.params.num_ticks):
                 for node_pos, node_idx in enumerate(self.node_indices):
-                    data.append({"tick": tick, "node_id": self.model.scenario["id"][node_idx], "cases": self.reported_cases[tick, node_pos]})
+                    data.append(
+                        {"tick": tick, "node_id": self.model.scenario["id"][node_idx], "cases": self.reported_cases[tick, node_pos]}
+                    )
 
         # Create DataFrame
         return pl.DataFrame(data)
@@ -176,7 +178,7 @@ class CaseSurveillanceTracker(BasePhase):
 
         # Create heatmap with log scale
         heatmap_data = np.log1p(pivot_df.values)
-        im = ax.imshow(heatmap_data, aspect='auto', cmap="viridis")
+        im = ax.imshow(heatmap_data, aspect="auto", cmap="viridis")
         cbar = fig.colorbar(im, ax=ax)
         cbar.set_label("log(cases + 1)")
 

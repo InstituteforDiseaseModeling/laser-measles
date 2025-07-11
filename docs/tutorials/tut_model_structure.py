@@ -24,15 +24,14 @@
 import polars as pl
 
 from laser_measles.compartmental import CompartmentalModel
+from laser_measles.compartmental.components import CaseSurveillanceParams
+from laser_measles.compartmental.components import CaseSurveillanceTracker
 from laser_measles.compartmental.params import CompartmentalParams
-from laser_measles.compartmental.components import CaseSurveillanceTracker, CaseSurveillanceParams
 
 # Create a simple scenario
-scenario = pl.DataFrame({"id": ['1', '2', '3'],
-                        "pop": [1000, 2000, 1500],
-                        "lat": [40.0, 41.0, 42.0],
-                        "lon": [-74.0, -73.0, -72.0],
-                        "mcv1": [0.0,0.0,0.0]})
+scenario = pl.DataFrame(
+    {"id": ["1", "2", "3"], "pop": [1000, 2000, 1500], "lat": [40.0, 41.0, 42.0], "lon": [-74.0, -73.0, -72.0], "mcv1": [0.0, 0.0, 0.0]}
+)
 
 # Initialize compartmental model
 params = CompartmentalParams(num_ticks=100)
@@ -52,11 +51,12 @@ print(comp_model)
 # Create a CaseSurveillanceTracker to monitor infections
 case_tracker = lm.create_component(
     CaseSurveillanceTracker,
-    CaseSurveillanceParams(detection_rate=1.0)  # 100% detection for accurate infection counting
+    CaseSurveillanceParams(detection_rate=1.0),  # 100% detection for accurate infection counting
 )
 
 # Add transmission and surveillance to the model
 from laser_measles.compartmental.components import TransmissionProcess
+
 comp_model.add_component(TransmissionProcess)
 comp_model.add_component(case_tracker)
 
@@ -84,10 +84,10 @@ print(f"\nCompartmental model total infections: {comp_infections_df['cases'].sum
 # In addition to a `patch`, the ABM uses `people` (e.g., `BasePeopleLaserFrame`) for individual agents:
 
 # %%
+import laser_measles as lm
 from laser_measles.abm import ABMModel
 from laser_measles.abm.components import TransmissionProcess
 from laser_measles.abm.params import ABMParams
-import laser_measles as lm
 
 # Initialize ABM model
 abm_params = ABMParams(num_ticks=100)
@@ -104,8 +104,7 @@ print(abm_model)
 
 # Add CaseSurveillanceTracker to ABM model
 abm_case_tracker = lm.create_component(
-    lm.abm.components.CaseSurveillanceTracker,
-    lm.abm.components.CaseSurveillanceParams(detection_rate=1.0)
+    lm.abm.components.CaseSurveillanceTracker, lm.abm.components.CaseSurveillanceParams(detection_rate=1.0)
 )
 abm_model.add_component(abm_case_tracker)
 
@@ -173,14 +172,12 @@ print(f"Compartmental model total infections: {comp_infections_df['cases'].sum()
 print(f"ABM model total infections: {abm_infections_df['cases'].sum()}")
 
 # Show infection timeline for compartmental model
-comp_timeline = comp_infections_df.group_by('tick').agg(pl.col('cases').sum().alias('daily_cases'))
+comp_timeline = comp_infections_df.group_by("tick").agg(pl.col("cases").sum().alias("daily_cases"))
 print("\nCompartmental model infection timeline (first 20 days):")
 print(comp_timeline.head(20))
 
 # Calculate cumulative infections
-comp_timeline = comp_timeline.with_columns(
-    pl.col('daily_cases').cumsum().alias('cumulative_cases')
-)
+comp_timeline = comp_timeline.with_columns(pl.col("daily_cases").cumsum().alias("cumulative_cases"))
 print(f"\nPeak daily infections (compartmental): {comp_timeline['daily_cases'].max()}")
 print(f"Days to peak: {comp_timeline.filter(pl.col('daily_cases') == comp_timeline['daily_cases'].max())['tick'].to_list()[0]}")
 

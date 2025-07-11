@@ -22,4 +22,4 @@ else
             jupytext --to notebook "$py_file"
         fi
     done
-fi 
+fi
