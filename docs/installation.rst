@@ -57,6 +57,13 @@ Dependency Groups
 Development
 ===========
 
+You can use this github codespace for fast development:
+
+.. raw:: html
+
+   <a href='https://codespaces.new/InstituteforDiseaseModeling/laser-measles'><img src='https://github.com/codespaces/badge.svg' alt='Open in GitHub Codespaces' style='max-width: 100%;'></a>
+
+
 To run all the tests run:
 
 .. code-block:: bash
