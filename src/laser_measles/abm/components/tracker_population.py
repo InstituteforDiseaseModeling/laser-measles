@@ -16,4 +16,5 @@ class PopulationTracker(BasePhase):
     def __call__(self, model, tick: int) -> None:
         self.population_tracker[:, tick] = model.patches.states.sum(axis=0)
 
-    def _initialize(self, model: ABMModel) -> None: pass
+    def _initialize(self, model: ABMModel) -> None:
+        pass

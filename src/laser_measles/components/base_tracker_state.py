@@ -124,7 +124,6 @@ class BaseStateTracker(BasePhase):
                 filtered_states = model.patches.states.sum(axis=1)
             self.state_tracker[:, tick, 0] = filtered_states
 
-
     def plot(self, fig: Figure | None = None):
         """
         Plots the time series of SEIR state counts across all nodes using subplots.
@@ -246,4 +245,5 @@ class BaseStateTracker(BasePhase):
 
         return pl.DataFrame(data)
 
-    def _initialize(self, model: BaseLaserModel) -> None: pass
+    def _initialize(self, model: BaseLaserModel) -> None:
+        pass
