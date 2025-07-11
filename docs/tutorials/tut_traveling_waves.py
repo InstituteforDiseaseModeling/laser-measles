@@ -24,8 +24,8 @@
 # we can estimate wave speeds and understand spatial epidemic dynamics.
 
 # %%
-import numpy as np
 import matplotlib.pyplot as plt
+import numpy as np
 import polars as pl
 from scipy import stats
 

@@ -6,8 +6,8 @@ These tutorials are designed to get you started with the basics of the library.
 
 .. toctree::
     :maxdepth: 1
-    
-    tutorials/tut_basic_model.ipynb    
+
+    tutorials/tut_basic_model.ipynb
     tutorials/tut_model_structure.ipynb
     tutorials/tut_abm_intro.ipynb
     tutorials/tut_scenarios.ipynb
@@ -19,8 +19,8 @@ These tutorials are designed to highlight specific features of the library.
 
 .. toctree::
     :maxdepth: 1
-    
-    tutorials/tut_random_numbers.ipynb  
+
+    tutorials/tut_random_numbers.ipynb
     tutorials/tut_creating_component.ipynb
     tutorials/tut_pydantic_component_parameters.ipynb
     tutorials/tut_state_arrays.ipynb
@@ -31,7 +31,7 @@ These tutorials are designed to show you how to use the library to solve a probl
 
 .. toctree::
     :maxdepth: 1
-    
+
     tutorials/tut_traveling_waves.ipynb
 
 AI Assistance

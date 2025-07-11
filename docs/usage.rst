@@ -5,7 +5,7 @@ Usage
 Overview
 --------
 
-laser-measles is a spatial epidemiological modeling toolkit for measles transmission dynamics, built on the `LASER framework <https://github.com/InstituteforDiseaseModeling/laser>`_. 
+laser-measles is a spatial epidemiological modeling toolkit for measles transmission dynamics, built on the `LASER framework <https://github.com/InstituteforDiseaseModeling/laser>`_.
 It provides a flexible, component-based architecture for disease simulation with support for multiple geographic scales and demographic configurations.
 
 Key features include:
@@ -33,7 +33,7 @@ For development installation with all dependencies (recommended: use `uv` for fa
     uv pip install -e ".[dev]"
     # or for full installation including examples
     uv pip install -e ".[full]"
-    
+
     # Alternative: using pip
     pip install -e ".[dev]"
 
@@ -80,13 +80,13 @@ The ABM model provides individual-level simulation with stochastic agents, allow
 .. code-block:: python
 
     from laser_measles.abm import ABMModel, ABMParams
-    
+
     # Configure model parameters
     params = ABMParams(
         num_ticks=7300,  # 20 years of daily timesteps
         seed=12345
     )
-    
+
     # Initialize and run model
     model = ABMModel(scenario_data, params)
     model.run()
@@ -111,13 +111,13 @@ The Biweekly Model is a compartmental model optimized for fast simulation and pa
 .. code-block:: python
 
     from laser_measles.biweekly import BiweeklyModel, BiweeklyParams
-    
+
     # Configure model parameters
     params = BiweeklyParams(
         num_ticks=520,  # 20 years of bi-weekly time steps
         seed=12345
     )
-    
+
     # Initialize and run model
     model = BiweeklyModel(scenario_data, params)
     model.run()
@@ -142,13 +142,13 @@ The Compartmental Model provides population-level SEIR dynamics with daily times
 .. code-block:: python
 
     from laser_measles.compartmental import CompartmentalModel, CompartmentalParams
-    
+
     # Configure model parameters
     params = CompartmentalParams(
         num_ticks=7300,  # 20 years of daily time steps
         seed=12345
     )
-    
+
     # Initialize and run model
     model = CompartmentalModel(scenario_data, params)
     model.run()
@@ -180,10 +180,10 @@ The demographics package provides comprehensive geographic data handling capabil
 .. code-block:: python
 
     from laser_measles.demographics import GADMShapefile, RasterPatchGenerator, RasterPatchParams
-    
+
     # Load administrative boundaries
     shapefile = GADMShapefile("ETH", admin_level=1)  # Ethiopia, admin level 1
-    
+
     # Generate population patches
     params = RasterPatchParams(
         shapefile_path="path/to/shapefile.shp",
@@ -208,7 +208,7 @@ laser-measles uses Pydantic for type-safe parameter management, providing automa
 * ``CompartmentalParams``: Configuration for compartmental models with daily dynamics
 
 **Component Classes:**
-Components come in "process" and "tracker" categories and each component has a corresponding parameter class. 
+Components come in "process" and "tracker" categories and each component has a corresponding parameter class.
 Each model (ABM, Biweekly, or Compartmental) has its own set of components. See the :doc:`API documentation <api/index>` for more details.
 
 **Benefits:**
@@ -223,12 +223,12 @@ Each model (ABM, Biweekly, or Compartmental) has its own set of components. See 
 .. code-block:: python
 
     from laser_measles.biweekly import BiweeklyParams
-    
+
     params = BiweeklyParams(
         num_ticks=520,  # Validated as positive integer
         seed=12345      # Random seed for reproducibility
     )
-    
+
     # Export configuration
     config_json = params.model_dump_json()
 
@@ -270,7 +270,7 @@ The component system provides a uniform interface for disease dynamics with inte
 **Base Component Classes:**
 
 * ``base_transmission.py``: Base transmission/infection logic
-* ``base_vital_dynamics.py``: Base births/deaths logic  
+* ``base_vital_dynamics.py``: Base births/deaths logic
 * ``base_importation.py``: Base importation pressure logic
 * ``base_tracker.py``: Base tracking/metrics logic
 * ``base_infection.py``: Base infection state transitions
@@ -287,11 +287,11 @@ The component system provides a uniform interface for disease dynamics with inte
 
     # Component with parameters using Pydantic
     from laser_measles.components.base_infection import BaseInfectionProcess
-    
+
     class MyInfectionProcess(BaseInfectionProcess):
         def __init__(self, model, verbose=False, **params):
             super().__init__(model, verbose)
             # Initialize with validated parameters
-    
+
     # Add to model
     model.components = [MyInfectionProcess]

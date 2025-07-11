@@ -181,7 +181,7 @@ state_tracker = model.get_instance(StateTracker)[0]
 - Compartmental dynamics with binomial sampling
 - Recommended for scenario building and policy analysis
 
-#### Compartmental Models  
+#### Compartmental Models
 - Use daily timesteps (365 ticks per year)
 - SEIR dynamics with detailed temporal resolution
 - Recommended for parameter estimation and outbreak modeling

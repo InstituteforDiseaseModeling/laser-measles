@@ -115,8 +115,11 @@ class PIRIProcess(BasePhase):
 
 # %%
 import numpy as np
+
 RNG = np.random.default_rng(42)
-def run_simulation(use_piri: bool = True, num_ticks: int = 365*10) -> tuple:
+
+
+def run_simulation(use_piri: bool = True, num_ticks: int = 365 * 10) -> tuple:
     """Run a simulation with or without the PIRI component."""
 
     # Create scenario with low initial MCV1 coverage
@@ -145,7 +148,9 @@ def run_simulation(use_piri: bool = True, num_ticks: int = 365*10) -> tuple:
         # Track states over time
         lm.compartmental.components.StateTracker,
         # Track cases over time
-        lm.create_component(lm.compartmental.components.CaseSurveillanceTracker, lm.compartmental.components.CaseSurveillanceParams(detection_rate=1.0))
+        lm.create_component(
+            lm.compartmental.components.CaseSurveillanceTracker, lm.compartmental.components.CaseSurveillanceParams(detection_rate=1.0)
+        ),
     ]
 
     # Add PIRI component if requested
@@ -201,12 +206,11 @@ final_with_piri = results_with_piri.tail(1)
 print(f"\nFinal Results (Day {final_no_piri['tick'][0]}):")
 print(f"{'Metric':<20} {'No PIRI':<15} {'With PIRI':<15} {'Difference':<15}")
 print("-" * 65)
-no_piri_val = cases_no_piri['cases'].sum()
-with_piri_val = cases_with_piri['cases'].sum()
+no_piri_val = cases_no_piri["cases"].sum()
+with_piri_val = cases_with_piri["cases"].sum()
 difference = with_piri_val - no_piri_val
 
 print(f"{'cases' + ' (final)':<20} {no_piri_val:<15,} {with_piri_val:<15,} {difference:<15,}")
-
 
 
 # %%
