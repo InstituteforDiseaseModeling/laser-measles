@@ -191,13 +191,13 @@ examples = [
     "ipykernel>=6.0.0",
 ]
 full = [
+    "ruff",
+    "pytest",
     "pytest-order>=1.1.1",
-    "sphinx-autodoc-typehints>=3.0.1",
-    "sphinxcontrib-napoleon>=0.7",
+    "pyright",
+    "mypy",
     "jupytext>=1.17.2",
     "notebook>=7.4.3",
     "seaborn>=0.13.2",
-    "ipykernel>=6.0.0",
-    "mypy",
-    "pyright"
+    "ipykernel>=6.0.0",    
 ]
