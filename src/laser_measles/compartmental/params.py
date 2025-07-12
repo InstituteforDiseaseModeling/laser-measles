@@ -1,23 +1,18 @@
 import json
 from collections import OrderedDict
 
-from pydantic import BaseModel
 from pydantic import Field
+
+from laser_measles.base import BaseModelParams
 
 TIME_STEP_DAYS = 1
 STATES = ["S", "E", "I", "R"]  # Compartments/states for SEIR model
 
 
-class CompartmentalParams(BaseModel):
+class CompartmentalParams(BaseModelParams):
     """
     Parameters for the compartmental SEIR model with daily timesteps.
     """
-
-    num_ticks: int = Field(..., description="Number of time steps (days)")
-    seed: int = Field(default=20250314, description="Random seed")
-    start_time: str = Field(default="2005-01", description="Initial start time of simulation in YYYY-MM format")
-    verbose: bool = Field(default=False, description="Whether to print verbose output")
-    use_numba: bool = Field(default=True, description="Whether to use numba acceleration when available")
 
     @property
     def time_step_days(self) -> int:

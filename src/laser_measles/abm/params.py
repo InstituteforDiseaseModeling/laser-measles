@@ -5,23 +5,18 @@ Parameters for the ABM model.
 import json
 from collections import OrderedDict
 
-from pydantic import BaseModel
 from pydantic import Field
+
+from laser_measles.base import BaseModelParams
 
 TIME_STEP_DAYS = 1
 STATES = ["S", "E", "I", "R"]
 
 
-class ABMParams(BaseModel):
+class ABMParams(BaseModelParams):
     """
     Parameters for the ABM model.
     """
-
-    num_ticks: int = Field(..., description="Number of time steps (daily)")
-    seed: int = Field(default=20250314, description="Random seed")
-    start_time: str = Field(default="2000-01", description="Initial start time of simulation in YYYY-MM format")
-    verbose: bool = Field(default=False, description="Whether to print verbose output")
-    use_numba: bool = Field(default=True, description="Whether to use numba acceleration when available")
 
     @property
     def time_step_days(self) -> int:
