@@ -61,6 +61,9 @@ Repository = "https://github.com/InstituteforDiseaseModeling/laser-measles.git"
 Issues = "https://github.com/InstituteforDiseaseModeling/laser-measles/issues"
 Changelog = "https://github.com/InstituteforDiseaseModeling/laser-measles/blob/master/CHANGELOG.md"
 
+[project.scripts]
+laser-measles = "laser_measles.cli:app"
+
 [tool.ruff]
 extend-exclude = ["static", "ci/templates", "docs/tutorials/not_ready/*", "docs/tutorials/convert_tutorials.py", "docs/tutorials/tut_*.py"]
 line-length = 140
