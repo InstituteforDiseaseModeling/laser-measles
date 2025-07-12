@@ -189,6 +189,7 @@ examples = [
     "notebook>=7.4.3",
     "seaborn>=0.13.2",
     "ipykernel>=6.0.0",
+    "optuna>=4.4.0"
 ]
 full = [
     "ruff",
