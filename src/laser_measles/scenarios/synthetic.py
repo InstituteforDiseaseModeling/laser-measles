@@ -3,13 +3,23 @@ import polars as pl
 
 
 def single_patch_scenario(population: int = 100_000, mcv1_coverage: float = 0.0) -> pl.DataFrame:
-    """Generate a synthetic scenario with a single patch."""
+    """Generate a synthetic scenario with a single patch.
+
+    Args:
+        population (int): Population of the patch.
+        mcv1_coverage (float): MCV1 coverage of the patch.
+    """
     df = pl.DataFrame({"id": ["patch_1"], "pop": [population], "lat": [40.0], "lon": [4.0], "mcv1": [mcv1_coverage]})
     return df
 
 
 def two_patch_scenario(population: int = 100_000, mcv1_coverage: float = 0.0) -> pl.DataFrame:
-    """Generate a synthetic scenario with two patches."""
+    """Generate a synthetic scenario with two patches where one is half the size of the other.
+
+    Args:
+        population (int): Population of the largest patch.
+        mcv1_coverage (float): MCV1 coverage of the patches.
+    """
     df = pl.DataFrame(
         {
             "id": ["patch_1", "patch_2"],
@@ -32,11 +42,11 @@ def two_cluster_scenario(
     """Generate a synthetic scenario with two clusters of nodes.
 
     Args:
-        seed: Random seed for reproducibility.
-        n_nodes_per_cluster: Number of nodes per cluster.
-        cluster_centers: List of tuples representing the centers of the clusters.
-        cluster_size_std: Standard deviation of the Gaussian distribution for cluster size.
-        mcv1_coverage_range: Range of MCV1 coverage percentages.
+        seed (int): Random seed for reproducibility.
+        n_nodes_per_cluster (int): Number of nodes per cluster.
+        cluster_centers (list[tuple[float, float]]): List of tuples representing the centers of the clusters.
+        cluster_size_std (float): Standard deviation of the Gaussian distribution for cluster size.
+        mcv1_coverage_range (tuple[float, float]): Range of MCV1 coverage percentages.
     """
 
     # Set defaults for mutable arguments
