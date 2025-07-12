@@ -27,6 +27,8 @@ from laser_core.laserframe import LaserFrame
 from laser_core.random import seed as seed_prng
 from matplotlib.backends.backend_pdf import PdfPages
 from matplotlib.figure import Figure
+from pydantic import BaseModel
+from pydantic import Field
 
 from laser_measles.utils import StateArray
 from laser_measles.utils import get_laserframe_properties
@@ -41,11 +43,38 @@ class ParamsProtocol(Protocol):
     start_time: str
     num_ticks: int
     verbose: bool
+    show_progress: bool
 
     @property
     def time_step_days(self) -> int: ...
     @property
     def states(self) -> list[str]: ...
+
+
+class BaseModelParams(BaseModel):
+    """
+    Base parameters for all laser-measles models.
+    
+    This class provides common parameters that are shared across all model types.
+    Model-specific parameter classes should inherit from this class.
+    """
+    
+    seed: int = Field(default=20250314, description="Random seed")
+    start_time: str = Field(default="2000-01", description="Initial start time of simulation in YYYY-MM format")
+    num_ticks: int = Field(..., description="Number of time steps")
+    verbose: bool = Field(default=False, description="Whether to print verbose output")
+    show_progress: bool = Field(default=True, description="Whether to show progress bar during simulation")
+    use_numba: bool = Field(default=True, description="Whether to use numba acceleration when available")
+
+    @property
+    def time_step_days(self) -> int:
+        """Time step in days. Must be implemented by subclasses."""
+        raise NotImplementedError("Subclasses must implement time_step_days")
+
+    @property
+    def states(self) -> list[str]:
+        """List of model states. Must be implemented by subclasses."""
+        raise NotImplementedError("Subclasses must implement states")
 
 
 @pretty_laserframe
@@ -178,6 +207,55 @@ class BaseLaserModel(ABC):
         self.start_time = datetime.strptime(self.params.start_time, "%Y-%m")  # noqa DTZ007
         self.current_date = self.start_time
 
+    def __repr__(self) -> str:
+        """
+        Return a string representation of the model, showing key attributes.
+
+        Returns:
+            str: String representation of the model, including LaserFrame attributes.
+        """
+        attrs = []
+        for attr in dir(self):
+            if attr.startswith("_"):
+                continue
+            value = getattr(self, attr)
+            # Check if the attribute is a LaserFrame
+            if isinstance(value, LaserFrame):
+                attrs.append(f"{attr}=<LaserFrame shape={getattr(value, 'shape', None)}>")
+            else:
+                # Only show simple types to avoid clutter
+                if isinstance(value, int | float | str | bool | type(None)):
+                    attrs.append(f"{attr}={value!r}")
+        return f"<{self.__class__.__name__}({', '.join(attrs)})>"
+
+    def __str__(self) -> str:
+        """
+        Return a string representation of the model, showing key attributes.
+        """
+        attrs = {}
+        for attr in dir(self):
+            if attr.startswith("_"):
+                continue
+            value = getattr(self, attr)
+            # Check if the attribute is a LaserFrame
+            if isinstance(value, LaserFrame):
+                attrs[attr] = "\n" + value.__str__()
+            else:
+                # Only show simple types to avoid clutter
+                if isinstance(value, int | float | str | bool | type(None)):
+                    attrs[attr] = value.__str__()
+        return f"<{self.__class__.__name__}>:\n{'\n'.join([f'{k}: {v}' for k, v in attrs.items()])}>"
+
+    @abstractmethod
+    def __call__(self, model: BaseLaserModel, tick: int) -> None:
+        """
+        Hook for subclasses to update the model for a given tick.
+
+        Args:
+            model: The model instance.
+            tick: The current time step or tick.
+        """
+
     @property
     def components(self) -> list:
         """
@@ -238,55 +316,6 @@ class BaseLaserModel(ABC):
             self.phases.insert(0, instance)
         self._setup_components()
 
-    @abstractmethod
-    def __call__(self, model: BaseLaserModel, tick: int) -> None:
-        """
-        Hook for subclasses to update the model for a given tick.
-
-        Args:
-            model: The model instance.
-            tick: The current time step or tick.
-        """
-
-    def __repr__(self) -> str:
-        """
-        Return a string representation of the model, showing key attributes.
-
-        Returns:
-            str: String representation of the model, including LaserFrame attributes.
-        """
-        attrs = []
-        for attr in dir(self):
-            if attr.startswith("_"):
-                continue
-            value = getattr(self, attr)
-            # Check if the attribute is a LaserFrame
-            if isinstance(value, LaserFrame):
-                attrs.append(f"{attr}=<LaserFrame shape={getattr(value, 'shape', None)}>")
-            else:
-                # Only show simple types to avoid clutter
-                if isinstance(value, int | float | str | bool | type(None)):
-                    attrs.append(f"{attr}={value!r}")
-        return f"<{self.__class__.__name__}({', '.join(attrs)})>"
-
-    def __str__(self) -> str:
-        """
-        Return a string representation of the model, showing key attributes.
-        """
-        attrs = {}
-        for attr in dir(self):
-            if attr.startswith("_"):
-                continue
-            value = getattr(self, attr)
-            # Check if the attribute is a LaserFrame
-            if isinstance(value, LaserFrame):
-                attrs[attr] = "\n" + value.__str__()
-            else:
-                # Only show simple types to avoid clutter
-                if isinstance(value, int | float | str | bool | type(None)):
-                    attrs[attr] = value.__str__()
-        return f"<{self.__class__.__name__}>:\n{'\n'.join([f'{k}: {v}' for k, v in attrs.items()])}>"
-
     def run(self) -> None:
         """
         Execute the model for a specified number of ticks, recording timing metrics.
@@ -305,10 +334,17 @@ class BaseLaserModel(ABC):
             print(f"{self._tstart}: Running the {self.name} model for {num_ticks} ticks…")
 
         self.metrics = []
-        with alive_progress.alive_bar(num_ticks) as bar:
+        
+        # Create progress bar only if show_progress is True
+        if self.params.show_progress:
+            with alive_progress.alive_bar(num_ticks) as bar:
+                for tick in range(num_ticks):
+                    self._execute_tick(tick)
+                    bar()
+        else:
+            # Run without progress bar
             for tick in range(num_ticks):
                 self._execute_tick(tick)
-                bar()
 
         self._tfinish = datetime.now(tz=None)  # noqa: DTZ005
         if self.params.verbose:

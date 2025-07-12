@@ -46,7 +46,7 @@ def calc_distances(latitudes: np.ndarray, longitudes: np.ndarray, verbose: bool 
 
     Returns:
 
-        np.ndarray: A 2-dimensional array where the element at [i, j] represents the distance between the i-th and j-th points.
+        np.ndarray: A 2-dimensional array where the element at [i, j] represents the distance in km between the i-th and j-th points.
 
     Raises:
 

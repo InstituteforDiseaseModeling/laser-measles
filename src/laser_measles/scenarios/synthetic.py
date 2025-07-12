@@ -1,3 +1,6 @@
+"""Synthetic scenarios for testing and development.
+"""
+
 import numpy as np
 import polars as pl
 
@@ -8,6 +11,9 @@ def single_patch_scenario(population: int = 100_000, mcv1_coverage: float = 0.0)
     Args:
         population (int): Population of the patch.
         mcv1_coverage (float): MCV1 coverage of the patch.
+
+    Returns:
+        pl.DataFrame: Scenario DataFrame.
     """
     df = pl.DataFrame({"id": ["patch_1"], "pop": [population], "lat": [40.0], "lon": [4.0], "mcv1": [mcv1_coverage]})
     return df
@@ -19,6 +25,9 @@ def two_patch_scenario(population: int = 100_000, mcv1_coverage: float = 0.0) ->
     Args:
         population (int): Population of the largest patch.
         mcv1_coverage (float): MCV1 coverage of the patches.
+
+    Returns:
+        pl.DataFrame: Scenario DataFrame.
     """
     df = pl.DataFrame(
         {
@@ -47,6 +56,9 @@ def two_cluster_scenario(
         cluster_centers (list[tuple[float, float]]): List of tuples representing the centers of the clusters.
         cluster_size_std (float): Standard deviation of the Gaussian distribution for cluster size.
         mcv1_coverage_range (tuple[float, float]): Range of MCV1 coverage percentages.
+
+    Returns:
+        pl.DataFrame: Scenario DataFrame.
     """
 
     # Set defaults for mutable arguments
@@ -123,3 +135,62 @@ def two_cluster_scenario(
     scenario_data = pl.DataFrame({"id": node_ids, "pop": populations, "lat": lats, "lon": lons, "mcv1": mcv1_coverage})
 
     return scenario_data
+
+def satellites_scenario(core_population: int = 500_000, satellite_population: int = 100_000, n_towns: int = 30, max_distance: float = 200, mcv1: float = 0.50, seed: int | None = None):
+    """
+    Create a cluster of nodes with a single large node in the center (core) surrounded by smaller nodes (satellites).
+
+    Args:
+        core_population (int): Population of the core city
+        satellite_population (int): Population of the satellite cities
+        n_towns (int): Number of towns to create
+        max_distance (float): Maximum distance from center (km)
+        mcv1 (float): MCV1 coverage
+        seed (int): Random seed for reproducibility
+
+    Returns:
+        pl.DataFrame: Scenario DataFrame.
+    """
+    # Create one major city at the center
+    towns = []
+
+    # Set random seed for reproducibility
+    rng = np.random.default_rng(seed=seed)
+
+    # Major city (largest population)
+    towns.append(
+        {
+            "id": "0",
+            "lat": 0.0,
+            "lon": 0.0,
+            "pop": core_population,  # Large central city
+            "mcv1": mcv1,
+        }
+    )
+
+    # Create smaller towns at various distances
+    for i in range(1, n_towns):
+        # Random distance from center (weighted toward closer distances)
+        # distance = np.random.exponential(scale=max_distance / 3)
+        distance = np.sqrt(np.random.uniform(0, max_distance**2))
+        distance = min(distance, max_distance)
+
+        # Random angle
+        angle = np.random.uniform(0, 2 * np.pi)
+
+        # Convert to lat/lon (approximate, assuming 1 degree ≈ 111 km)
+        lat = (distance * np.cos(angle)) / 111.0
+        lon = (distance * np.sin(angle)) / 111.0
+
+        # Population follows power law distribution (many small towns, few large ones)
+        pop = satellite_population + rng.integers(0, int(core_population / 10), 1)
+        # pop = np.random.lognormal(mean=np.log(target_median), sigma=np.log(target_median) / 10)  # Log-normal distribution
+        # pop = max(5000, min(100000, int(pop)))  # Constrain to reasonable range
+
+        # MCV1 coverage varies slightly
+        mcv1 = np.random.normal(mcv1, 0.05)
+        mcv1 = max(0.0, min(0.95, mcv1))
+
+        towns.append({"id": str(i), "lat": lat, "lon": lon, "pop": int(pop), "mcv1": mcv1})
+
+    return pl.DataFrame(towns)
