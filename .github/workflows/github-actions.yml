@@ -30,7 +30,7 @@ jobs:
             python: '3.12'
             toxpython: 'python3.12'
             python_arch: 'x64'
-            tox_env: 'py312'
+            tox_env: 'py312-ci'
             cibw_arch: 'x86_64'
             cibw_build: false
             os: 'ubuntu-latest'
@@ -38,7 +38,7 @@ jobs:
             python: '3.12'
             toxpython: 'python3.12'
             python_arch: 'x64'
-            tox_env: 'py312'
+            tox_env: 'py312-ci'
             cibw_arch: 'AMD64'
             cibw_build: false
             os: 'windows-latest'
@@ -46,7 +46,7 @@ jobs:
             python: '3.12'
             toxpython: 'python3.12'
             python_arch: 'x64'
-            tox_env: 'py312'
+            tox_env: 'py312-ci'
             cibw_arch: 'x86_64'
             cibw_build: false
             os: 'macos-13'
@@ -54,7 +54,7 @@ jobs:
             python: '3.12'
             toxpython: 'python3.12'
             python_arch: 'arm64'
-            tox_env: 'py312'
+            tox_env: 'py312-ci'
             cibw_arch: 'arm64'
             cibw_build: false
             os: 'macos-latest'
