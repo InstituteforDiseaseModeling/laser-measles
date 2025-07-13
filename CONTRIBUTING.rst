@@ -76,6 +76,20 @@ For merging, you should:
 Tips
 ----
 
+To run individual tox environments::
+
+    # Run code quality checks (linting, formatting, etc.)
+    tox -e check
+
+    # Run tests (including slow tests)
+    tox -e py312
+
+    # Run tests excluding slow tests (same as CI)
+    tox -e py312-ci
+
+    # Build documentation
+    tox -e docs
+
 To run a subset of tests::
 
     tox -e envname -- pytest -k test_myfeature
