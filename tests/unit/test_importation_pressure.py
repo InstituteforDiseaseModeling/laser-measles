@@ -50,10 +50,5 @@ def test_importation_pressure_two_patch(measles_module):
 
 
 if __name__ == "__main__":
-    for module in MEASLES_MODULES:
-        print(f"Testing {module}...")
-        test_importation_pressure_single_patch(module)
-        print(f"✓ {module} single patch test passed")
 
-        test_importation_pressure_two_patch(module)
-        print(f"✓ {module} two patch test passed")
+    pytest.main([__file__ + "::test_importation_pressure_two_patch", "-v", "-s"])

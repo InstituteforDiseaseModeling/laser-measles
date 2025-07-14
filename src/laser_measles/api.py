@@ -5,18 +5,35 @@
 from . import abm
 from . import biweekly
 from . import compartmental
-from . import components
-from . import demographics
-from . import scenarios
+
 
 __all__ = []
 
-
+# models
 __all__.extend(
     [
         "abm",
         "biweekly",
         "compartmental",
+    ]
+)
+
+# sub-modules
+from . import migration
+from . import base
+__all__.extend(
+    [
+        "base",
+        "migration"
+    ]
+)
+
+# sub-packages
+from . import components
+from . import demographics
+from . import scenarios
+__all__.extend(
+    [
         "components",
         "demographics",
         "scenarios",

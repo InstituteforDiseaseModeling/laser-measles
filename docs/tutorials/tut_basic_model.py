@@ -156,10 +156,8 @@ print("Simulation completed!")
 
 # Print final state summary
 print("\nFinal state distribution:")
-print(f"Total Susceptible: {biweekly_model.patches.states[0].sum():,}")
-print(f"Total Infected: {biweekly_model.patches.states[1].sum():,}")
-print(f"Total Recovered: {biweekly_model.patches.states[2].sum():,}")
-print(f"Total Population: {biweekly_model.patches.states.sum():,}")
+for state in biweekly_model.params.states:
+    print(f"{state}: {getattr(biweekly_model.patches.states, state).sum():,}")
 
 # %% [markdown]
 # ## Switching models
@@ -204,10 +202,8 @@ print("Simulation completed!")
 
 # Print final state summary
 print("\nFinal state distribution:")
-print(f"Total Susceptible: {compartmental_model.patches.states[0].sum():,}")
-print(f"Total Infected: {compartmental_model.patches.states[1].sum():,}")
-print(f"Total Recovered: {compartmental_model.patches.states[2].sum():,}")
-print(f"Total Population: {compartmental_model.patches.states.sum():,}")
+for state in compartmental_model.params.states:
+    print(f"{state}: {getattr(compartmental_model.patches.states, state).sum():,}")
 
 # %% [markdown]
 # ## Visualize Results

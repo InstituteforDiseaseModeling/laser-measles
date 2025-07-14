@@ -28,8 +28,7 @@ class CaseSurveillanceParams(BaseModel):
 
     detection_rate: float = Field(default=0.1, description="Probability of detecting an infected case", ge=0.0, le=1.0)
     filter_fn: Callable[[str], bool] = Field(default=lambda x: True, description="Function to filter which nodes to include in aggregation")
-    aggregate_cases: bool = Field(default=True, description="Whether to aggregate cases by geographic level")
-    aggregation_level: int = Field(default=2, description="Number of levels to use for aggregation (e.g., 2 for country:state:lga)")
+    aggregation_level: int = Field(default=-1, description="Number of levels to use for aggregation (e.g., 2 for country:state:lga)")
 
 
 class CaseSurveillanceTracker(BasePhase):
@@ -61,24 +60,21 @@ class CaseSurveillanceTracker(BasePhase):
 
         for node_idx, node_id in enumerate(model.scenario["id"]):
             if self.params.filter_fn(node_id):
-                if self.params.aggregate_cases:
+                if self.params.aggregation_level >= 0:
                     # Create geographic grouping key
                     group_key = ":".join(node_id.split(":")[: self.params.aggregation_level + 1])
                     if group_key not in self.node_mapping:
                         self.node_mapping[group_key] = []
                     self.node_mapping[group_key].append(node_idx)
                 else:
-                    self.node_indices.append(node_idx)
+                    group_key = node_id
+                    self.node_mapping[group_key] = [node_idx]
 
         # Initialize reported cases tracker
-        if self.params.aggregate_cases:
-            # For aggregated cases: nticks x num_groups
-            self.reported_cases = np.zeros((model.params.num_ticks, len(self.node_mapping)), dtype=model.patches.states.dtype)
-            # Store group IDs in order
-            self.group_ids = sorted(self.node_mapping.keys())
-        else:
-            # For individual nodes: nticks x num_filtered_nodes
-            self.reported_cases = np.zeros((model.params.num_ticks, len(self.node_indices)), dtype=model.patches.states.dtype)
+        # For aggregated cases: nticks x num_groups
+        self.reported_cases = np.zeros((len(self.node_mapping), model.params.num_ticks), dtype=model.patches.states.dtype)
+        # Store group IDs in order
+        self.group_ids = sorted(self.node_mapping.keys())
 
     def _validate_params(self) -> None:
         """Validate component parameters.
@@ -86,8 +82,8 @@ class CaseSurveillanceTracker(BasePhase):
         Raises:
             ValueError: If aggregation_level is less than 1.
         """
-        if self.params.aggregation_level < 0:
-            raise ValueError("aggregation_level must be at least 0")
+        if self.params.aggregation_level < -1:
+            raise ValueError("aggregation_level must be at least -1")
 
     def __call__(self, model, tick: int) -> None:
         """Process case surveillance for the current tick.
@@ -97,30 +93,24 @@ class CaseSurveillanceTracker(BasePhase):
             tick: Current time step.
         """
         # Get current infected cases
-        infected = model.patches.states[1]  # Infected state is index 1
+        infected = model.patches.states.I  # Infected state is index 1
 
-        if self.params.aggregate_cases:
-            # For each group, aggregate detected cases from its nodes
-            for group_idx, (_, node_indices) in enumerate(self.node_mapping.items()):
-                # Get infected cases for this group's nodes
-                group_infected = infected[node_indices]
+        # For each group, aggregate detected cases from its nodes
+        for group_idx, (_, node_indices) in enumerate(self.node_mapping.items()):
+            # Get infected cases for this group's nodes
+            group_infected = infected[node_indices]
 
-                if self.params.detection_rate < 1:
-                    # Simulate case detection using binomial distribution
-                    detected_cases = cast_type(
-                        np.random.binomial(n=group_infected, p=self.params.detection_rate), model.patches.states.dtype
-                    )
-                else:
-                    # Otherwise report infections
-                    detected_cases = cast_type(group_infected, model.patches.states.dtype)
+            if self.params.detection_rate < 1:
+                # Simulate case detection using binomial distribution
+                detected_cases = cast_type(
+                    model.prng.binomial(n=group_infected, p=self.params.detection_rate), model.patches.states.dtype
+                )
+            else:
+                # Otherwise report infections
+                detected_cases = cast_type(group_infected, model.patches.states.dtype)
 
-                # Store total detected cases for this group
-                self.reported_cases[tick, group_idx] = detected_cases.sum()
-        else:
-            # For individual nodes
-            filtered_infected = infected[self.node_indices]
-            detected_cases = cast_type(np.random.binomial(n=filtered_infected, p=self.params.detection_rate), model.patches.states.dtype)
-            self.reported_cases[tick] = detected_cases
+            # Store total detected cases for this group
+            self.reported_cases[group_idx, tick] = detected_cases.sum()
 
     def get_dataframe(self) -> pl.DataFrame:
         """Get a DataFrame of reported cases over time.
@@ -134,18 +124,11 @@ class CaseSurveillanceTracker(BasePhase):
         # Create a list to store the data
         data = []
 
-        if self.params.aggregate_cases:
-            # For each tick and group, add the reported cases
-            for tick in range(self.model.params.num_ticks):
-                for group_idx, group_id in enumerate(self.group_ids):
-                    data.append({"tick": tick, "group_id": group_id, "cases": self.reported_cases[tick, group_idx]})
-        else:
-            # For each tick and node, add the reported cases
-            for tick in range(self.model.params.num_ticks):
-                for node_idx, node_id in enumerate(self.node_indices):
-                    data.append({"tick": tick, "node_id": self.model.scenario["id"][node_id], "cases": self.reported_cases[tick, node_idx]})
-
-        # Create DataFrame
+        # For each tick and group, add the reported cases
+        for tick in range(self.model.params.num_ticks):
+            for group_idx, group_id in enumerate(self.group_ids):
+                data.append({"tick": tick, "group_id": group_id, "cases": self.reported_cases[group_idx, tick]})
+    # Create DataFrame
         return pl.DataFrame(data)
 
     def initialize(self, model: BaseLaserModel) -> None:
@@ -167,10 +150,7 @@ class CaseSurveillanceTracker(BasePhase):
         pdf = df.to_pandas()
 
         # Create pivot table for heatmap
-        if self.params.aggregate_cases:
-            pivot_df = pdf.pivot(index="group_id", columns="tick", values="cases")
-        else:
-            pivot_df = pdf.pivot(index="node_id", columns="tick", values="cases")
+        pivot_df = pdf.pivot(index="group_id", columns="tick", values="cases")
 
         # Create figure and axis if not provided
         if fig is None:

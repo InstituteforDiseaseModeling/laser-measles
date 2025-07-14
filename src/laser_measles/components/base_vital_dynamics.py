@@ -65,14 +65,14 @@ class BaseVitalDynamicsProcess(BasePhase, ABC):
         population = states.sum(axis=0)
         avg_births = population * self.lambda_birth
         vaccinated_births = cast_type(
-            np.random.poisson(avg_births * np.array(model.scenario["mcv1"]) * self.params.mcv1_efficacy), states.dtype
+            model.prng.poisson(avg_births * np.array(model.scenario["mcv1"]) * self.params.mcv1_efficacy), states.dtype
         )  # vaccinated AND protected
         unvaccinated_births = cast_type(
-            np.random.poisson(avg_births * (1 - np.array(model.scenario["mcv1"]) * self.params.mcv1_efficacy)), states.dtype
+            model.prng.poisson(avg_births * (1 - np.array(model.scenario["mcv1"]) * self.params.mcv1_efficacy)), states.dtype
         )
 
         avg_deaths = states * self.mu_death
-        deaths = cast_type(np.random.poisson(avg_deaths), states.dtype)  # number of deaths
+        deaths = cast_type(model.prng.poisson(avg_deaths), states.dtype)  # number of deaths
 
         states.S += unvaccinated_births  # add births to S
         states.R += vaccinated_births  # add births to R

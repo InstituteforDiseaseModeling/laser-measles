@@ -32,7 +32,7 @@ def mock_scenario():
 @pytest.fixture
 def mock_model_params():
     """Create mock model parameters."""
-    return CompartmentalParams(num_ticks=100, start_time="2023-01", beta=0.5, sigma=1.0 / 8.0, gamma=1.0 / 5.0)
+    return CompartmentalParams(num_ticks=100, start_time="2023-01")
 
 
 @pytest.fixture
@@ -120,12 +120,8 @@ class TestSIACalendarProcess:
         params = CompartmentalParams(
             num_ticks=100,
             start_time="2023-01",  # Month format
-            beta=0.5,
-            sigma=1.0 / 8.0,
-            gamma=1.0 / 5.0,
         )
         model = CompartmentalModel(mock_scenario, params)
-
         sia_params = SIACalendarParams(sia_schedule=mock_sia_schedule)
         component = SIACalendarProcess(model, params=sia_params)
 

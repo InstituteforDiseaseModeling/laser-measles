@@ -33,6 +33,17 @@ import numpy as np
 from laser_core.laserframe import LaserFrame
 from laser_core.migration import distance
 
+def assert_row_vector(vec: np.ndarray) -> None:
+    # for scalars
+    if vec.size == 1:
+        return
+        
+    # For 1D arrays (shape: (n,))
+    assert vec.ndim == 1, f"Expected 1D array, got {vec.ndim}D"
+    
+    # OR for 2D row vectors (shape: (1, n))
+    assert vec.ndim == 2 and vec.shape[0] == 1, f"Expected row vector, got shape {vec.shape}"
+
 
 def calc_distances(latitudes: np.ndarray, longitudes: np.ndarray, verbose: bool = False) -> np.ndarray:
     """
