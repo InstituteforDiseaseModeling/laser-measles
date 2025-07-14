@@ -8,7 +8,7 @@ from pydantic import Field
 
 from laser_measles.base import BaseLaserModel
 from laser_measles.base import BasePhase
-from laser_measles.compartmental.mixing import init_gravity_diffusion
+from laser_measles.migration import init_gravity_diffusion
 from laser_measles.utils import cast_type
 
 
@@ -95,18 +95,18 @@ class InfectionProcess(BasePhase):
         states = model.patches.states
 
         # Calculate total population per patch
-        total_pop = states.sum(axis=0)
+        total_patch_pop = states.sum(axis=0)
 
         # Avoid division by zero
-        total_pop = np.maximum(total_pop, 1)
+        total_patch_pop = np.maximum(total_patch_pop, 1)
 
         # Calculate prevalence of infectious individuals in each patch
-        prevalence = states.I / total_pop  # I_j / N_j
+        prevalence = states.I / total_patch_pop  # I_j / N_j
 
         # Calculate force of infection with seasonal variation
         seasonal_factor = 1 + self.params.seasonality_factor * np.sin(2 * np.pi * (tick - self.params.season_start) / 365.0)
         lambda_i = (
-            self.params.beta * seasonal_factor * np.matmul(self.mixing, prevalence)  # M @ (I_j / N_j)
+            (self.params.beta * seasonal_factor * prevalence) @ self.mixing  # recall mixing is pij: i -> j
         )
 
         # Stochastic transitions using binomial sampling

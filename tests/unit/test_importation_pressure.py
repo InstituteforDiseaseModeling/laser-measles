@@ -50,5 +50,4 @@ def test_importation_pressure_two_patch(measles_module):
 
 
 if __name__ == "__main__":
-
     pytest.main([__file__ + "::test_importation_pressure_two_patch", "-v", "-s"])

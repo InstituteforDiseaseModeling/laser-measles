@@ -1,7 +1,8 @@
+from collections.abc import Callable
+
 import numpy as np
 import polars as pl
-from laser_core.migration import distance, gravity
-from typing import Callable
+
 
 def pairwise_haversine(df):  # TODO: use angular separation formula instead
     """Pairwise distances for all (lon, lat) points using the Haversine formula.
@@ -29,6 +30,7 @@ def pairwise_haversine(df):  # TODO: use angular separation formula instead
     d = np.sin(dlat / 2) ** 2 + np.cos(lat[:, None]) * np.cos(lat) * np.sin(dlon / 2) ** 2
     return 2 * earth_radius_km * np.arcsin(np.sqrt(d))
 
+
 def get_diffusion_matrix(df: pl.DataFrame, scale: float, func: Callable, f_kwargs: dict, enforce_scale: bool = True) -> np.ndarray:
     if len(df) == 1:
         return np.ones((1, 1))
@@ -54,6 +56,8 @@ def get_diffusion_matrix(df: pl.DataFrame, scale: float, func: Callable, f_kwarg
     np.fill_diagonal(diffusion_matrix, diagonal)
 
     return diffusion_matrix
+
+
 def init_gravity_diffusion(df: pl.DataFrame, scale: float, dist_exp: float, enforce_scale: bool = True) -> np.ndarray:
     """Initialize a gravity diffusion matrix for population mixing. The diffusion
     matrix is a square matrix where each row represents the outbound migration

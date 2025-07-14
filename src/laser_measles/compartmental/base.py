@@ -3,6 +3,7 @@ Basic classes for compartmental model.
 """
 
 import traceback
+
 import numpy as np
 import patito as pt
 import polars as pl
@@ -25,6 +26,7 @@ class BaseScenarioSchema(pt.Model):
     id: str  # ids of the nodes
     mcv1: float  # MCV1 coverages (as percentages, will be divided by 100)
 
+
 class BaseCompartmentalScenario(BaseScenario):
     def __init__(self, df: pl.DataFrame):
         super().__init__(df)
@@ -42,7 +44,7 @@ class BaseCompartmentalScenario(BaseScenario):
         try:
             if df["id"].unique().len() != len(df):
                 raise ValueError("Column 'id' must be unique")
-            
+
             # Validate pop is integer
             if not df["pop"].dtype == pl.Int64:
                 raise ValueError("Column 'pop' must be integer type")

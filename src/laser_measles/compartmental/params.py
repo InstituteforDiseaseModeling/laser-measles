@@ -1,8 +1,6 @@
 import json
 from collections import OrderedDict
 
-from pydantic import Field
-
 from laser_measles.base import BaseModelParams
 
 TIME_STEP_DAYS = 1
