@@ -97,3 +97,35 @@ To run a subset of tests::
 To run all the test environments in *parallel*::
 
     tox -p auto
+
+Version Management
+==================
+
+This project uses `bump-my-version <https://github.com/callowayproject/bump-my-version>`_ for automated version management. The tool is configured in ``pyproject.toml`` and automatically updates version numbers across multiple files.
+
+Common version bump commands::
+
+    # Patch release (bug fixes): 0.7.0 -> 0.7.1
+    bump-my-version bump patch
+
+    # Minor release (new features): 0.7.0 -> 0.8.0  
+    bump-my-version bump minor
+
+    # Major release (breaking changes): 0.7.0 -> 1.0.0
+    bump-my-version bump major
+
+    # Development version: 0.7.0 -> 0.7.1-dev0
+    bump-my-version bump patch --new-version 0.7.1-dev0
+
+    # Release candidate: 0.7.1-dev0 -> 0.7.1-rc0
+    bump-my-version bump pre_l --new-version 0.7.1-rc0
+
+The tool automatically updates version numbers in:
+
+* ``pyproject.toml``
+* ``setup.py``
+* ``docs/conf.py``
+* ``src/laser_measles/__init__.py``
+* ``.cookiecutterrc``
+
+By default, bump-my-version will create a git commit and tag. The configuration supports semantic versioning with pre-release labels (dev, rc, final).
