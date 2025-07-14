@@ -43,7 +43,8 @@ def assert_row_vector(vec: np.ndarray) -> None:
     assert vec.ndim == 1, f"Expected 1D array, got {vec.ndim}D"
 
     # OR for 2D row vectors (shape: (1, n))
-    assert vec.ndim == 2 and vec.shape[0] == 1, f"Expected row vector, got shape {vec.shape}"
+    assert vec.ndim == 2, f"Expected 2D array, got {vec.ndim}D"
+    assert vec.shape[0] == 1, f"Expected row vector, got shape {vec.shape}"
 
 
 def calc_distances(latitudes: np.ndarray, longitudes: np.ndarray, verbose: bool = False) -> np.ndarray:
