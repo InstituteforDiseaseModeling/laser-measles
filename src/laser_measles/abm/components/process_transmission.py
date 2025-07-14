@@ -8,7 +8,7 @@ from pydantic import Field
 
 from laser_measles.abm.model import ABMModel
 from laser_measles.base import BasePhase
-from laser_measles.compartmental.mixing import init_gravity_diffusion  # TODO: consolidate spatial mixing into separate module
+from laser_measles.migration import init_gravity_diffusion
 from laser_measles.utils import cast_type
 
 # Import numba conditionally for the numba implementation
@@ -189,7 +189,7 @@ class TransmissionProcess(BasePhase):
         # transfer between and w/in patches
         # NB: this assumes that the mixing matrix is properly normalized
         # i.e., that the sum of each row is 1 (self.mixing.sum(axis=1) == 1)
-        forces = self.mixing @ (beta_effective * patches.states.I)
+        forces = (beta_effective * patches.states.I) @ self.mixing
 
         # normalize by the population
         forces /= patches.states.sum(axis=0)

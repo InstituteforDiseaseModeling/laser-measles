@@ -2,6 +2,7 @@
 Basic classes for compartmental model.
 """
 
+import traceback
 import numpy as np
 import patito as pt
 import polars as pl
@@ -24,21 +25,24 @@ class BaseScenarioSchema(pt.Model):
     id: str  # ids of the nodes
     mcv1: float  # MCV1 coverages (as percentages, will be divided by 100)
 
-
 class BaseCompartmentalScenario(BaseScenario):
     def __init__(self, df: pl.DataFrame):
         super().__init__(df)
         BaseScenarioSchema.validate(df, allow_superfluous_columns=True)
+        self._validate(df)
 
     def _validate(self, df: pl.DataFrame):
-        # Validate required columns exist - derive from schema
-        required_columns = list(BaseScenarioSchema.model_fields.keys())
-        missing_columns = [col for col in required_columns if col not in df.columns]
-        if missing_columns:
-            raise ValueError(f"Missing required columns: {missing_columns}")
+        # # Validate required columns exist - derive from schema
+        # required_columns = list(BaseScenarioSchema.model_fields.keys())
+        # missing_columns = [col for col in required_columns if col not in df.columns]
+        # if missing_columns:
+        #     raise ValueError(f"Missing required columns: {missing_columns}")
 
         # Validate data types using Polars' native operations
         try:
+            if df["id"].unique().len() != len(df):
+                raise ValueError("Column 'id' must be unique")
+            
             # Validate pop is integer
             if not df["pop"].dtype == pl.Int64:
                 raise ValueError("Column 'pop' must be integer type")
@@ -67,6 +71,7 @@ class BaseCompartmentalScenario(BaseScenario):
                 raise ValueError(f"DataFrame contains null values:\n{null_counts}")
 
         except Exception as e:
+            traceback.print_exc()
             raise ValueError(f"DataFrame validation error:\n{e}") from e
 
 
