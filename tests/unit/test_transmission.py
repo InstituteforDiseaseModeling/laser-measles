@@ -30,13 +30,13 @@ def setup_sim(scenario, params, module):
 def setup_NxN_sim(params, module):
     N = params.get("N", 4)
     scenario = pl.DataFrame(
-        dict(
-            id=[f"patch_{i}" for i in range(N)],
-            pop=N * [10_000],
-            lat=np.linspace(0, 1, N),
-            lon=np.linspace(0, 1, N),
-            mcv1=N * [0.0],
-        )
+        {
+            "id": [f"patch_{i}" for i in range(N)],
+            "pop": N * [10_000],
+            "lat": np.linspace(0, 1, N),
+            "lon": np.linspace(0, 1, N),
+            "mcv1": N * [0.0],
+        }
     )
     sim = setup_sim(scenario, params, module)
     return sim
