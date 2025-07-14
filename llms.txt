@@ -1,0 +1,107 @@
+# laser-measles
+
+## Project Description
+
+laser-measles is a spatial epidemiological modeling toolkit for measles transmission dynamics, built on the LASER framework. It provides a flexible, component-based architecture for disease simulation with support for multiple geographic scales and demographic configurations.
+
+## Key Features
+
+- **Spatial modeling**: Support for geographic regions with administrative boundaries and population distributions
+- **Multiple model types**: Agent-based (ABM), Biweekly, and Generic compartmental models for different use cases
+- **Component-based architecture**: Interchangeable disease dynamics components
+- **High-performance computing**: Optimized data structures and Numba JIT compilation
+- **Type-safe parameters**: Pydantic-based configuration management
+
+## Model Types
+
+1. **ABM (Agent-Based Model)**: Individual-level simulation with stochastic agents, daily timesteps
+2. **Biweekly Compartmental Model**: Population-level SEIR dynamics with 2-week timesteps
+3. **Compartmental Model**: Population-level SEIR dynamics with daily timesteps
+
+## Installation
+
+```bash
+pip install laser-measles
+```
+
+For development installation:
+```bash
+pip install -e ".[dev]"
+```
+
+## Dependencies
+
+- **Core**: laser-core>=0.5.1, pydantic>=2.11.5, polars>=1.30.0
+- **Development**: pytest, ruff, mypy
+- **Documentation**: sphinx, sphinx-autodoc-typehints
+- **Examples**: jupyter, seaborn, optuna
+
+## Usage Examples
+
+### ABM Model
+```python
+from laser_measles.abm import ABMModel, ABMParams
+
+params = ABMParams(num_ticks=7300, seed=12345)
+model = ABMModel(scenario_data, params)
+model.run()
+```
+
+### Biweekly Model
+```python
+from laser_measles.biweekly import BiweeklyModel, BiweeklyParams
+
+params = BiweeklyParams(num_ticks=520, seed=12345)
+model = BiweeklyModel(scenario_data, params)
+model.run()
+```
+
+### Compartmental Model
+```python
+from laser_measles.compartmental import CompartmentalModel, CompartmentalParams
+
+params = CompartmentalParams(num_ticks=7300, seed=12345)
+model = CompartmentalModel(scenario_data, params)
+model.run()
+```
+
+## Demographics Package
+
+The demographics package provides comprehensive geographic data handling:
+- GADM integration for administrative boundaries
+- Raster processing for population distribution
+- Support for multiple geographic scales
+
+```python
+from laser_measles.demographics import GADMShapefile, RasterPatchGenerator
+
+shapefile = GADMShapefile("ETH", admin_level=1)
+generator = RasterPatchGenerator(params)
+patches = generator.generate_patches()
+```
+
+## Documentation
+
+- **Documentation**: https://laser-measles.readthedocs.io/en/latest/
+- **Repository**: https://github.com/InstituteforDiseaseModeling/laser-measles
+- **Issues**: https://github.com/InstituteforDiseaseModeling/laser-measles/issues
+
+## Development
+
+- **Python**: 3.10+
+- **Testing**: pytest
+- **Linting**: ruff
+- **Type checking**: mypy
+- **Documentation**: Sphinx
+
+## License
+
+MIT License - Copyright (c) 2024, Bill & Melinda Gates Foundation
+
+## Contributing
+
+Contributions are welcome! Please see CONTRIBUTING.rst for guidelines. The project uses conventional commits and follows Google style docstrings.
+
+## Keywords
+
+measles, spatial, modeling, epidemiology, agent-based, compartmental, SEIR, LASER, disease transmission, public health 
