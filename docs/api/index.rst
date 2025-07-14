@@ -37,16 +37,15 @@ Components that modify population states and drive model dynamics:
    :template: custom-function-template.rst
    :nosignatures:
 
-   components.VitalDynamicsProcess
-   components.TransmissionProcess
    components.NoBirthsProcess
-   components.InfectionSeedingProcess
+   components.VitalDynamicsProcess
+   components.ConstantPopProcess
+   components.TransmissionProcess
    components.InfectionProcess
    components.DiseaseProcess
-   components.ConstantPopProcess
    components.ImportationPressureProcess
-   components.InfectRandomAgentsProcess
-   components.InfectAgentsInPatchProcess
+   components.InfectionSeedingProcess
+
 
 Trackers
 --------
