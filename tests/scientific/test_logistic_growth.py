@@ -100,7 +100,7 @@ def single_test(MeaslesModel, problem_params, measles_module):
 
 
 @pytest.mark.slow
-@pytest.mark.parametrize("measles_module,num_reps", [(module, 5) for module in MEASLES_MODULES])
+@pytest.mark.parametrize("measles_module,num_reps", [(module, 10) for module in MEASLES_MODULES])
 def test_no_vital_dynamics(measles_module, num_reps):
     """
     Test logistic growth for SI model with no vital dynamics.
