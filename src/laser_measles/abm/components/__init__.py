@@ -43,6 +43,10 @@ __all__.extend(["ImportationPressureParams", "ImportationPressureProcess"])
 # Trackers
 # --------
 
+from .tracker_case_surveillance import CaseSurveillanceParams, CaseSurveillanceTracker
+
+__all__.extend(["CaseSurveillanceParams", "CaseSurveillanceTracker"])
+
 from .tracker_state import StateTracker, StateTrackerParams
 
 __all__.extend(["StateTracker", "StateTrackerParams"])
