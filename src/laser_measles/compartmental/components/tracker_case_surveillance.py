@@ -102,9 +102,7 @@ class CaseSurveillanceTracker(BasePhase):
 
             if self.params.detection_rate < 1:
                 # Simulate case detection using binomial distribution
-                detected_cases = cast_type(
-                    model.prng.binomial(n=group_infected, p=self.params.detection_rate), model.patches.states.dtype
-                )
+                detected_cases = cast_type(model.prng.binomial(n=group_infected, p=self.params.detection_rate), model.patches.states.dtype)
             else:
                 # Otherwise report infections
                 detected_cases = cast_type(group_infected, model.patches.states.dtype)
@@ -128,7 +126,7 @@ class CaseSurveillanceTracker(BasePhase):
         for tick in range(self.model.params.num_ticks):
             for group_idx, group_id in enumerate(self.group_ids):
                 data.append({"tick": tick, "group_id": group_id, "cases": self.reported_cases[group_idx, tick]})
-    # Create DataFrame
+        # Create DataFrame
         return pl.DataFrame(data)
 
     def initialize(self, model: BaseLaserModel) -> None:

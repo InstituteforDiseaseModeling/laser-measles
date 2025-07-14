@@ -27,7 +27,8 @@ from laser_core.laserframe import LaserFrame
 from laser_core.random import seed as seed_prng
 from matplotlib.backends.backend_pdf import PdfPages
 from matplotlib.figure import Figure
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel
+from pydantic import ConfigDict
 from pydantic import Field
 
 from laser_measles.utils import StateArray
@@ -54,10 +55,11 @@ class ParamsProtocol(Protocol):
 class BaseModelParams(BaseModel):
     """
     Base parameters for all laser-measles models.
-    
+
     This class provides common parameters that are shared across all model types.
     Model-specific parameter classes should inherit from this class.
     """
+
     model_config = ConfigDict(extra="forbid")
 
     seed: int = Field(default=20250314, description="Random seed")
@@ -335,7 +337,7 @@ class BaseLaserModel(ABC):
             print(f"{self._tstart}: Running the {self.name} model for {num_ticks} ticks…")
 
         self.metrics = []
-        
+
         # Create progress bar only if show_progress is True
         if self.params.show_progress:
             with alive_progress.alive_bar(num_ticks) as bar:
@@ -719,7 +721,6 @@ class BaseScenario(ABC):
             df: The polars DataFrame containing scenario data.
         """
         self._df = df
-
 
     def __getattr__(self, attr):
         """

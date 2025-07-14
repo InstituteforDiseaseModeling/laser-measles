@@ -1,5 +1,4 @@
-"""Synthetic scenarios for testing and development.
-"""
+"""Synthetic scenarios for testing and development."""
 
 import numpy as np
 import polars as pl
@@ -136,9 +135,16 @@ def two_cluster_scenario(
 
     return scenario_data
 
-def satellites_scenario(core_population: int = 500_000, satellite_population: int = 100_000, n_towns: int = 30, 
-                        max_distance: float = 200, mcv1: float = 0.50, seed: int | None = 52,
-                        population_std: float = 0.3):
+
+def satellites_scenario(
+    core_population: int = 500_000,
+    satellite_population: int = 100_000,
+    n_towns: int = 30,
+    max_distance: float = 200,
+    mcv1: float = 0.50,
+    seed: int | None = 52,
+    population_std: float = 0.3,
+):
     """
     Create a cluster of nodes with a single large node in the center (core) surrounded by smaller nodes (satellites).
 

@@ -6,7 +6,6 @@ from . import abm
 from . import biweekly
 from . import compartmental
 
-
 __all__ = []
 
 # models
@@ -19,19 +18,16 @@ __all__.extend(
 )
 
 # sub-modules
-from . import migration
 from . import base
-__all__.extend(
-    [
-        "base",
-        "migration"
-    ]
-)
+from . import migration
+
+__all__.extend(["base", "migration"])
 
 # sub-packages
 from . import components
 from . import demographics
 from . import scenarios
+
 __all__.extend(
     [
         "components",

@@ -200,5 +200,5 @@ full = [
     "jupytext>=1.17.2",
     "notebook>=7.4.3",
     "seaborn>=0.13.2",
-    "ipykernel>=6.0.0",    
+    "ipykernel>=6.0.0",
 ]
