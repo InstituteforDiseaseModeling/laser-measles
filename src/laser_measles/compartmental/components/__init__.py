@@ -40,3 +40,7 @@ from .process_infection_seeding import InfectionSeedingParams
 from .process_infection_seeding import InfectionSeedingProcess
 
 __all__.extend(["InfectionSeedingParams", "InfectionSeedingProcess"])
+
+from .tracker_population import PopulationTracker, PopulationTrackerParams
+
+__all__.extend(["PopulationTracker", "PopulationTrackerParams"])
