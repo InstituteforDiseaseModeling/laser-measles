@@ -1,3 +1,7 @@
+"""
+https://github.com/InstituteforDiseaseModeling/laser-polio/blob/main/tests/test_transmission.py
+"""
+
 import importlib
 
 import numpy as np
@@ -5,6 +9,7 @@ import polars as pl
 import pytest
 
 import laser_measles as lm
+from laser_measles.base import BaseLaserModel
 
 MEASLES_MODULES = ["laser_measles.compartmental", "laser_measles.biweekly"]
 
@@ -43,7 +48,7 @@ def setup_NxN_sim(params, module):
 
 
 class ChainTransmissionProcess(lm.base.BaseComponent):
-    def _initialize(self, model):
+    def _initialize(self, model: BaseLaserModel):
         c = model.get_component("InfectionProcess")
         assert len(c) == 1, "There should be exactly one infection process"
         assert c[0].initialized, "Infection process must be initialized"
