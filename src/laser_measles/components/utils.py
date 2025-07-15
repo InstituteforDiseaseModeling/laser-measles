@@ -114,7 +114,7 @@ def create_component(component_class: type[T], params: type[B] | None = None) ->
     Examples
     --------
     >>> model.components = [
-    ...     create_component(MyComponent, param1=10, param2=20),
+    ...     create_component(MyComponent, params=MyComponentParams),
     ...     AnotherComponent,
     ... ]
     """
