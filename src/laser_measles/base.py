@@ -64,7 +64,7 @@ class BaseModelParams(BaseModel):
 
     seed: int = Field(default=20250314, description="Random seed")
     start_time: str = Field(default="2000-01", description="Initial start time of simulation in YYYY-MM format")
-    num_ticks: int = Field(..., description="Number of time steps")
+    num_ticks: int = Field(default=365, description="Number of time steps")
     verbose: bool = Field(default=False, description="Whether to print verbose output")
     show_progress: bool = Field(default=True, description="Whether to show progress bar during simulation")
     use_numba: bool = Field(default=True, description="Whether to use numba acceleration when available")
