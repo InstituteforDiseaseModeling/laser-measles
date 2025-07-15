@@ -161,8 +161,9 @@ Components that monitor and record model state for analysis:
    :nosignatures:
 
    components.StateTracker
-   components.FadeOutTracker
    components.CaseSurveillanceTracker
+   components.PopulationTracker
+   components.FadeOutTracker
 
 Utilities
 ---------

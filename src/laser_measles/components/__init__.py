@@ -31,6 +31,17 @@ __all__.extend(
         "BaseCaseSurveillanceParams",
     ]
 )
+
+from .base_tracker_population import BasePopulationTracker
+from .base_tracker_population import BasePopulationTrackerParams
+
+__all__.extend(
+    [
+        "BasePopulationTracker",
+        "BasePopulationTrackerParams",
+    ]
+)
+
 from .base_vital_dynamics import BaseVitalDynamicsParams
 from .base_vital_dynamics import BaseVitalDynamicsProcess
 
