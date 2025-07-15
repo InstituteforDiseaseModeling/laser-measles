@@ -14,7 +14,6 @@ from laser_measles.abm.base import PatchLaserFrame
 from laser_measles.abm.base import PeopleLaserFrame
 from laser_measles.base import BaseComponent
 from laser_measles.base import BaseLaserModel
-from laser_measles.utils import cast_type
 
 
 class InfectionSeedingParams(BaseModel):
@@ -199,9 +198,6 @@ class InfectionSeedingProcess(BaseComponent):
                     )
 
             if actual_infections > 0:
-                # Convert to proper type for the state array
-                infections_to_seed = cast_type(actual_infections, patches.states.dtype)
-
                 idx = np.where(np.logical_and(people.patch_id == patch_idx, people.state == model.params.states.index("S")))[0]
                 # idx = model.prng.choice(idx, size=actual_infections, replace=False)
                 model.prng.shuffle(idx)
@@ -216,10 +212,7 @@ class InfectionSeedingProcess(BaseComponent):
                 elif flag > 1:
                     raise RuntimeError("Multiple instances found with an infect method")
 
-                # Move from Susceptible to Infected
-                patches.states.S[patch_idx] -= infections_to_seed
-                patches.states.I[patch_idx] += infections_to_seed
-
+                # Patch states are now updated by the component's infect method
                 total_seeded += actual_infections
 
                 if self.verbose:

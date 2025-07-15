@@ -95,9 +95,7 @@ class ImportationPressureProcess(BasePhase):
             # update the number of imported cases for the patch after susceptibility filtering
             imported_cases[patch_idx] = len(idx)
 
-        # update states
-        states.S -= imported_cases
-        states.E += imported_cases  # Move to exposed state
+        # Patch states are now updated by the component's infect method
 
     def _initialize(self, model: ABMModel) -> None:
         pass
