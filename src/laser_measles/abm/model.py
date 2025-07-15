@@ -107,6 +107,43 @@ class ABMModel(BaseLaserModel):
         # Update the people laserframe
         self.people = new_people
 
+    def infect(self, indices: int | np.ndarray, num_infected: int | np.ndarray) -> None:
+        """
+        Infect agents by moving them from Susceptible to Exposed state.
+        
+        This method finds the transmission component and delegates to its infect method,
+        which handles both individual agent state updates and patch counter updates.
+        
+        Args:
+            indices (int | np.ndarray): The indices of the agents to infect.
+            num_infected (int | np.ndarray): The number of agents to infect (for API consistency).
+                                           Note: In ABM, this should match the length of indices.
+        """
+        if isinstance(indices, int):
+            indices = np.array([indices])
+        if isinstance(num_infected, int):
+            # For single values, create array
+            if len(indices) != num_infected:
+                raise ValueError(f"Number of indices ({len(indices)}) must match num_infected ({num_infected})")
+        elif isinstance(num_infected, np.ndarray):
+            # For arrays, sum should equal length of indices
+            if len(indices) != num_infected.sum():
+                raise ValueError(f"Length of indices ({len(indices)}) must match sum of num_infected ({num_infected.sum()})")
+        
+        # Find the component with infect method
+        transmission_component = None
+        for instance in self.instances:
+            if hasattr(instance, "infect"):
+                if transmission_component is not None:
+                    raise RuntimeError("Multiple components found with an infect method")
+                transmission_component = instance
+        
+        if transmission_component is None:
+            raise RuntimeError("No component found with an infect method")
+        
+        # Delegate to the transmission component
+        transmission_component.infect(self, indices)
+
     def plot(self, fig: Figure | None = None):
         """
         Plots various visualizations related to the scenario and population data.

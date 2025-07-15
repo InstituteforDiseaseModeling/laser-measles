@@ -227,16 +227,29 @@ class TransmissionProcess(BasePhase):
         self._mixing = mixing
 
     def infect(self, model: ABMModel, idx: np.ndarray | int) -> None:
-        """Infect a set of agents. The function does not adjust counts in e.g., patches.states"""
+        """Infect a set of agents. Moves agents from S to E state and updates patch counters."""
         if isinstance(idx, int):
             idx = np.array([idx])
         people = model.people
+        patches = model.patches
+        
+        # Update individual agent states
         people.state[idx] = model.params.states.index("E")
         people.susceptibility[idx] = 0.0
         people.etimer[idx] = cast_type(
             np.maximum(1, np.round(np.random.lognormal(self.params.mu_underlying, self.params.sigma_underlying, size=len(idx)))),
             people.etimer.dtype,
         )
+        
+        # Update patch state counters
+        # Count infections per patch
+        patch_counts = np.bincount(people.patch_id[idx], minlength=patches.states.shape[-1])
+        infections_per_patch = cast_type(patch_counts, patches.states.dtype)
+        
+        # Move from Susceptible to Exposed
+        patches.states.S -= infections_per_patch
+        patches.states.E += infections_per_patch
+        
         return
 
     def _initialize(self, model: ABMModel) -> None:
