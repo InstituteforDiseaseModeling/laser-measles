@@ -247,7 +247,8 @@ class BaseLaserModel(ABC):
                 # Only show simple types to avoid clutter
                 if isinstance(value, int | float | str | bool | type(None)):
                     attrs[attr] = value.__str__()
-        return f"<{self.__class__.__name__}>:\n{'\n'.join([f'{k}: {v}' for k, v in attrs.items()])}>"
+        newline = '\n'
+        return f"<{self.__class__.__name__}>:\n{newline.join([f'{k}: {v}' for k, v in attrs.items()])}>"
 
     @abstractmethod
     def __call__(self, model: BaseLaserModel, tick: int) -> None:
