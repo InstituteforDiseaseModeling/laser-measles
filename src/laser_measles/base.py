@@ -171,7 +171,7 @@ class BaseLaserModel(ABC):
     # Class attribute for subclasses to specify scenario wrapper
     scenario_wrapper_class: type[BaseScenario] | None = None
 
-    def __init__(self, scenario: ScenarioType | pl.DataFrame | BaseScenario, params: ParamsType, name: str) -> None:
+    def __init__(self, scenario: pl.DataFrame | BaseScenario, params: BaseModelParams, name: str) -> None:
         """
         Initialize the model with common attributes.
 
@@ -188,8 +188,8 @@ class BaseLaserModel(ABC):
         if isinstance(scenario, pl.DataFrame) and self.scenario_wrapper_class is not None:
             scenario = self.scenario_wrapper_class(scenario)
 
-        self.scenario = scenario
-        self.params = params
+        self.scenario: BaseScenario = scenario
+        self.params: BaseModelParams = params
         self.name = name
 
         # Initialize random number generator
