@@ -11,7 +11,7 @@ import pytest
 import laser_measles as lm
 from laser_measles.base import BaseLaserModel
 
-MEASLES_MODULES = ["laser_measles.compartmental", "laser_measles.biweekly"]
+from laser_measles import MEASLES_MODULES
 
 
 def setup_sim(scenario, params, module):

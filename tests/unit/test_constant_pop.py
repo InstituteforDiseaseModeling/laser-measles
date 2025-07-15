@@ -4,8 +4,8 @@ import pytest
 
 import laser_measles as lm
 
-MEASLES_MODULES = ["laser_measles.biweekly", "laser_measles.compartmental", "laser_measles.abm"]
-MEASLES_MODULES = [MEASLES_MODULES[-1]]
+from laser_measles import MEASLES_MODULES
+
 VERBOSE = False
 SEED = 42
 
