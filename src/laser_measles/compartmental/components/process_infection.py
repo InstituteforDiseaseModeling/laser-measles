@@ -18,7 +18,7 @@ class InfectionParams(BaseModel):
     beta: float = Field(default=1.0, description="Base transmission rate", ge=0.0)
     exp_mu: float = Field(default=6.0, description="Exposure mean", gt=0.0)
     inf_mu: float = Field(default=8.0, description="Infection mean", gt=0.0)
-    seasonality_factor: float = Field(default=0.0, description="Seasonality factor, default is no seasonality", ge=0.0, le=1.0)
+    seasonality: float = Field(default=0.0, description="Seasonality factor, default is no seasonality", ge=0.0, le=1.0)
     season_start: float = Field(default=0, description="Season start day (0-364)", ge=0, le=364)
     distance_exponent: float = Field(default=1.5, description="Distance exponent", ge=0.0)
     mixing_scale: float = Field(default=0.001, description="Mixing scale", ge=0.0)
@@ -104,7 +104,7 @@ class InfectionProcess(BasePhase):
         prevalence = states.I / total_patch_pop  # I_j / N_j
 
         # Calculate force of infection with seasonal variation
-        seasonal_factor = 1 + self.params.seasonality_factor * np.sin(2 * np.pi * (tick - self.params.season_start) / 365.0)
+        seasonal_factor = 1 + self.params.seasonality * np.sin(2 * np.pi * (tick - self.params.season_start) / 365.0)
         lambda_i = (
             (self.params.beta * seasonal_factor * prevalence) @ self.mixing  # recall mixing is pij: i -> j
         )

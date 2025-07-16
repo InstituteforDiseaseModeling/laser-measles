@@ -104,7 +104,7 @@ class TransmissionParams(BaseModel):
     """Parameters specific to the transmission process component."""
 
     beta: float = Field(default=1.0, description="Base transmission rate", ge=0.0)
-    seasonality_factor: float = Field(default=1.0, description="Seasonality factor", ge=0.0, le=1.0)
+    seasonality: float = Field(default=1.0, description="Seasonality factor", ge=0.0, le=1.0)
     season_start: float = Field(default=0.0, description="Seasonality phase", ge=0, le=364)
     exp_mu: float = Field(default=6.0, description="Exposure mean (days)", gt=0.0)
     exp_sigma: float = Field(default=2.0, description="Exposure sigma (days)", gt=0.0)
@@ -183,7 +183,7 @@ class TransmissionProcess(BasePhase):
         patches = model.patches
         people = model.people
 
-        seasonal_factor = 1 + self.params.seasonality_factor * np.sin(2 * np.pi * (tick - self.params.season_start) / 365)
+        seasonal_factor = 1 + self.params.seasonality * np.sin(2 * np.pi * (tick - self.params.season_start) / 365)
         beta_effective = self.params.beta * seasonal_factor
 
         # transfer between and w/in patches
