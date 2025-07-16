@@ -92,7 +92,7 @@ def component(cls: type[T] | None = None, **default_params):
     return decorator
 
 
-def create_component(component_class: type[T], params: type[B] | None = None) -> Callable[[Any, Any], T]:
+def create_component(component_class: type[T], params: type[B] | None = None) -> Callable[[Any, Any], T]:  # noqa: UP047
     """
     Helper function to create a component instance with parameters.
 
