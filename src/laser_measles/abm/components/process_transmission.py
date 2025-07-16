@@ -232,7 +232,7 @@ class TransmissionProcess(BasePhase):
             idx = np.array([idx])
         people = model.people
         patches = model.patches
-        
+
         # Update individual agent states
         people.state[idx] = model.params.states.index("E")
         people.susceptibility[idx] = 0.0
@@ -240,16 +240,16 @@ class TransmissionProcess(BasePhase):
             np.maximum(1, np.round(np.random.lognormal(self.params.mu_underlying, self.params.sigma_underlying, size=len(idx)))),
             people.etimer.dtype,
         )
-        
+
         # Update patch state counters
         # Count infections per patch
         patch_counts = np.bincount(people.patch_id[idx], minlength=patches.states.shape[-1])
         infections_per_patch = cast_type(patch_counts, patches.states.dtype)
-        
+
         # Move from Susceptible to Exposed
         patches.states.S -= infections_per_patch
         patches.states.E += infections_per_patch
-        
+
         return
 
     def _initialize(self, model: ABMModel) -> None:

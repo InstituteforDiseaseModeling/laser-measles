@@ -195,7 +195,7 @@ def run_traveling_wave_simulation(scenario_df, mixing_scale=0.005, num_ticks=365
         inf_mu=6.0,  # 6-day infectious period
         mixing_scale=mixing_scale,  # κ parameter
         distance_exponent=1.5,  # Distance decay
-        seasonality_factor=0.1,  # Slight seasonality
+        seasonality=0.1,  # Slight seasonality
         season_start=0,
     )
 

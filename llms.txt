@@ -104,4 +104,4 @@ Contributions are welcome! Please see CONTRIBUTING.rst for guidelines. The proje
 
 ## Keywords
 
-measles, spatial, modeling, epidemiology, agent-based, compartmental, SEIR, LASER, disease transmission, public health 
+measles, spatial, modeling, epidemiology, agent-based, compartmental, SEIR, LASER, disease transmission, public health
