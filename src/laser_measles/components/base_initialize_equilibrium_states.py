@@ -5,8 +5,8 @@ Component for initializing the population in each of the model states by rough e
 from pydantic import BaseModel
 from pydantic import Field
 
-from laser_measles.base import BasePhase
 from laser_measles.base import BaseLaserModel
+from laser_measles.base import BasePhase
 
 
 class BaseInitializeEquilibriumStatesParams(BaseModel):

@@ -1,11 +1,14 @@
 import importlib
+
 import polars as pl
 import pytest
 
 from laser_measles import MEASLES_MODULES
 
+
 def test_api_import():
-    import laser_measles as lm
+    pass
+
 
 @pytest.mark.parametrize("measles_module", MEASLES_MODULES)
 def test_model_import(measles_module):

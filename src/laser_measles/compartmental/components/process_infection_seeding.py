@@ -1,11 +1,11 @@
-from laser_measles.components.base_infection_seeding import BaseInfectionSeedingProcess
-from laser_measles.components.base_infection_seeding import BaseInfectionSeedingParams
-
 from laser_measles.base import BaseLaserModel
+from laser_measles.components.base_infection_seeding import BaseInfectionSeedingParams
+from laser_measles.components.base_infection_seeding import BaseInfectionSeedingProcess
 
 
 class InfectionSeedingParams(BaseInfectionSeedingParams):
     pass
+
 
 class InfectionSeedingProcess(BaseInfectionSeedingProcess):
     """Process infection seeding."""

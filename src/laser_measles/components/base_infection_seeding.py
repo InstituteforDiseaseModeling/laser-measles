@@ -196,8 +196,6 @@ class BaseInfectionSeedingProcess(BaseComponent):
 
                 self._seed_infections_in_patch(model, patch_idx, int(infections_to_seed))
 
-
-
                 total_seeded += actual_infections
 
                 if self.verbose:
@@ -211,4 +209,3 @@ class BaseInfectionSeedingProcess(BaseComponent):
     @abstractmethod
     def _seed_infections_in_patch(self, model: BaseLaserModel, patch_idx: int, num_infections: int) -> int:
         """Seed infections in a specific patch."""
-        pass

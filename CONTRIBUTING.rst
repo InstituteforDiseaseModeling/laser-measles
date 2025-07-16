@@ -108,7 +108,7 @@ Common version bump commands::
     # Patch release (bug fixes): 0.7.0 -> 0.7.1
     bump-my-version bump patch
 
-    # Minor release (new features): 0.7.0 -> 0.8.0  
+    # Minor release (new features): 0.7.0 -> 0.8.0
     bump-my-version bump minor
 
     # Major release (breaking changes): 0.7.0 -> 1.0.0

@@ -4,7 +4,6 @@ import numpy as np
 import pytest
 
 import laser_measles as lm
-
 from laser_measles import MEASLES_MODULES
 
 VERBOSE = False

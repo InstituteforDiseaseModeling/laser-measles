@@ -4,6 +4,7 @@ from pydantic import BaseModel
 from laser_measles.base import BaseLaserModel
 from laser_measles.base import BasePhase
 
+
 class BasePopulationTrackerParams(BaseModel):
     pass
 
