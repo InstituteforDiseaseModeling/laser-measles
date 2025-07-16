@@ -18,7 +18,7 @@ T = TypeVar("T", bound=BaseComponent)
 B = TypeVar("B", bound=BaseModel)
 
 
-def component(cls: type[T] | None = None, **default_params):
+def component(cls: type[T] | None = None, **default_params):  # noqa: UP047
     """
     Decorator for creating components with default parameters.
 
