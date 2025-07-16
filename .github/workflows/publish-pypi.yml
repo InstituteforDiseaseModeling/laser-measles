@@ -85,19 +85,18 @@ jobs:
         inputs: >-
           ./dist/*.tar.gz
           ./dist/*.whl
-    - name: Create GitHub Release
-      env:
-        GITHUB_TOKEN: ${{ github.token }}
+    - name: Install bump-my-version
       run: |
         python3 -m pip install bump-my-version
-        tag_name=v$(bump-my-version show current_version)
-        gh release create "$tag_name" dist/* --title "$tag_name" --notes "Automated release for $tag_name"
-    - name: Upload artifact signatures to GitHub Release
+    - name: Create GitHub Release and Upload Artifacts
       env:
         GITHUB_TOKEN: ${{ github.token }}
-      # Upload to GitHub Release using the `gh` CLI.
-      # `dist/` contains the built packages, and the
-      # sigstore-produced signatures and certificates.
       run: |
         tag_name=v$(bump-my-version show current_version)
-        gh release upload "$tag_name" dist/*
+        # Create release or upload to existing release
+        if gh release create "$tag_name" dist/* --title "$tag_name" --notes "Automated release for $tag_name"; then
+          echo "Release created successfully"
+        else
+          echo "Release may already exist, attempting to upload artifacts"
+          gh release upload "$tag_name" dist/*
+        fi
