@@ -52,6 +52,16 @@ __all__.extend(
     ]
 )
 
+from .base_constant_pop import BaseConstantPopParams
+from .base_constant_pop import BaseConstantPopProcess
+
+__all__.extend(
+    [
+        "BaseConstantPopParams",
+        "BaseConstantPopProcess",
+    ]
+)
+
 from .base_initialize_equilibrium_states import BaseInitializeEquilibriumStatesParams
 from .base_initialize_equilibrium_states import BaseInitializeEquilibriumStatesProcess
 

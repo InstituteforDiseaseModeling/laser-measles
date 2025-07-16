@@ -6,23 +6,15 @@ import numpy as np
 from pydantic import Field
 
 from laser_measles.abm.model import ABMModel
-from laser_measles.components import BaseVitalDynamicsParams
-from laser_measles.components import BaseVitalDynamicsProcess
+from laser_measles.components import BaseConstantPopParams
+from laser_measles.components import BaseConstantPopProcess
 from laser_measles.utils import cast_type
 
 
-class ConstantPopParams(BaseVitalDynamicsParams):
-    """Parameters specific to the births process component."""
+class ConstantPopParams(BaseConstantPopParams):
+    pass
 
-    crude_birth_rate: float = Field(default=20, description="Crude birth rate per 1000 people per year", ge=0.0)
-
-    @property
-    def crude_death_rate(self) -> float:
-        """Death rate is always equal to birth rate to maintain constant population."""
-        return self.crude_birth_rate
-
-
-class ConstantPopProcess(BaseVitalDynamicsProcess):
+class ConstantPopProcess(BaseConstantPopProcess):
     """
     A component to handle the birth events in a model with constant population - that is, births == deaths.
 
@@ -96,22 +88,6 @@ class ConstantPopProcess(BaseVitalDynamicsProcess):
         # Births, set date of birth and state to 0 (susceptible)
         people.date_of_birth[idx] = tick  # set to current tick
         people.state[idx] = model.params.states.index("S")  # set to susceptible
-
-    @property
-    def lambda_birth(self) -> float:
-        """birth rate per tick"""
-        return (1 + self.params.crude_birth_rate / 1000) ** (1 / 365 * self.model.params.time_step_days) - 1
-
-    @property
-    def mu_death(self) -> float:
-        """death rate per tick"""
-        return self.lambda_birth
-
-    def calculate_capacity(self, model) -> np.ndarray:
-        """
-        Calculate the capacity of the model.
-        """
-        return model.scenario["pop"].sum()
 
     def _initialize(self, model: ABMModel) -> None:
         """

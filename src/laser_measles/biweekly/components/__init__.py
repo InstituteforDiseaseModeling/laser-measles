@@ -15,6 +15,12 @@ from .process_importation_pressure import ImportationPressureProcess
 
 __all__.extend(["ImportationPressureParams", "ImportationPressureProcess"])
 
+from .process_constant_pop import ConstantPopParams
+from .process_constant_pop import ConstantPopProcess
+
+__all__.extend(["ConstantPopParams", "ConstantPopProcess"])
+
+
 from .process_infection import InfectionParams
 from .process_infection import InfectionProcess
 
