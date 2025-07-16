@@ -34,7 +34,7 @@ class InfectionParams(BaseModel):
         """Extract transmission-specific parameters."""
         return TransmissionParams(
             beta=self.beta,
-            seasonality_factor=self.seasonality_factor,
+            seasonality=self.seasonality_factor,
             season_start=self.season_start,
             exp_mu=self.exp_mu,
             exp_sigma=self.exp_sigma,

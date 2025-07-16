@@ -11,7 +11,7 @@ class InfectionParams(BaseInfectionParams):
     """Parameters specific to the infection process component."""
 
     beta: float = Field(
-        default=1, description="Base transmission rate (infections per day)", ge=0.0
+        default=1*8/14, description="Base transmission rate (infections per day)", ge=0.0
     )  # beta = R0 / (mean infectious period)
     seasonality: float = Field(default=0.0, description="Seasonality factor, default is no seasonality", ge=0.0, le=1.0)
     season_start: int = Field(default=0, description="Season start tick (0-25)", ge=0, le=25)
@@ -71,7 +71,7 @@ class InfectionProcess(BaseInfection):
         states = model.patches.states
 
         # prevalence in each patch
-        prevalence = states[1] / states.sum(axis=0)  # I_j / N_j
+        prevalence = states.I / states.sum(axis=0)  # I_j / N_j
 
         lambda_i = (
             self.params.beta_per_tick
