@@ -31,8 +31,8 @@ from .tracker_case_surveillance import CaseSurveillanceTracker
 
 __all__.extend(["CaseSurveillanceParams", "CaseSurveillanceTracker"])
 
-from .process_initialize_states import InitializeEquilibriumStatesParams
-from .process_initialize_states import InitializeEquilibriumStatesProcess
+from .process_initialize_equilibrium_states import InitializeEquilibriumStatesParams
+from .process_initialize_equilibrium_states import InitializeEquilibriumStatesProcess
 
 __all__.extend(["InitializeEquilibriumStatesParams", "InitializeEquilibriumStatesProcess"])
 

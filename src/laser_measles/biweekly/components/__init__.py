@@ -20,8 +20,8 @@ from .process_infection import InfectionProcess
 
 __all__.extend(["InfectionParams", "InfectionProcess"])
 
-from .process_initialize_states import InitializeEquilibriumStatesParams
-from .process_initialize_states import InitializeEquilibriumStatesProcess
+from .process_initialize_equilibrium_states import InitializeEquilibriumStatesParams
+from .process_initialize_equilibrium_states import InitializeEquilibriumStatesProcess
 
 __all__.extend(["InitializeEquilibriumStatesParams", "InitializeEquilibriumStatesProcess"])
 

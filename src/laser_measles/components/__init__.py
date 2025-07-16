@@ -52,6 +52,16 @@ __all__.extend(
     ]
 )
 
+from .base_initialize_equilibrium_states import BaseInitializeEquilibriumStatesParams
+from .base_initialize_equilibrium_states import BaseInitializeEquilibriumStatesProcess
+
+__all__.extend(
+    [
+        "BaseInitializeEquilibriumStatesParams",
+        "BaseInitializeEquilibriumStatesProcess",
+    ]
+)
+
 from .utils import component
 from .utils import create_component
 
