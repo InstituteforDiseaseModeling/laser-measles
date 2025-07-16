@@ -6,7 +6,7 @@ Welcome to laser-measles
 
 .. image:: https://img.shields.io/pypi/v/laser-measles.svg
     :alt: PyPI Package latest release
-    :target: https://test.pypi.org/project/laser-measles/
+    :target: https://pypi.org/project/laser-measles/
 
 .. image:: https://img.shields.io/pypi/l/laser-measles.svg
     :alt: MIT License
