@@ -40,6 +40,13 @@ from .process_importation_pressure import ImportationPressureParams, Importation
 
 __all__.extend(["ImportationPressureParams", "ImportationPressureProcess"])
 
+# Initialization
+# --------------
+
+from .process_initialize_equilibrium_states import InitializeEquilibriumStatesParams, InitializeEquilibriumStatesProcess
+
+__all__.extend(["InitializeEquilibriumStatesParams", "InitializeEquilibriumStatesProcess"])
+
 # Trackers
 # --------
 

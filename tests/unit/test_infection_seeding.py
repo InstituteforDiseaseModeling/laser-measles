@@ -24,7 +24,10 @@ def test_seed_single_patch(measles_module):
         MeaslesModel.components.InfectionProcess,
     ]  # NB: No disease progression included in the components
     model.run()
-    assert model.patches.states.I.sum() == 1
+    if "E" in model.params.states:
+        assert model.patches.states.E.sum() == 1
+    else:
+        assert model.patches.states.I.sum() == 1
 
 
 @pytest.mark.parametrize("measles_module", MEASLES_MODULES)
@@ -38,7 +41,10 @@ def test_seed_two_patch(measles_module):
         MeaslesModel.components.InfectionProcess,
     ]  # NB: No disease progression included in the components
     model.run()
-    assert model.patches.states.I.sum() == 1
+    if "E" in model.params.states:
+        assert model.patches.states.E.sum() == 1
+    else:
+        assert model.patches.states.I.sum() == 1
 
 
 if __name__ == "__main__":
