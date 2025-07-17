@@ -8,7 +8,6 @@ from pydantic import Field
 from laser_measles.abm.model import ABMModel
 from laser_measles.base import BaseLaserModel
 from laser_measles.base import BasePhase
-from laser_measles.utils import cast_type
 
 
 class SIACalendarParams(BaseModel):
@@ -119,39 +118,39 @@ class SIACalendarProcess(BasePhase):
     def _vaccinate_agents(self, model: ABMModel, patch_indices: list[int]) -> int:
         """
         Vaccinate agents in specified patches.
-        
+
         Args:
             model: The ABM model
             patch_indices: List of patch indices to vaccinate in
-            
+
         Returns:
             Total number of agents vaccinated
         """
         people = model.people
         patches = model.patches
-        
+
         # Find susceptible agents in target patches
-        susceptible_mask = people.state[:people.count] == 0  # Susceptible state
-        patch_mask = np.isin(people.patch_id[:people.count], patch_indices)
+        susceptible_mask = people.state[: people.count] == 0  # Susceptible state
+        patch_mask = np.isin(people.patch_id[: people.count], patch_indices)
         target_mask = susceptible_mask & patch_mask
-        
+
         target_indices = np.where(target_mask)[0]
-        
+
         if len(target_indices) == 0:
             return 0
-            
+
         # Randomly select agents to vaccinate based on efficacy
         num_to_vaccinate = int(len(target_indices) * self.params.sia_efficacy)
         if num_to_vaccinate == 0:
             return 0
-            
+
         # Randomly select agents without replacement
         selected_indices = np.random.choice(target_indices, size=num_to_vaccinate, replace=False)
-        
+
         # Update agent states to recovered (R = 3)
         recovered_state = model.params.states.index("R")
         people.state[selected_indices] = recovered_state
-        
+
         # Update patch-level state counts
         for patch_idx in patch_indices:
             # Count vaccinated agents in this patch
@@ -159,7 +158,7 @@ class SIACalendarProcess(BasePhase):
             if patch_vaccinated > 0:
                 patches.states.S[patch_idx] -= patch_vaccinated
                 patches.states.R[patch_idx] += patch_vaccinated
-        
+
         return len(selected_indices)
 
     def initialize(self, model: BaseLaserModel) -> None:

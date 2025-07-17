@@ -19,7 +19,6 @@ from laser_core import PropertySet
 from scipy.optimize import fsolve
 
 import laser_measles as lm
-
 from laser_measles import MEASLES_MODULES
 
 SEED = np.random.randint(1000000)
@@ -113,9 +112,7 @@ def single_test(MeaslesModel, problem_params, measles_module):
 
 
 @pytest.mark.slow
-@pytest.mark.parametrize(
-    "measles_module,num_reps", [(module, 5) for module in MEASLES_MODULES]
-)
+@pytest.mark.parametrize("measles_module,num_reps", [(module, 5) for module in MEASLES_MODULES])
 def test_final_outbreak_size(measles_module, num_reps):
     """
     Test final outbreak size against Kermack-McKendrick theoretical prediction.

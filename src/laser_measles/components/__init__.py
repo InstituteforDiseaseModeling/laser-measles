@@ -2,13 +2,13 @@
 
 __all__ = []
 
-from .base_infection import BaseInfectionProcess
 from .base_infection import BaseInfectionParams
+from .base_infection import BaseInfectionProcess
 
 __all__.extend(
     [
-        "BaseInfectionProcess",
         "BaseInfectionParams",
+        "BaseInfectionProcess",
     ]
 )
 

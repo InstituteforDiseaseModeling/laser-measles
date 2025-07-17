@@ -3,8 +3,8 @@ from pydantic import Field
 
 from laser_measles.base import BaseLaserModel
 from laser_measles.biweekly.mixing import init_gravity_diffusion
-from laser_measles.components import BaseInfectionProcess
 from laser_measles.components import BaseInfectionParams
+from laser_measles.components import BaseInfectionProcess
 
 
 class InfectionParams(BaseInfectionParams):

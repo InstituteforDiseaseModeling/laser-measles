@@ -8,7 +8,6 @@ from pydantic import Field
 from laser_measles.base import BaseLaserModel
 from laser_measles.components import BaseVitalDynamicsParams
 from laser_measles.components import BaseVitalDynamicsProcess
-from laser_measles.utils import cast_type
 
 
 class BaseConstantPopParams(BaseVitalDynamicsParams):

@@ -27,5 +27,6 @@ global-exclude tests/ignore/* tests/unit/test_component_factory.py
 global-exclude docs/reference/laser_measles.rst
 global-exclude docs/tutorials/study_traveling_wave.db docs/tutorials/tut_optuna_calibration.py
 global-exclude tests/unit/test_migration.py
+global-exclude src/laser_measles/server.py
 
 recursive-exclude .devcontainer *
