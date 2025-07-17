@@ -199,7 +199,9 @@ class InfectionSeedingProcess(BaseComponent):
                     )
 
             if actual_infections > 0:
-                idx = np.where(np.logical_and(people.patch_id[:num_active] == patch_idx, people.state[:num_active] == model.params.states.index("S")))[0]
+                idx = np.where(
+                    np.logical_and(people.patch_id[:num_active] == patch_idx, people.state[:num_active] == model.params.states.index("S"))
+                )[0]
                 # idx = model.prng.choice(idx, size=actual_infections, replace=False)
                 model.prng.shuffle(idx)
                 idx = idx[:actual_infections]

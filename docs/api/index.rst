@@ -11,8 +11,8 @@ Base Components
 
 .. currentmodule:: laser_measles.components
 
-Components (e.g., infection, aging, vital dynamics, etc.) setup and affect the model, its structure and dynamics. 
-Shared base classes that provide common interfaces and functionality across all model types. 
+Components (e.g., infection, aging, vital dynamics, etc.) setup and affect the model, its structure and dynamics.
+Shared base classes that provide common interfaces and functionality across all model types.
 Model-specific implementations inherit from these base classes.
 
 Component Architecture
@@ -33,8 +33,8 @@ The laser-measles framework follows a hierarchical component architecture:
    class BaseInitializeEquilibriumStatesProcess(BasePhase):
        # Common interface and default behavior
        pass
-   
-   # Model-specific implementation in laser_measles.abm.components  
+
+   # Model-specific implementation in laser_measles.abm.components
    class InitializeEquilibriumStatesProcess(BaseInitializeEquilibriumStatesProcess):
        # ABM-specific implementation
        pass
@@ -53,11 +53,11 @@ Abstract base classes for components that modify population states and drive mod
    BaseVitalDynamicsProcess
    BaseConstantPopProcess
    BaseInfectionProcess
-   
-Note that each component has a corresponding parameter class that is used to configure the component. 
-For example, the ``BaseInfectionProcess`` has a corresponding ``BaseInfectionParams`` class. 
-The parameter class is used to configure the component and defaults can be overridden using the 
-``create_component`` function. 
+
+Note that each component has a corresponding parameter class that is used to configure the component.
+For example, the ``BaseInfectionProcess`` has a corresponding ``BaseInfectionParams`` class.
+The parameter class is used to configure the component and defaults can be overridden using the
+``create_component`` function.
 
 Tracker Base Classes
 --------------------
@@ -270,7 +270,7 @@ Most inherit from base classes in ``laser_measles.components``:
    components.CaseSurveillanceTracker
    components.PopulationTracker
    components.FadeOutTracker
-   
+
 Biweekly-Specific Tracker Components
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 

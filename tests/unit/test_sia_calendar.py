@@ -3,7 +3,6 @@
 
 import importlib
 from datetime import datetime
-from datetime import timedelta
 
 import numpy as np
 import polars as pl
@@ -17,23 +16,23 @@ def setup_sia_sim(scenario, model_params, sia_params, module):
     """Set up a SIA simulation for testing."""
     # Create model
     model = module.Model(scenario, model_params)
-    
+
     # Create SIA component with parameters
     sia_component = lm.create_component(module.components.SIACalendarProcess, sia_params)
-    
+
     # Add basic components needed for SIA testing
     components = [sia_component]
-    
+
     # Add state tracker if available
-    if hasattr(module.components, 'StateTracker'):
+    if hasattr(module.components, "StateTracker"):
         components.append(module.components.StateTracker)
-    
+
     # Add initialization component if available
-    if hasattr(module.components, 'InitializeEquilibriumStatesProcess'):
+    if hasattr(module.components, "InitializeEquilibriumStatesProcess"):
         components.insert(0, module.components.InitializeEquilibriumStatesProcess)
-    
+
     model.components = components
-    
+
     return model
 
 
@@ -54,12 +53,13 @@ def mock_scenario():
 def create_sia_schedule(model_type=None):
     """Create a mock SIA schedule."""
     schedule = pl.DataFrame({"id": ["NG:KN", "NG:KD", "NG:KN"], "date": ["2023-01-10", "2023-01-15", "2023-01-25"]})
-    
+
     if model_type and "compartmental" not in model_type:
         # ABM and biweekly models expect datetime dates
         schedule = schedule.with_columns(pl.col("date").str.to_datetime())
-    
+
     return schedule
+
 
 @pytest.fixture
 def mock_sia_schedule():
@@ -127,7 +127,7 @@ class TestSIACalendarProcess:
         """Test component initialization."""
         module = importlib.import_module(measles_module)
         model = create_model(mock_scenario, module)
-        
+
         # Test with aggregation level 2 to group by state
         sia_schedule = create_sia_schedule(measles_module)
         params = module.components.SIACalendarParams(sia_schedule=sia_schedule, aggregation_level=2)
@@ -143,7 +143,7 @@ class TestSIACalendarProcess:
         """Test initialization fails without parameters."""
         module = importlib.import_module(measles_module)
         model = create_model(mock_scenario, module)
-        
+
         with pytest.raises(ValueError, match="SIACalendarParams must be provided"):
             module.components.SIACalendarProcess(model)
 
@@ -151,20 +151,20 @@ class TestSIACalendarProcess:
         """Test date parsing functionality."""
         module = importlib.import_module(measles_module)
         model = create_model(mock_scenario, module)
-        
+
         sia_schedule = create_sia_schedule(measles_module)
         params = module.components.SIACalendarParams(sia_schedule=sia_schedule)
         component = module.components.SIACalendarProcess(model, params=params)
 
         # Test that component has access to current_date from model
         # Different models may have different date handling
-        assert hasattr(model, 'current_date')
+        assert hasattr(model, "current_date")
 
     def test_date_parsing_month_format(self, mock_scenario, measles_module):
         """Test date parsing with YYYY-MM format."""
         module = importlib.import_module(measles_module)
         model = create_model(mock_scenario, module, start_time="2023-01")
-        
+
         sia_schedule = create_sia_schedule(measles_module)
         sia_params = module.components.SIACalendarParams(sia_schedule=sia_schedule)
         component = module.components.SIACalendarProcess(model, params=sia_params)
@@ -175,7 +175,7 @@ class TestSIACalendarProcess:
     def test_invalid_date_format(self, mock_scenario, measles_module):
         """Test invalid date format handling."""
         module = importlib.import_module(measles_module)
-        
+
         # Test invalid format in model initialization
         with pytest.raises(ValueError):
             model_params = module.Params(num_ticks=100, start_time="invalid-date")
@@ -185,7 +185,7 @@ class TestSIACalendarProcess:
         """Test parameter validation."""
         module = importlib.import_module(measles_module)
         model = create_model(mock_scenario, module)
-        
+
         # Test missing required columns
         invalid_schedule = pl.DataFrame({"wrong_column": ["value"]})
         params = module.components.SIACalendarParams(sia_schedule=invalid_schedule)
@@ -203,13 +203,13 @@ class TestSIACalendarProcess:
     def test_sia_implementation(self, mock_scenario, measles_module):
         """Test SIA implementation functionality."""
         module = importlib.import_module(measles_module)
-        
+
         # Create a model with SIA component
         model_params = create_model_params(module)
         sia_schedule = create_sia_schedule(measles_module)
         sia_params = module.components.SIACalendarParams(sia_schedule=sia_schedule, sia_efficacy=1.0, aggregation_level=2)
         model = setup_sia_sim(mock_scenario, model_params, sia_params, module)
-        
+
         # Set seed for reproducible testing
         np.random.seed(42)
 
@@ -217,7 +217,6 @@ class TestSIACalendarProcess:
         sia_component = model.get_instance(module.components.SIACalendarProcess)[0]
 
         # Set current_date to simulate tick 10 (2023-01-11) - should trigger KN SIA scheduled for 2023-01-10
-        from datetime import datetime
         model.current_date = datetime(2023, 1, 11)
         sia_component(model, tick=10)
 
@@ -227,12 +226,12 @@ class TestSIACalendarProcess:
     def test_sia_not_implemented_twice(self, mock_scenario, measles_module):
         """Test that SIAs are not implemented twice."""
         module = importlib.import_module(measles_module)
-        
+
         model_params = create_model_params(module)
         sia_schedule = create_sia_schedule(measles_module)
         sia_params = module.components.SIACalendarParams(sia_schedule=sia_schedule, sia_efficacy=1.0, aggregation_level=2)
         model = setup_sia_sim(mock_scenario, model_params, sia_params, module)
-        
+
         np.random.seed(42)
 
         # Get the SIA component
@@ -251,19 +250,18 @@ class TestSIACalendarProcess:
     def test_multiple_sias_different_dates(self, mock_scenario, measles_module):
         """Test multiple SIAs at different dates."""
         module = importlib.import_module(measles_module)
-        
+
         model_params = create_model_params(module)
         sia_schedule = create_sia_schedule(measles_module)
         sia_params = module.components.SIACalendarParams(sia_schedule=sia_schedule, sia_efficacy=1.0, aggregation_level=2)
         model = setup_sia_sim(mock_scenario, model_params, sia_params, module)
-        
+
         np.random.seed(42)
 
         # Get the SIA component
         sia_component = model.get_instance(module.components.SIACalendarProcess)[0]
 
         # Set current_date to simulate tick 10 (2023-01-11) - should trigger KN SIA scheduled for 2023-01-10
-        from datetime import datetime
         model.current_date = datetime(2023, 1, 11)
         sia_component(model, tick=10)
         assert len(sia_component.implemented_sias) >= 1
@@ -300,7 +298,7 @@ class TestSIACalendarProcess:
         """Test different aggregation levels."""
         module = importlib.import_module(measles_module)
         model = create_model(mock_scenario, module)
-        
+
         # Test aggregation level 2 (country:state)
         sia_schedule = create_sia_schedule(measles_module)
         params = module.components.SIACalendarParams(sia_schedule=sia_schedule, aggregation_level=2)
@@ -315,7 +313,7 @@ class TestSIACalendarProcess:
         """Test getting SIA schedule."""
         module = importlib.import_module(measles_module)
         model = create_model(mock_scenario, module)
-        
+
         sia_schedule = create_sia_schedule(measles_module)
         params = module.components.SIACalendarParams(sia_schedule=sia_schedule)
         component = module.components.SIACalendarProcess(model, params=params)
@@ -331,7 +329,7 @@ class TestSIACalendarProcess:
         """Test verbose output."""
         module = importlib.import_module(measles_module)
         model = create_model(mock_scenario, module)
-        
+
         # Create verbose component
         sia_schedule = create_sia_schedule(measles_module)
         sia_params = module.components.SIACalendarParams(sia_schedule=sia_schedule, sia_efficacy=1.0, aggregation_level=2)
@@ -345,20 +343,18 @@ class TestSIACalendarProcess:
         """Test behavior with empty SIA schedule."""
         module = importlib.import_module(measles_module)
         model = create_model(mock_scenario, module)
-        
+
         # Create empty schedule with proper types based on model type
         if "compartmental" in measles_module:
             # Compartmental model expects string dates that it converts
-            empty_schedule = pl.DataFrame({"id": [], "date": []}).with_columns([
-                pl.col("id").cast(pl.String), 
-                pl.col("date").cast(pl.String)
-            ])
+            empty_schedule = pl.DataFrame({"id": [], "date": []}).with_columns(
+                [pl.col("id").cast(pl.String), pl.col("date").cast(pl.String)]
+            )
         else:
             # ABM and biweekly models expect datetime dates
-            empty_schedule = pl.DataFrame({"id": [], "date": []}).with_columns([
-                pl.col("id").cast(pl.String), 
-                pl.col("date").cast(pl.Datetime)
-            ])
+            empty_schedule = pl.DataFrame({"id": [], "date": []}).with_columns(
+                [pl.col("id").cast(pl.String), pl.col("date").cast(pl.Datetime)]
+            )
 
         params = module.components.SIACalendarParams(sia_schedule=empty_schedule)
         component = module.components.SIACalendarProcess(model, params=params)

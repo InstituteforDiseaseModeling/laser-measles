@@ -12,6 +12,7 @@ import laser_measles as lm
 from laser_measles import MEASLES_MODULES
 from laser_measles.base import BaseLaserModel
 
+
 def setup_sim(scenario, params, module):
     model_params = module.Params(num_ticks=50, seed=42)
     kwargs = {}
@@ -67,7 +68,9 @@ def test_zero_trans_single_patch(measles_module):
     sim_r0_zero = setup_sim(scenario, {"beta": 0.0}, MeaslesModel)
     sim_r0_zero.run()
     seeding = sim_r0_zero.get_component("InfectionSeedingProcess")[0]
-    assert np.max(sim_r0_zero.get_component("StateTracker")[0].state_tracker.I) <= seeding.params.num_infections, "There should be NO additional infections when r0 is 0."
+    assert np.max(sim_r0_zero.get_component("StateTracker")[0].state_tracker.I) <= seeding.params.num_infections, (
+        "There should be NO additional infections when r0 is 0."
+    )
 
 
 @pytest.mark.parametrize("measles_module", MEASLES_MODULES)

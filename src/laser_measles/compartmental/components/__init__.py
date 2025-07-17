@@ -52,6 +52,7 @@ from .tracker_population import PopulationTrackerParams
 
 __all__.extend(["PopulationTracker", "PopulationTrackerParams"])
 
-from .tracker_fadeout import FadeOutTracker, FadeOutTrackerParams
+from .tracker_fadeout import FadeOutTracker
+from .tracker_fadeout import FadeOutTrackerParams
 
 __all__.extend(["FadeOutTracker", "FadeOutTrackerParams"])

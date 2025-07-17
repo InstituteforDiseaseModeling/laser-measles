@@ -13,10 +13,9 @@ from pydantic import BaseModel
 from laser_measles.base import BaseLaserModel
 from laser_measles.base import BasePhase
 
+
 class BaseFadeOutTrackerParams(BaseModel):
     """Parameters for the FadeOutTracker component."""
-
-    pass
 
 
 class BaseFadeOutTracker(BasePhase):
@@ -40,7 +39,7 @@ class BaseFadeOutTracker(BasePhase):
         self.fade_out_tracker = np.zeros(model.params.num_ticks)
 
     def __call__(self, model, tick: int) -> None:
-        self.fade_out_tracker[tick] = np.sum(model.patches.states.I == 0) # number of nodes with 0 in I state
+        self.fade_out_tracker[tick] = np.sum(model.patches.states.I == 0)  # number of nodes with 0 in I state
 
     def initialize(self, model: BaseLaserModel) -> None:
         pass

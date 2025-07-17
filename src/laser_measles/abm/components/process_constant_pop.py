@@ -3,7 +3,6 @@ Component defining the ConstantPopProcess, which handles the birth events in a m
 """
 
 import numpy as np
-from pydantic import Field
 
 from laser_measles.abm.model import ABMModel
 from laser_measles.components import BaseConstantPopParams
@@ -13,6 +12,7 @@ from laser_measles.utils import cast_type
 
 class ConstantPopParams(BaseConstantPopParams):
     pass
+
 
 class ConstantPopProcess(BaseConstantPopProcess):
     """
