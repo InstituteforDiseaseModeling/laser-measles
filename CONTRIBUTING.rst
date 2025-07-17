@@ -105,6 +105,9 @@ This project uses `bump-my-version <https://github.com/callowayproject/bump-my-v
 
 Common version bump commands::
 
+    # Show the potential versioning path
+    bump-my-version show-bump
+
     # Patch release (bug fixes): 0.7.0 -> 0.7.1
     bump-my-version bump patch
 

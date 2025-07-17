@@ -178,7 +178,8 @@ dev = [
     "pytest",
     "pytest-order>=1.1.1",
     "pyright",
-    "mypy"
+    "mypy",
+    "bump-my-version"
 ]
 docs = [
     "sphinx-autodoc-typehints>=3.0.1",
@@ -197,6 +198,7 @@ full = [
     "pytest-order>=1.1.1",
     "pyright",
     "mypy",
+    "bump-my-version",
     "jupytext>=1.17.2",
     "notebook>=7.4.3",
     "seaborn>=0.13.2",
