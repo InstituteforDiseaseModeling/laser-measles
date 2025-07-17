@@ -62,6 +62,10 @@ from .tracker_population import PopulationTracker
 
 __all__.extend(["PopulationTracker"])
 
+from .tracker_fadeout import FadeOutTracker, FadeOutTrackerParams
+
+__all__.extend(["FadeOutTracker", "FadeOutTrackerParams"])
+
 from .process_sia_calendar import SIACalendarParams, SIACalendarProcess
 
 __all__.extend(["SIACalendarParams", "SIACalendarProcess"])

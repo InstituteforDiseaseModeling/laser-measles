@@ -70,11 +70,9 @@ Abstract base classes for components that monitor and record model state for ana
    :nosignatures:
 
    BaseStateTracker
-   BaseStateTrackerParams
    BaseCaseSurveillanceTracker
-   BaseCaseSurveillanceParams
    BasePopulationTracker
-   BasePopulationTrackerParams
+   BaseFadeOutTracker
 
 Utilities
 ---------
@@ -159,6 +157,7 @@ All inherit from base classes in ``laser_measles.components``:
    components.StateTracker
    components.CaseSurveillanceTracker
    components.PopulationTracker
+   components.FadeOutTracker
 
 ----
 
@@ -214,6 +213,7 @@ All inherit from base classes in ``laser_measles.components``:
    components.StateTracker
    components.CaseSurveillanceTracker
    components.PopulationTracker
+   components.FadeOutTracker
 
 ----
 
@@ -269,7 +269,8 @@ Most inherit from base classes in ``laser_measles.components``:
    components.StateTracker
    components.CaseSurveillanceTracker
    components.PopulationTracker
-
+   components.FadeOutTracker
+   
 Biweekly-Specific Tracker Components
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
