@@ -3,16 +3,16 @@ Component for simulating the SEIR infection process in the compartmental model.
 """
 
 import numpy as np
-from pydantic import BaseModel
 from pydantic import Field
 
 from laser_measles.base import BaseLaserModel
-from laser_measles.base import BasePhase
+from laser_measles.components import BaseInfectionParams
+from laser_measles.components import BaseInfectionProcess
 from laser_measles.migration import init_gravity_diffusion
 from laser_measles.utils import cast_type
 
 
-class InfectionParams(BaseModel):
+class InfectionParams(BaseInfectionParams):
     """Parameters specific to the SEIR infection process component."""
 
     beta: float = Field(default=1.0, description="Base transmission rate", ge=0.0)
@@ -49,7 +49,7 @@ class InfectionParams(BaseModel):
         return 1.0 / self.gamma
 
 
-class InfectionProcess(BasePhase):
+class InfectionProcess(BaseInfectionProcess):
     """
     Component for simulating SEIR disease progression with daily timesteps.
 

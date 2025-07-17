@@ -212,9 +212,7 @@ class TransmissionProcess(BasePhase):
         # Update susceptible and exposed counters
         patches.states.S -= model.patches.incidence
         patches.states.E += model.patches.incidence
-
-        if np.any(forces > 0):
-            print("pause")        
+      
         return
 
     @property
