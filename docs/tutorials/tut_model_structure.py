@@ -142,13 +142,13 @@ print(f"\nABM model total infections: {abm_infections_df['cases'].sum()}")
 # %% [markdown]
 # ## When to Use Each Model
 #
-# **Use Compartmental Model when:**
+# **Use a Patches model only (e.g., Compartmental Model) when:**
 # - Analyzing population-level dynamics
 # - Running many scenarios quickly
 # - Interested in aggregate outcomes
 # - Working with large populations
 #
-# **Use ABM Model when:**
+# **Use a Patches+People Model (e.g., ABM Model) when:**
 # - Modeling individual heterogeneity
 # - Studying contact networks
 # - Tracking individual histories
@@ -156,42 +156,3 @@ print(f"\nABM model total infections: {abm_infections_df['cases'].sum()}")
 #
 # Both models share the same component architecture and can use similar
 # initialization and analysis tools, making it easy to switch between approaches.
-
-# %% [markdown]
-# ## Using CaseSurveillanceTracker for Infection Monitoring
-#
-# The CaseSurveillanceTracker component provides a powerful way to monitor disease
-# dynamics and evaluate intervention effectiveness. Unlike StateTracker which tracks
-# population compartments, CaseSurveillanceTracker specifically monitors new infections
-# (cases) over time.
-
-# %%
-# Compare infection patterns between models
-print("=== Infection Analysis ===")
-print(f"Compartmental model total infections: {comp_infections_df['cases'].sum()}")
-print(f"ABM model total infections: {abm_infections_df['cases'].sum()}")
-
-# Show infection timeline for compartmental model
-comp_timeline = comp_infections_df.group_by("tick").agg(pl.col("cases").sum().alias("daily_cases"))
-print("\nCompartmental model infection timeline (first 20 days):")
-print(comp_timeline.head(20))
-
-# Calculate cumulative infections
-comp_timeline = comp_timeline.with_columns(pl.col("daily_cases").cumsum().alias("cumulative_cases"))
-print(f"\nPeak daily infections (compartmental): {comp_timeline['daily_cases'].max()}")
-print(f"Days to peak: {comp_timeline.filter(pl.col('daily_cases') == comp_timeline['daily_cases'].max())['tick'].to_list()[0]}")
-
-# %% [markdown]
-# ### Key Benefits of CaseSurveillanceTracker:
-# - **Detection simulation**: Models realistic case reporting with configurable detection rates
-# - **Geographic aggregation**: Groups cases by administrative levels
-# - **Time-series data**: Provides detailed infection timeline for analysis
-# - **Intervention evaluation**: Perfect for assessing PIRIProcess or SIA effectiveness
-# - **Surveillance modeling**: Simulates real-world surveillance system limitations
-#
-# ### Evaluating Intervention Effectiveness:
-# To evaluate PIRIProcess effectiveness, you would:
-# 1. Run baseline simulation without PIRIProcess
-# 2. Run intervention simulation with PIRIProcess
-# 3. Compare total infections using CaseSurveillanceTracker data
-# 4. Calculate percent reduction: `(baseline - intervention) / baseline * 100`
