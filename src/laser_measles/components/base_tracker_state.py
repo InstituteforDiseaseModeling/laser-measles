@@ -10,6 +10,7 @@ from pydantic import Field
 
 from laser_measles.base import BaseLaserModel
 from laser_measles.base import BasePhase
+from laser_measles.base import StateArray
 
 
 class BaseStateTrackerParams(BaseModel):
@@ -75,7 +76,8 @@ class BaseStateTracker(BasePhase):
             num_groups = 1
             self.group_ids = ["all_patches"]
 
-        self.state_tracker = np.zeros((len(model.params.states), model.params.num_ticks, num_groups), dtype=model.patches.states.dtype)
+        self.state_tracker = StateArray(np.zeros((len(model.params.states), model.params.num_ticks, num_groups), dtype=model.patches.states.dtype), 
+        model.params.states)
 
         # Dynamically create properties for each state
         for i, state in enumerate(model.params.states):

@@ -61,3 +61,7 @@ __all__.extend(["StateTracker", "StateTrackerParams"])
 from .tracker_population import PopulationTracker
 
 __all__.extend(["PopulationTracker"])
+
+from .process_sia_calendar import SIACalendarParams, SIACalendarProcess
+
+__all__.extend(["SIACalendarParams", "SIACalendarProcess"])

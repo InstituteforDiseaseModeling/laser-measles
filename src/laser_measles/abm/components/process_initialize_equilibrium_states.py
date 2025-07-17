@@ -53,20 +53,21 @@ class InitializeEquilibriumStatesProcess(BaseInitializeEquilibriumStatesProcess)
         total_pop = scenario_df["pop"].sum()
 
         # Initialize people LaserFrame with correct capacity
-        model.initialize_people_capacity(capacity=total_pop, initial_count=total_pop)
+        # model.initialize_people_capacity(capacity=total_pop, initial_count=total_pop) # BUG: capacity should be determined from vital dynamics
 
         people: PeopleLaserFrame = model.people
         patches: PatchLaserFrame = model.patches
+        num_active = len(model.people)
 
         # Assign patch_id to each agent based on patch population
-        people.patch_id[:] = np.array(
+        people.patch_id[:num_active] = np.array(
             scenario_df.with_row_index().select(pl.col("index").repeat_by(pl.col("pop"))).explode("index")["index"].to_numpy(),
             dtype=people.patch_id.dtype,
         )
 
         # Initialize all agents as susceptible first
-        people.state[:] = model.params.states.index("S")
-        people.susceptibility[:] = 1.0
+        people.state[:num_active] = model.params.states.index("S")
+        people.susceptibility[:num_active] = 1.0
 
         # Now assign R state agents according to equilibrium calculation
         # We need to round the equilibrium counts to integers and adjust patch states to match

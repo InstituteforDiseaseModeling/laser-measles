@@ -179,6 +179,7 @@ class InfectionSeedingProcess(BaseComponent):
         people: PeopleLaserFrame = model.people
         patches: PatchLaserFrame = model.patches
         total_seeded = 0
+        num_active = len(model.people)
 
         for patch_id, num_infections in zip(target_patches, infections_per_patch, strict=False):
             # Find patch index
@@ -198,13 +199,14 @@ class InfectionSeedingProcess(BaseComponent):
                     )
 
             if actual_infections > 0:
-                idx = np.where(np.logical_and(people.patch_id == patch_idx, people.state == model.params.states.index("S")))[0]
+                idx = np.where(np.logical_and(people.patch_id[:num_active] == patch_idx, people.state[:num_active] == model.params.states.index("S")))[0]
                 # idx = model.prng.choice(idx, size=actual_infections, replace=False)
                 model.prng.shuffle(idx)
                 idx = idx[:actual_infections]
                 flag = 0
                 for instance in model.instances:
                     if hasattr(instance, "infect"):
+                        assert np.all(idx < num_active), "Index out of bounds"
                         instance.infect(model, idx)
                         flag += 1
                 if flag == 0:

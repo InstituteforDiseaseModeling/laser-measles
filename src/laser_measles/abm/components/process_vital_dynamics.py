@@ -109,8 +109,8 @@ class VitalDynamicsProcess(BaseVitalDynamicsProcess):
 
     def _initialize(self, model: ABMModel) -> None:
         # initialize the people laserframe with correct capacity
-        initial_pop = model.scenario["pop"].sum()
-        model.initialize_people_capacity(capacity=self.calculate_capacity(model), initial_count=initial_pop)
+        # initial_pop = model.scenario["pop"].sum()
+        # model.initialize_people_capacity(capacity=self.calculate_capacity(model), initial_count=initial_pop)
 
         # Activate population
         model.people.active[0 : model.people.count] = True
