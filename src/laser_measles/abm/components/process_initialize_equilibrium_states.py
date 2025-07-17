@@ -49,12 +49,6 @@ class InitializeEquilibriumStatesProcess(BaseInitializeEquilibriumStatesProcess)
         scenario = model.scenario
         scenario_df = scenario.unwrap()
 
-        # Calculate total population needed (use original scenario population, not fractional equilibrium)
-        total_pop = scenario_df["pop"].sum()
-
-        # Initialize people LaserFrame with correct capacity
-        # model.initialize_people_capacity(capacity=total_pop, initial_count=total_pop) # BUG: capacity should be determined from vital dynamics
-
         people: PeopleLaserFrame = model.people
         patches: PatchLaserFrame = model.patches
         num_active = len(model.people)

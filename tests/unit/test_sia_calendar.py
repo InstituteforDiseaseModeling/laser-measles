@@ -152,10 +152,6 @@ class TestSIACalendarProcess:
         module = importlib.import_module(measles_module)
         model = create_model(mock_scenario, module)
 
-        sia_schedule = create_sia_schedule(measles_module)
-        params = module.components.SIACalendarParams(sia_schedule=sia_schedule)
-        component = module.components.SIACalendarProcess(model, params=params)
-
         # Test that component has access to current_date from model
         # Different models may have different date handling
         assert hasattr(model, "current_date")
