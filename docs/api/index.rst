@@ -6,6 +6,91 @@ API reference
 
 This page lists laser-measles's API.
 
+Base Components
+===============
+
+.. currentmodule:: laser_measles.components
+
+Components (e.g., infection, aging, vital dynamics, etc.) setup and affect the model, its structure and dynamics. 
+Shared base classes that provide common interfaces and functionality across all model types. 
+Model-specific implementations inherit from these base classes.
+
+Component Architecture
+----------------------
+
+The laser-measles framework follows a hierarchical component architecture:
+
+1. **Base Components** (``laser_measles.components``) define abstract interfaces and common functionality
+2. **Model-Specific Implementations** (``laser_measles.{model}.components``) inherit from base classes and implement model-specific behavior
+3. **Parameter Classes** use Pydantic for validation and are paired with their respective component classes
+4. **Numpy/Numba Pattern** - Components can provide both numpy and numba implementations for performance optimization
+
+**Inheritance Pattern Example:**
+
+.. code-block:: python
+
+   # Base class in laser_measles.components
+   class BaseInitializeEquilibriumStatesProcess(BasePhase):
+       # Common interface and default behavior
+       pass
+   
+   # Model-specific implementation in laser_measles.abm.components  
+   class InitializeEquilibriumStatesProcess(BaseInitializeEquilibriumStatesProcess):
+       # ABM-specific implementation
+       pass
+
+Process Base Classes
+--------------------
+
+Abstract base classes for components that modify population states and drive model dynamics:
+
+.. autosummary::
+   :toctree: _autosummary
+   :template: custom-function-template.rst
+   :nosignatures:
+
+   BaseInitializeEquilibriumStatesProcess
+   BaseVitalDynamicsProcess
+   BaseConstantPopProcess
+   BaseInfectionProcess
+   
+Note that each component has a corresponding parameter class that is used to configure the component. 
+For example, the ``BaseInfectionProcess`` has a corresponding ``BaseInfectionParams`` class. 
+The parameter class is used to configure the component and defaults can be overridden using the 
+``create_component`` function. 
+
+Tracker Base Classes
+--------------------
+
+Abstract base classes for components that monitor and record model state for analysis:
+
+.. autosummary::
+   :toctree: _autosummary
+   :template: custom-function-template.rst
+   :nosignatures:
+
+   BaseStateTracker
+   BaseStateTrackerParams
+   BaseCaseSurveillanceTracker
+   BaseCaseSurveillanceParams
+   BasePopulationTracker
+   BasePopulationTrackerParams
+
+Utilities
+---------
+
+Component creation and management utilities:
+
+.. autosummary::
+   :toctree: _autosummary
+   :template: custom-function-template.rst
+   :nosignatures:
+
+   component
+   create_component
+
+----
+
 ABM Model
 =========
 
@@ -27,10 +112,29 @@ Agent based model
    utils
    cli
 
-Processes
----------
+Process Components
+------------------
 
-Components that modify population states and drive model dynamics:
+Components that modify population states and drive model dynamics.
+Most inherit from base classes in ``laser_measles.components``:
+
+.. autosummary::
+   :toctree: _autosummary
+   :template: custom-function-template.rst
+   :nosignatures:
+
+   components.InitializeEquilibriumStatesProcess
+   components.VitalDynamicsProcess
+   components.ConstantPopProcess
+   components.InfectionProcess
+   components.InfectionSeedingProcess
+   components.ImportationPressureProcess
+   components.SIACalendarProcess
+
+ABM-Specific Process Components
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Components unique to the ABM model:
 
 .. autosummary::
    :toctree: _autosummary
@@ -38,19 +142,14 @@ Components that modify population states and drive model dynamics:
    :nosignatures:
 
    components.NoBirthsProcess
-   components.VitalDynamicsProcess
-   components.ConstantPopProcess
    components.TransmissionProcess
-   components.InfectionProcess
    components.DiseaseProcess
-   components.ImportationPressureProcess
-   components.InfectionSeedingProcess
 
+Tracker Components
+------------------
 
-Trackers
---------
-
-Components that monitor and record model state for analysis:
+Components that monitor and record model state for analysis.
+All inherit from base classes in ``laser_measles.components``:
 
 .. autosummary::
    :toctree: _autosummary
@@ -82,10 +181,11 @@ Compartmental model with daily timesteps
    params
    base
 
-Processes
----------
+Process Components
+------------------
 
-Components that modify population states and drive model dynamics:
+Components that modify population states and drive model dynamics.
+All inherit from base classes in ``laser_measles.components``:
 
 .. autosummary::
    :toctree: _autosummary
@@ -97,12 +197,14 @@ Components that modify population states and drive model dynamics:
    components.InfectionProcess
    components.ImportationPressureProcess
    components.VitalDynamicsProcess
+   components.ConstantPopProcess
    components.SIACalendarProcess
 
-Trackers
---------
+Tracker Components
+------------------
 
-Components that monitor and record model state for analysis:
+Components that monitor and record model state for analysis.
+All inherit from base classes in ``laser_measles.components``:
 
 .. autosummary::
    :toctree: _autosummary
@@ -111,6 +213,7 @@ Components that monitor and record model state for analysis:
 
    components.StateTracker
    components.CaseSurveillanceTracker
+   components.PopulationTracker
 
 ----
 
@@ -133,10 +236,11 @@ Compartmental model with 2-week timesteps
    params
    base
 
-Processes
----------
+Process Components
+------------------
 
-Components that modify population states and drive model dynamics:
+Components that modify population states and drive model dynamics.
+All inherit from base classes in ``laser_measles.components``:
 
 .. autosummary::
    :toctree: _autosummary
@@ -148,12 +252,14 @@ Components that modify population states and drive model dynamics:
    components.InfectionProcess
    components.VitalDynamicsProcess
    components.ImportationPressureProcess
+   components.ConstantPopProcess
    components.SIACalendarProcess
 
-Trackers
---------
+Tracker Components
+------------------
 
-Components that monitor and record model state for analysis:
+Components that monitor and record model state for analysis.
+Most inherit from base classes in ``laser_measles.components``:
 
 .. autosummary::
    :toctree: _autosummary
@@ -163,6 +269,17 @@ Components that monitor and record model state for analysis:
    components.StateTracker
    components.CaseSurveillanceTracker
    components.PopulationTracker
+
+Biweekly-Specific Tracker Components
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Components unique to the Biweekly model:
+
+.. autosummary::
+   :toctree: _autosummary
+   :template: custom-function-template.rst
+   :nosignatures:
+
    components.FadeOutTracker
 
 Utilities

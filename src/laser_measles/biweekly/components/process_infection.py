@@ -3,7 +3,7 @@ from pydantic import Field
 
 from laser_measles.base import BaseLaserModel
 from laser_measles.biweekly.mixing import init_gravity_diffusion
-from laser_measles.components import BaseInfection
+from laser_measles.components import BaseInfectionProcess
 from laser_measles.components import BaseInfectionParams
 
 
@@ -23,7 +23,7 @@ class InfectionParams(BaseInfectionParams):
         return (self.beta * 365) / 26
 
 
-class InfectionProcess(BaseInfection):
+class InfectionProcess(BaseInfectionProcess):
     """
     Component for simulating the spread of infection in the model.
 

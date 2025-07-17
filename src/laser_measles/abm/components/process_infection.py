@@ -4,11 +4,11 @@ Component defining the InfectionProcess, which orchestrates the transmission and
 
 import numpy as np
 from matplotlib.figure import Figure
-from pydantic import BaseModel
 from pydantic import Field
 
 from laser_measles.abm.model import ABMModel
-from laser_measles.base import BaseComponent
+from laser_measles.components import BaseInfectionParams
+from laser_measles.components import BaseInfectionProcess
 
 from .process_disease import DiseaseParams
 from .process_disease import DiseaseProcess
@@ -16,11 +16,11 @@ from .process_transmission import TransmissionParams
 from .process_transmission import TransmissionProcess
 
 
-class InfectionParams(BaseModel):
+class InfectionParams(BaseInfectionParams):
     """Combined parameters for transmission and disease processes."""
 
     beta: float = Field(default=1.0, description="Base transmission rate", ge=0.0)
-    seasonality_factor: float = Field(default=0.0, description="Seasonality factor", ge=0.0, le=1.0)
+    seasonality: float = Field(default=0.0, description="Seasonality factor", ge=0.0, le=1.0)
     season_start: float = Field(default=0, description="Season start day (0-364)", ge=0, le=364)
     exp_mu: float = Field(default=6.0, description="Exposure mean (lognormal)", gt=0.0)
     exp_sigma: float = Field(default=2.0, description="Exposure sigma (lognormal)", gt=0.0)
@@ -34,7 +34,7 @@ class InfectionParams(BaseModel):
         """Extract transmission-specific parameters."""
         return TransmissionParams(
             beta=self.beta,
-            seasonality=self.seasonality_factor,
+            seasonality=self.seasonality,
             season_start=self.season_start,
             exp_mu=self.exp_mu,
             exp_sigma=self.exp_sigma,
@@ -48,7 +48,7 @@ class InfectionParams(BaseModel):
         return DiseaseParams(inf_mean=self.inf_mean, inf_sigma=self.inf_sigma)
 
 
-class InfectionProcess(BaseComponent):
+class InfectionProcess(BaseInfectionProcess):
     """
     Combined infection process that orchestrates transmission and disease progression.
 
