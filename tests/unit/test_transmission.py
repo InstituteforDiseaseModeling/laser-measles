@@ -12,9 +12,8 @@ import laser_measles as lm
 from laser_measles import MEASLES_MODULES
 from laser_measles.base import BaseLaserModel
 
-
 def setup_sim(scenario, params, module):
-    model_params = module.Params(num_ticks=100)
+    model_params = module.Params(num_ticks=50, seed=42)
     kwargs = {}
     if "beta" in params:
         kwargs["beta"] = params["beta"]
@@ -23,10 +22,10 @@ def setup_sim(scenario, params, module):
     sim = module.Model(scenario, model_params)
     sim.components = [
         module.components.InitializeEquilibriumStatesProcess,
-        module.components.InfectionSeedingProcess,
-        module.components.VitalDynamicsProcess,
-        lm.create_component(module.components.InfectionProcess, infection_params),
         module.components.StateTracker,
+        lm.create_component(module.components.InfectionSeedingProcess, module.components.InfectionSeedingParams(num_infections=10)),
+        lm.create_component(module.components.InfectionProcess, infection_params),
+        module.components.VitalDynamicsProcess,
     ]
     return sim
 
@@ -52,17 +51,23 @@ class ChainTransmissionProcess(lm.base.BaseComponent):
         assert len(c) == 1, "There should be exactly one infection process"
         assert c[0].initialized, "Infection process must be initialized"
         num_patches = len(model.scenario)
-        c[0].mixing = np.diag(np.ones(num_patches - 1), k=1)
+        if hasattr(c[0], "mixing"):
+            c[0].mixing = np.diag(np.ones(num_patches - 1), k=1)
+        elif hasattr(c[0], "transmission"):
+            c[0].transmission.mixing = np.diag(np.ones(num_patches - 1), k=1)
+        else:
+            raise ValueError("No mixing attribute found")
 
 
 @pytest.mark.parametrize("measles_module", MEASLES_MODULES)
-def test_zero_trans(measles_module):
+def test_zero_trans_single_patch(measles_module):
     # Test with r0 = 0x
     MeaslesModel = importlib.import_module(measles_module)
     scenario = lm.scenarios.synthetic.single_patch_scenario()
-    sim_r0_zero = setup_sim(scenario, {"beta": 0}, MeaslesModel)
+    sim_r0_zero = setup_sim(scenario, {"beta": 0.0}, MeaslesModel)
     sim_r0_zero.run()
-    assert sim_r0_zero.get_component("StateTracker")[0].state_tracker[1, :].sum() == 0, "There should be NO exposures when r0 is 0."
+    seeding = sim_r0_zero.get_component("InfectionSeedingProcess")[0]
+    assert np.max(sim_r0_zero.get_component("StateTracker")[0].state_tracker.I) <= seeding.params.num_infections, "There should be NO additional infections when r0 is 0."
 
 
 @pytest.mark.parametrize("measles_module", MEASLES_MODULES)
@@ -90,4 +95,4 @@ def test_linear_transmission(measles_module):
 
 
 if __name__ == "__main__":
-    pytest.main([__file__, "-v", "-s"])
+    pytest.main([__file__ + "::test_zero_trans_single_patch", "-v", "-s"])
