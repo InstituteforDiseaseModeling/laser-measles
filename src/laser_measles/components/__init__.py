@@ -12,6 +12,16 @@ __all__.extend(
     ]
 )
 
+from .base_tracker_fadeout import BaseFadeOutTracker
+from .base_tracker_fadeout import BaseFadeOutTrackerParams
+
+__all__.extend(
+    [
+        "BaseFadeOutTracker",
+        "BaseFadeOutTrackerParams",
+    ]
+)
+
 from .base_tracker_state import BaseStateTracker
 from .base_tracker_state import BaseStateTrackerParams
 
