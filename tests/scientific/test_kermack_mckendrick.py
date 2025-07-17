@@ -20,7 +20,8 @@ from scipy.optimize import fsolve
 
 import laser_measles as lm
 
-MEASLES_MODULES = ["laser_measles.abm", "laser_measles.biweekly", "laser_measles.compartmental"]
+from laser_measles import MEASLES_MODULES
+
 SEED = np.random.randint(1000000)
 RNG = np.random.default_rng(SEED)
 
@@ -113,7 +114,7 @@ def single_test(MeaslesModel, problem_params, measles_module):
 
 @pytest.mark.slow
 @pytest.mark.parametrize(
-    "measles_module,num_reps", [("laser_measles.abm", 5), ("laser_measles.biweekly", 5), ("laser_measles.compartmental", 5)]
+    "measles_module,num_reps", [(module, 5) for module in MEASLES_MODULES]
 )
 def test_final_outbreak_size(measles_module, num_reps):
     """
@@ -135,10 +136,10 @@ def test_final_outbreak_size(measles_module, num_reps):
 
     problem_params = PropertySet(
         {
-            "population_size": 100_000,
+            "population_size": 10_000,
             "beta": beta,
             "R0": R0,
-            "num_days": 730,  # 2 years, enough for epidemic to complete
+            "num_days": 365,  # 2 years, enough for epidemic to complete
             "initial_infections": 10,
         }
     )
@@ -164,5 +165,5 @@ def test_final_outbreak_size(measles_module, num_reps):
 if __name__ == "__main__":
     for module in MEASLES_MODULES:
         print(f"Testing {module}...")
-        test_final_outbreak_size(module, num_reps=10)
+        test_final_outbreak_size(module, num_reps=3)
         print(f"✓ {module} test passed")

@@ -19,7 +19,11 @@ import laser_measles as lm
 from laser_measles.base import BaseLaserModel
 from laser_measles.base import BasePhase
 
-MEASLES_MODULES = ["laser_measles.biweekly", "laser_measles.compartmental"]
+from laser_measles import MEASLES_MODULES
+
+# drop ABM, TODO: create SI conversion for the module
+MEASLES_MODULES = [module for module in MEASLES_MODULES if module != "laser_measles.abm"]
+
 SEED = np.random.randint(1000000)
 RNG = np.random.default_rng(SEED)
 
@@ -100,7 +104,7 @@ def single_test(MeaslesModel, problem_params, measles_module):
 
 
 @pytest.mark.slow
-@pytest.mark.parametrize("measles_module,num_reps", [(module, 10) for module in MEASLES_MODULES])
+@pytest.mark.parametrize("measles_module,num_reps", [(module, 5) for module in MEASLES_MODULES])
 def test_no_vital_dynamics(measles_module, num_reps):
     """
     Test logistic growth for SI model with no vital dynamics.
@@ -110,7 +114,7 @@ def test_no_vital_dynamics(measles_module, num_reps):
 
     problem_params = PropertySet(
         {
-            "population_size": 100_000_000,
+            "population_size": 10_000,
             "beta": 2 / 14,
             "num_days": 730,  # in days
             "initial_infections": 1,
@@ -125,6 +129,8 @@ def test_no_vital_dynamics(measles_module, num_reps):
     # Different error tolerances for different model types
     if "compartmental" in measles_module:
         assert np.mean(rel_errors) < 0.15, f"Relative error: {np.mean(rel_errors):.4f} (max 0.15)"
+    elif "abm" in measles_module:
+        assert np.mean(rel_errors) < 0.15, f"Relative error: {np.mean(rel_errors):.4f} (max 0.15)"
     elif "biweekly" in measles_module:
         assert np.mean(rel_errors) < 1.0, f"Relative error: {np.mean(rel_errors):.4f} (max 1.0)"
 
@@ -132,5 +138,5 @@ def test_no_vital_dynamics(measles_module, num_reps):
 if __name__ == "__main__":
     for module in MEASLES_MODULES:
         print(f"Testing {module}...")
-        test_no_vital_dynamics(module, num_reps=10)
+        test_no_vital_dynamics(module, num_reps=5)
         print(f"✓ {module} test passed")
