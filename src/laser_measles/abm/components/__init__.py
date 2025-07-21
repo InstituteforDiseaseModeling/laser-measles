@@ -17,6 +17,10 @@ from .process_no_births import NoBirthsParams, NoBirthsProcess
 
 __all__.extend(["NoBirthsParams", "NoBirthsProcess"])
 
+from .process_wpp_vital_dynamics import WPPVitalDynamicsParams, WPPVitalDynamicsProcess
+
+__all__.extend(["WPPVitalDynamicsParams", "WPPVitalDynamicsProcess"])
+
 # Infection
 # ---------
 
@@ -69,3 +73,4 @@ __all__.extend(["FadeOutTracker", "FadeOutTrackerParams"])
 from .process_sia_calendar import SIACalendarParams, SIACalendarProcess
 
 __all__.extend(["SIACalendarParams", "SIACalendarProcess"])
+

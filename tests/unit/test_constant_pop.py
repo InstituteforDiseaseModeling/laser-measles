@@ -21,6 +21,15 @@ def test_constant_pop_single_patch(measles_module):
     component = model.get_component(MeaslesModel.components.ConstantPopProcess)[0]
     assert component.mu_death == component.lambda_birth
 
+@pytest.mark.slow
+def test_ABM_pop_agreement():
+    scenario = lm.scenarios.synthetic.two_patch_scenario()
+    model = lm.abm.Model(scenario, lm.abm.Params(num_ticks=50, verbose=VERBOSE, seed=SEED))
+    model.components = [lm.abm.components.ConstantPopProcess]
+    model.run()
+    # Assert population between patches and people are in agreement
+    assert model.patches.states.sum() == len(model.people)
+
 
 @pytest.mark.parametrize("measles_module", MEASLES_MODULES)
 def test_constant_pop_two_patch(measles_module):
