@@ -14,7 +14,7 @@ from laser_measles.utils import cast_type
 
 class VitalDynamicsParams(BaseVitalDynamicsParams):
     """
-    Parameters for the vital dynamics process.
+    Parameters for VitalDynamicsProcess.
     """
 
     routine_immunization_delay: int = Field(default=9 * 30, description="Delay in days before routine immunization is administered")
@@ -22,7 +22,7 @@ class VitalDynamicsParams(BaseVitalDynamicsParams):
 
 class VitalDynamicsProcess(BaseVitalDynamicsProcess):
     """
-    Process for simulating the vital dynamics in the ABM model with MCV1.
+    Process for simulating vital dynamics in the ABM model with MCV1 and constant birth and mortality rates (not age-structured).
     """
 
     def __init__(self, model, verbose: bool = False, params: VitalDynamicsParams | None = None) -> None:

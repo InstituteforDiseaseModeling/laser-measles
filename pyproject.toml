@@ -20,6 +20,7 @@ dependencies = [
   "rastertoolkit>=0.3.11",
   "typer>=0.12.0",
   "patito>=0.8.3",
+  "pyvd>=1.0.1",
 ]
 
 requires-python = ">= 3.10"
@@ -190,7 +191,8 @@ examples = [
     "notebook>=7.4.3",
     "seaborn>=0.13.2",
     "ipykernel>=6.0.0",
-    "optuna>=4.4.0"
+    "optuna>=4.4.0",
+    "plotly>=6.2.0",
 ]
 full = [
     "ruff",
@@ -203,4 +205,6 @@ full = [
     "notebook>=7.4.3",
     "seaborn>=0.13.2",
     "ipykernel>=6.0.0",
+    "optuna>=4.4.0",
+    "plotly>=6.2.0",
 ]

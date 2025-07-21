@@ -224,7 +224,7 @@ class BaseLaserModel(ABC):
             value = getattr(self, attr)
             # Check if the attribute is a LaserFrame
             if isinstance(value, LaserFrame):
-                attrs.append(f"{attr}=<LaserFrame shape={getattr(value, 'shape', None)}>")
+                attrs.append(f"{attr}=<LaserFrame capacity={getattr(value, 'capacity', None)}>")
             else:
                 # Only show simple types to avoid clutter
                 if isinstance(value, int | float | str | bool | type(None)):
@@ -386,6 +386,12 @@ class BaseLaserModel(ABC):
             if hasattr(instance, "_initialize") and hasattr(instance, "initialized"):
                 instance._initialize(self)
                 instance.initialized = True
+
+    def get_tick_date(self, tick: int) -> datetime:
+        """
+        Return the date for a given tick.
+        """
+        return self.start_time + timedelta(days=tick * self.params.time_step_days)
 
     def cleanup(self) -> None:
         """
