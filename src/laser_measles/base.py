@@ -34,6 +34,7 @@ from pydantic import Field
 from laser_measles.utils import StateArray
 from laser_measles.utils import get_laserframe_properties
 from laser_measles.utils import select_implementation
+from laser_measles.wrapper import PrettyComponentsList
 from laser_measles.wrapper import pretty_laserframe
 
 
@@ -261,14 +262,14 @@ class BaseLaserModel(ABC):
         """
 
     @property
-    def components(self) -> list:
+    def components(self) -> PrettyComponentsList:
         """
         Retrieve the list of model components.
 
         Returns:
-            A list containing the components.
+            A PrettyComponentsList containing the components with enhanced formatting.
         """
-        return self._components
+        return PrettyComponentsList(self._components)
 
     @components.setter
     def components(self, components: list[type[BaseComponent]]) -> None:

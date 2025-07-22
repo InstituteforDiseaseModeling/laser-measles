@@ -13,6 +13,54 @@ from laser_core.laserframe import LaserFrame
 from .utils import get_laserframe_properties
 
 
+class PrettyComponentsList(list):
+    """
+    A list wrapper that provides enhanced printing for model components.
+
+    This class maintains full list functionality while adding a formatted
+    display similar to the LaserFrame wrapper style.
+    """
+
+    def __str__(self) -> str:
+        """Return a formatted string representation of the components list."""
+        if not self:
+            return (
+                "┌─ Components (count: 0) ───────────────────────────┐\n"
+                "│  No components found                              │\n"
+                "└───────────────────────────────────────────────────┘"
+            )
+
+        # Get component count
+        count = len(self)
+
+        # Build the header
+        header = "\n"
+        header += f"┌─ Components (count: {count}) "
+        header += "─" * max(0, 50 - len(header)) + "┐"
+
+        # Build component lines
+        lines = []
+        for i, component in enumerate(self):
+            # Get component name
+            component_name = getattr(component, "__name__", str(component))
+
+            # Add bullet points
+            bullet = "├─" if i < len(self) - 1 else "└─"
+            line = f"{bullet} {component_name}"
+            lines.append(line)
+
+        # Combine everything
+        result = header + "\n"
+        result += "\n".join(lines)
+        result += "\n" + "└" + "─" * (len(header) - 2) + "┘"
+
+        return result
+
+    def __repr__(self) -> str:
+        """Return a detailed representation."""
+        return f"PrettyComponentsList({super().__repr__()})"
+
+
 class PrettyLaserFrameWrapper:
     """
     A wrapper around LaserFrame that provides enhanced printing capabilities.

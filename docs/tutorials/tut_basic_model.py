@@ -112,7 +112,7 @@ print(f"Parameters: {params}")
 biweekly_model = Model(scenario, params, name="biweekly_tutorial")
 
 # Currently the model has no components
-print(f"Model has {len(biweekly_model.components)} components: {biweekly_model.components}")
+print(f"Model has {len(biweekly_model.components)} components:\n{biweekly_model.components}")
 
 # Create infection parameters with seasonal transmission
 infection_params = components.InfectionParams(
@@ -127,11 +127,11 @@ model_components = [
     components.VitalDynamicsProcess,  # Births/deaths
 ]
 biweekly_model.components = model_components
-print(f"Model has {len(biweekly_model.components)} components: {biweekly_model.components}")
+print(f"Model has {len(biweekly_model.components)} components:\n{biweekly_model.components}")
 
 # You can also add components using the `add_component` method
 biweekly_model.add_component(components.StateTracker)
-print(f"Model has {len(biweekly_model.components)} components: {biweekly_model.components}")
+print(f"Model has {len(biweekly_model.components)} components:\n{biweekly_model.components}")
 
 # %% [markdown]
 # ## Components vs Instances
