@@ -165,12 +165,6 @@ class BaseLaserModel(ABC):
     timing, metrics collection, and execution loops.
     """
 
-    # Type annotations for attributes that subclasses will set
-    patches: BasePatchLaserFrame
-
-    # Class attribute for subclasses to specify scenario wrapper
-    scenario_wrapper_class: type[BaseScenario] | None = None
-
     def __init__(self, scenario: pl.DataFrame | BaseScenario, params: BaseModelParams, name: str) -> None:
         """
         Initialize the model with common attributes.
@@ -209,6 +203,12 @@ class BaseLaserModel(ABC):
         # Time tracking
         self.start_time = datetime.strptime(self.params.start_time, "%Y-%m")  # noqa DTZ007
         self.current_date = self.start_time
+
+        # Type annotations for attributes that subclasses will set
+        self.patches: BasePatchLaserFrame
+
+        # Attribute for subclasses to specify scenario wrapper
+        self.scenario_wrapper_class: type[BaseScenario] | None = None
 
     def __repr__(self) -> str:
         """
