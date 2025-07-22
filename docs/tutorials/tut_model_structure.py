@@ -1,28 +1,64 @@
 # %% [markdown]
 # # Model structure
 #
-# This tutorial compares the structure of compartmental and agent-based models,
+# This tutorial goes over how a laser-measles models run.
+# It compares the structure of compartmental and agent-based models,
 # focusing on their LaserFrame data structures and how they operate.
 
-# %% [markdown]
 # ## Overview
+# Laser-measles takes a stochastic, distrete-time approach that is 
+# focused on incirporating spatial structure and data to model measles transmission.
 #
 # laser-measles provides two primary modeling approaches:
 # - **Compartmental Model**: Population-level SEIR dynamics using aggregated patch data
 # - **ABM Model**: Individual-level simulation with stochastic agents
 #
 # The key difference lies in their data organization and LaserFrame structures.
+# You can choose which model (abm, compartmental, biweekly) to import by importing 
+# the submodule directly from laser-measles:
+# %%
+# Importing all three models
+from laser_measles.abm import ABMModel, ABMParams
+from laser_measles.compartmental import CompartmentalModel, CompartmentalParams
+from laser_measles.biweekly import BiweeklyModel, BiweeklyParams
+# or use the Model alias to allow for code that can be easily carried between models:
+from laser_measles.abm import Model
 
+# %% [markdown]
+# ## The BaseLaserModel and Components
+# **BaseLaserModel**
+# All three models inherit from the `BaseLaserModel`. This class is composed of a few main steps/methods:
+# - `.__init__`: This method is called when the model is instantiated and sets up the model's random seed (for reproducibility), 
+# model clock (`start_time` and `current_date`), and performance metrics (`metrics`).
+# - `.run`: This method executes the model, running the model in discrete time steps (`num_ticks`)
+#
+# **Component and Phases**
+# Each time step the model loops over the components that define what will happen in the simulation. Laser-measles 
+# diffentiates between a `BaseComponent` and a `BasePhase`. Most components will be a `BasePhase` which is called 
+# every time step. A `BaseComponent` will be called at the beginning of the simulation but not necessarily every
+# time step (e.g., useful for initialization).
+#
+# A `Phase` (e.g. `InfectionProcess` or `StateTracker`) executes every time step the `__call__` method 
+# defined in the class. Both a `Phase` and a `Component` has an `__init__` method that executes on initialization
+# as well as an `_initialize` method that run at the beginning of the simulation (`model.run()`). These are
+# particularly important for the abm model.
+# 
+# To see/access all components available for a model you use the associated `components` sub-module.
+# %%
+from laser_measles.abm import components
+print("Available Process components:")
+for c in sorted([c for c in dir(components) if 'Process' in c]):
+    print(f"  - {c}")
 # %% [markdown]
 # ## Patches
 #
 # Patches exist for both the compartmental and ABM models and track the spatial
 # data and aggregates in the model.
-# The `patches` use a `BasePatchLaserFrame` (or child class) for population-level aggregates:
-
+# The `patches` use a `BasePatchLaserFrame` (or child class) for population-level aggregates.
 # %%
 import polars as pl
 
+from laser_measles import create_component
 from laser_measles.compartmental import CompartmentalModel
 from laser_measles.compartmental.components import CaseSurveillanceParams
 from laser_measles.compartmental.components import CaseSurveillanceTracker
@@ -49,15 +85,16 @@ print("Compartmental model 'out of the box':")
 print(comp_model)
 
 # Create a CaseSurveillanceTracker to monitor infections
-case_tracker = lm.create_component(
+case_tracker = create_component(
     CaseSurveillanceTracker,
     CaseSurveillanceParams(detection_rate=1.0),  # 100% detection for accurate infection counting
 )
 
 # Add transmission and surveillance to the model
-from laser_measles.compartmental.components import TransmissionProcess
+from laser_measles.compartmental.components import InfectionProcess, InfectionSeedingProcess
 
-comp_model.add_component(TransmissionProcess)
+comp_model.add_component(InfectionSeedingProcess)
+comp_model.add_component(InfectionProcess)
 comp_model.add_component(case_tracker)
 
 print("\nCompartmental model with surveillance:")
@@ -86,7 +123,7 @@ print(f"\nCompartmental model total infections: {comp_infections_df['cases'].sum
 # %%
 import laser_measles as lm
 from laser_measles.abm import ABMModel
-from laser_measles.abm.components import TransmissionProcess
+from laser_measles.abm.components import InfectionProcess, InfectionSeedingProcess
 from laser_measles.abm.params import ABMParams
 
 # Initialize ABM model
@@ -97,9 +134,10 @@ abm_model = ABMModel(scenario, abm_params)
 print("ABM model 'out of the box':")
 print(abm_model)
 
-# Now what if add a transmission?
-abm_model.add_component(TransmissionProcess)
-print("ABM model after adding transmission:")
+# Now what if we add a transmission?
+abm_model.add_component(InfectionSeedingProcess)
+abm_model.add_component(InfectionProcess)
+print("ABM model after adding infection:")
 print(abm_model)
 
 # Add CaseSurveillanceTracker to ABM model
@@ -118,6 +156,7 @@ abm_model.run()
 abm_case_tracker_instance = abm_model.get_instance(lm.abm.components.CaseSurveillanceTracker)[0]
 abm_infections_df = abm_case_tracker_instance.get_dataframe()
 print(f"\nABM model total infections: {abm_infections_df['cases'].sum()}")
+
 
 # %% [markdown]
 # ### Key Features of BasePeopleLaserFrame:
