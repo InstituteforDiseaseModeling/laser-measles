@@ -34,15 +34,17 @@ class PrettyComponentsList(list):
         count = len(self)
 
         # Build the header
-        header = "\n"
-        header += f"┌─ Components (count: {count}) "
+        header = f"┌─ Components (count: {count}) "
         header += "─" * max(0, 50 - len(header)) + "┐"
 
         # Build component lines
         lines = []
         for i, component in enumerate(self):
-            # Get component name
-            component_name = getattr(component, "__name__", str(component))
+            # Get component name - handle ComponentFactory objects from create_component()
+            if hasattr(component, 'component_class'):
+                component_name = component.component_class.__name__
+            else:
+                component_name = getattr(component, "__name__", str(component))
 
             # Add bullet points
             bullet = "├─" if i < len(self) - 1 else "└─"
