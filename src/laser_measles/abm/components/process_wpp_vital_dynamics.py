@@ -45,7 +45,6 @@ class WPPVitalDynamicsProcess(BasePhase):
         model.initialize_people_capacity(capacity=int(capacity), initial_count=model.scenario["pop"].sum())
 
         people = model.people
-        patches = model.patches
 
         date_of_birth_dtype = np.int32
         self.null_value = np.iinfo(date_of_birth_dtype).max
