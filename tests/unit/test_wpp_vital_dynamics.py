@@ -1,6 +1,7 @@
 import os
 import sys
 
+import matplotlib.pyplot as plt
 import numpy as np
 import pytest
 import pyvd
@@ -19,7 +20,6 @@ def is_debugger_active():
 
 def debug_plot_age_pyramid(model, age_bins, model_pyramid, wpp_pyramid):
     """Helper function to plot age pyramid for debugging."""
-    import matplotlib.pyplot as plt
 
     plt.figure(figsize=(10, 6))
     plt.bar(
