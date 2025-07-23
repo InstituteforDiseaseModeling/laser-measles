@@ -32,7 +32,8 @@ class AgePyramidTrackerParams(BaseModel):
 
 
 class AgePyramidTracker(BasePhase):
-    """ Track the age distribution of the population."""
+    """Track the age distribution of the population."""
+
     def __init__(self, model, verbose: bool = False, params: AgePyramidTrackerParams | None = None):
         super().__init__(model, verbose)
         self.params = params or AgePyramidTrackerParams()

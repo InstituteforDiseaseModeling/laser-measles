@@ -41,7 +41,7 @@ class PrettyComponentsList(list):
         lines = []
         for i, component in enumerate(self):
             # Get component name - handle ComponentFactory objects from create_component()
-            if hasattr(component, 'component_class'):
+            if hasattr(component, "component_class"):
                 component_name = component.component_class.__name__
             else:
                 component_name = getattr(component, "__name__", str(component))

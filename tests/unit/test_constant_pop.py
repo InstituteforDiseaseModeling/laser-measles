@@ -21,6 +21,7 @@ def test_constant_pop_single_patch(measles_module):
     component = model.get_component(MeaslesModel.components.ConstantPopProcess)[0]
     assert component.mu_death == component.lambda_birth
 
+
 @pytest.mark.slow
 def test_ABM_pop_agreement():
     scenario = lm.scenarios.synthetic.two_patch_scenario()
