@@ -227,7 +227,7 @@ class StateArray(np.ndarray):
         if name.startswith("_") or name in ["base", "dtype", "shape", "size", "ndim"]:
             super().__setattr__(name, value)
         elif hasattr(self, "_state_indices") and name in self._state_indices:
-            self[self._state_indices[name]] = value
+            self[self._state_indices[name]] = cast_type(value, self.dtype)
         else:
             # For invalid state names, raise AttributeError
             if hasattr(self, "_state_indices") and name not in ["base", "dtype", "shape", "size", "ndim"]:
