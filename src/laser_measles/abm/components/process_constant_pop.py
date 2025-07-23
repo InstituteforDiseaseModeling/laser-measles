@@ -45,7 +45,7 @@ class ConstantPopProcess(BaseConstantPopProcess):
         # re-initialize people frame with correct capacity
         capacity = self.calculate_capacity(model=model)
         model.initialize_people_capacity(capacity=int(capacity), initial_count=model.scenario["pop"].sum())
-        
+
         model.people.add_scalar_property("date_of_birth", dtype=np.int32, default=model.params.num_ticks + 1)
 
         model.patches.add_scalar_property("births", dtype=np.uint32)

@@ -88,11 +88,11 @@ class WPPVitalDynamicsProcess(BasePhase):
 
         # set the state counts
         for patch_id in range(len(model.patches)):
-            model.patches.states[:, patch_id] = np.bincount(people.state[people.active & (people.patch_id == patch_id)],
-                minlength=len(model.params.states))
+            model.patches.states[:, patch_id] = np.bincount(
+                people.state[people.active & (people.patch_id == patch_id)], minlength=len(model.params.states)
+            )
 
     def __call__(self, model: ABMModel, tick: int) -> None:
-
         # get references to people and patches
         people = model.people
         patches = model.patches
@@ -102,7 +102,7 @@ class WPPVitalDynamicsProcess(BasePhase):
 
         # Deaths (get the index of the current year in the birth and mortality data vectors)
         # year_idx = np.argmin(np.abs(model.current_date.year  - self.year_vec)) # using NN
-        year_idx = np.where(self.year_vec < model.current_date.year)[0][-1] # using most recent entry
+        year_idx = np.where(self.year_vec < model.current_date.year)[0][-1]  # using most recent entry
         # get indices of active people
         idx = np.where(people.active)[0]
         # calculate current age (ticks) of active people
@@ -110,7 +110,7 @@ class WPPVitalDynamicsProcess(BasePhase):
 
         # age bin indices
         age_bin_idx = np.digitize(x=ages, bins=self.age_vec) - 1
-        mort_rates = self.vd_tup.mort_mat[::2,year_idx][age_bin_idx]
+        mort_rates = self.vd_tup.mort_mat[::2, year_idx][age_bin_idx]
         death_idx = idx[np.random.random(len(ages)) < mort_rates]
 
         # mark as not active
@@ -120,8 +120,9 @@ class WPPVitalDynamicsProcess(BasePhase):
         for patch_id in range(len(model.patches)):
             patch_idx = death_idx[people.patch_id[death_idx] == patch_id]
             if len(patch_idx) > 0:
-                model.patches.states[:, patch_id] -= cast_type(np.bincount(people.state[patch_idx],
-                    minlength=len(model.params.states)), model.patches.states.dtype)
+                model.patches.states[:, patch_id] -= cast_type(
+                    np.bincount(people.state[patch_idx], minlength=len(model.params.states)), model.patches.states.dtype
+                )
 
         # Births
         idx = np.where(~people.active)[0]
@@ -139,8 +140,6 @@ class WPPVitalDynamicsProcess(BasePhase):
             # update state counts
             model.patches.states.S[patch_id] += births
 
-
-
     def calculate_wpp_total_pop(self, year: int) -> int:
         assert year >= self.year_vec[0], f"Year index {year} is out of bounds (too early)"
         assert year <= self.year_vec[-1], f"Year index {year} is out of bounds (too late)"
@@ -150,8 +149,11 @@ class WPPVitalDynamicsProcess(BasePhase):
         sim_end_date = timedelta(days=model.params.num_ticks * model.params.time_step_days) + model.current_date
         assert sim_end_date.year >= self.year_vec[0], f"Year index {sim_end_date.year} is out of bounds (too early)"
         assert sim_end_date.year <= self.year_vec[-1], f"Year index {sim_end_date.year} is out of bounds (too late)"
-        return int(model.scenario["pop"].sum() * \
-            (self.calculate_wpp_total_pop(sim_end_date.year) / self.calculate_wpp_total_pop(model.current_date.year)) * (1 + buffer))
+        return int(
+            model.scenario["pop"].sum()
+            * (self.calculate_wpp_total_pop(sim_end_date.year) / self.calculate_wpp_total_pop(model.current_date.year))
+            * (1 + buffer)
+        )
 
     def _initialize(self, model: ABMModel) -> None:
         # initialization is done in the __init__ method

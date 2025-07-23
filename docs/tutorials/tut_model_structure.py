@@ -6,7 +6,7 @@
 # focusing on their LaserFrame data structures and how they operate.
 
 # ## Overview
-# Laser-measles takes a stochastic, distrete-time approach that is 
+# Laser-measles takes a stochastic, distrete-time approach that is
 # focused on incirporating spatial structure and data to model measles transmission.
 #
 # laser-measles provides two primary modeling approaches:
@@ -14,7 +14,7 @@
 # - **ABM Model**: Individual-level simulation with stochastic agents
 #
 # The key difference lies in their data organization and LaserFrame structures.
-# You can choose which model (abm, compartmental, biweekly) to import by importing 
+# You can choose which model (abm, compartmental, biweekly) to import by importing
 # the submodule directly from laser-measles:
 # %%
 # Importing all three models
@@ -28,21 +28,21 @@ from laser_measles.abm import Model
 # ## The BaseLaserModel and Components
 # **BaseLaserModel**
 # All three models inherit from the `BaseLaserModel`. This class is composed of a few main steps/methods:
-# - `.__init__`: This method is called when the model is instantiated and sets up the model's random seed (for reproducibility), 
+# - `.__init__`: This method is called when the model is instantiated and sets up the model's random seed (for reproducibility),
 # model clock (`start_time` and `current_date`), and performance metrics (`metrics`).
 # - `.run`: This method executes the model, running the model in discrete time steps (`num_ticks`)
 #
 # **Component and Phases**
-# Each time step the model loops over the components that define what will happen in the simulation. Laser-measles 
-# diffentiates between a `BaseComponent` and a `BasePhase`. Most components will be a `BasePhase` which is called 
+# Each time step the model loops over the components that define what will happen in the simulation. Laser-measles
+# diffentiates between a `BaseComponent` and a `BasePhase`. Most components will be a `BasePhase` which is called
 # every time step. A `BaseComponent` will be called at the beginning of the simulation but not necessarily every
 # time step (e.g., useful for initialization).
 #
-# A `Phase` (e.g. `InfectionProcess` or `StateTracker`) executes every time step the `__call__` method 
+# A `Phase` (e.g. `InfectionProcess` or `StateTracker`) executes every time step the `__call__` method
 # defined in the class. Both a `Phase` and a `Component` has an `__init__` method that executes on initialization
 # as well as an `_initialize` method that run at the beginning of the simulation (`model.run()`). These are
 # particularly important for the abm model.
-# 
+#
 # To see/access all components available for a model you use the associated `components` sub-module.
 # %%
 from laser_measles.abm import components
