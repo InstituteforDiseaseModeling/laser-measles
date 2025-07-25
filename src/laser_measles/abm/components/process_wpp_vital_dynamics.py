@@ -6,17 +6,15 @@ enforces age structure with age based mortality
 from datetime import timedelta
 
 import numpy as np
-import pyvd
 from laser_core import SortedQueue
 from laser_core.demographics import AliasedDistribution
 from pydantic import BaseModel
 from pydantic import Field
-from scipy.interpolate import make_interp_spline
 
 from laser_measles.abm.model import ABMModel
 from laser_measles.base import BasePhase
-from laser_measles.utils import cast_type
 from laser_measles.demographics.wpp import WPP
+from laser_measles.utils import cast_type
 
 
 class WPPVitalDynamicsParams(BaseModel):
