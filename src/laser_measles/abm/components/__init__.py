@@ -73,3 +73,7 @@ __all__.extend(["FadeOutTracker", "FadeOutTrackerParams"])
 from .process_sia_calendar import SIACalendarParams, SIACalendarProcess
 
 __all__.extend(["SIACalendarParams", "SIACalendarProcess"])
+
+from .tracker_age_pyramid import AgePyramidTracker, AgePyramidTrackerParams
+
+__all__.extend(["AgePyramidTracker", "AgePyramidTrackerParams"])

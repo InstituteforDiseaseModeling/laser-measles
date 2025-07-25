@@ -71,22 +71,23 @@ class VitalDynamicsProcess(BaseVitalDynamicsProcess):
             cnt = np.bincount(model.people.patch_id[idx][mask], minlength=model.patches.states.shape[-1])
             model.patches.states[state_idx] -= cast_type(cnt, model.patches.states.dtype)
 
-        # Births
-        # ------
-        # Calculate number of births
-        births = model.prng.poisson(population * self.lambda_birth)  # in each patch
-        # find indices of the people frame for initializing
-        istart, iend = people.add(births.sum())
-        people.date_of_birth[istart:iend] = tick  # born today
-        people.susceptibility[istart:iend] = 1.0  # all newborns are susceptible TODO: add maternal immunity component
-        people.date_of_vaccination[istart:iend] = tick + self._routine_immunization_delay()
-        index = istart
-        # update patch id
-        for this_patch_id, this_patch_births in enumerate(births):
-            people.patch_id[index : index + this_patch_births] = this_patch_id
-            index += this_patch_births
-        # update states
-        patches.states.S += cast_type(births, patches.states.dtype)
+        if self.lambda_birth > 0:
+            # Births
+            # ------
+            # Calculate number of births
+            births = model.prng.poisson(population * self.lambda_birth)  # in each patch
+            # find indices of the people frame for initializing
+            istart, iend = people.add(births.sum())
+            people.date_of_birth[istart:iend] = tick  # born today
+            people.susceptibility[istart:iend] = 1.0  # all newborns are susceptible TODO: add maternal immunity component
+            people.date_of_vaccination[istart:iend] = tick + self._routine_immunization_delay()
+            index = istart
+            # update patch id
+            for this_patch_id, this_patch_births in enumerate(births):
+                people.patch_id[index : index + this_patch_births] = this_patch_id
+                index += this_patch_births
+            # update states
+            patches.states.S += cast_type(births, patches.states.dtype)
 
         # Routine immunization
         # --------------------
@@ -116,6 +117,7 @@ class VitalDynamicsProcess(BaseVitalDynamicsProcess):
         model.people.active[0 : model.people.count] = True
         # Simple initializer for ages where birth rate = mortality rate:
         # Initialize ages for existing population
-        model.people.date_of_birth[0 : model.people.count] = cast_type(
-            -1 * model.prng.exponential(1 / self.mu_death, model.people.count), model.people.date_of_birth.dtype
-        )
+        if self.mu_death > 0:
+            model.people.date_of_birth[0 : model.people.count] = cast_type(
+                -1 * model.prng.exponential(1 / self.mu_death, model.people.count), model.people.date_of_birth.dtype
+            )

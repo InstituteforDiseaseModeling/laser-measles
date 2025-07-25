@@ -58,4 +58,6 @@ class AgePyramidTracker(BasePhase):
     def _get_age_pyramid(self, model: ABMModel, tick: int) -> dict:
         people = model.people
         idx = np.where(people.active)[0]
-        self.age_pyramid[str(model.current_date)] = np.histogram(tick - people.date_of_birth[idx], bins=self.params.age_bins)[0]
+        self.age_pyramid[model.current_date.strftime("%Y-%m-%d")] = np.histogram(
+            tick - people.date_of_birth[idx], bins=self.params.age_bins
+        )[0]
