@@ -39,7 +39,7 @@ print(f"Model PRNG seeded with: {params.seed}")
 # %%
 from laser_core.random import seed as seed_prng
 
-# This is what happens inside BaseLaserModel.__init__
+# This is what happens inside `BaseLaserModel.__init__`:
 prng = seed_prng(42)
 print(f"PRNG type: {type(prng)}")
 print(f"Available methods: {len([m for m in dir(prng) if not m.startswith('_')])} methods")
@@ -102,13 +102,11 @@ print("New infections by patch:", new_infections)
 # %%
 import numba as nb
 
-
 @nb.njit
 def sample_exposure_times(count, mu, sigma):
     """Sample exposure times using lognormal distribution"""
     # Use np.random directly in numba functions
     return np.maximum(1, np.round(np.random.lognormal(mu, sigma, count)))
-
 
 # Example parameters from ABM transmission
 exp_mu = 6.0  # Mean exposure time
@@ -127,7 +125,6 @@ print("Exposure times (days):", exposure_times)
 # ### Mixed Usage Example
 #
 # Real components often combine both approaches. Here's how the ABM transmission process works:
-
 
 # %%
 def transmission_example(model, forces, susceptible_agents):

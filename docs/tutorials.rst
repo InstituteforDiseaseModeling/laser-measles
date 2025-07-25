@@ -30,13 +30,10 @@ End-to-end tutorials
 ---------------------
 These tutorials are designed to show you how to use the library to solve a problem.
 
-.. toctree::
-    :maxdepth: 1
-
-    tutorials/tut_traveling_waves.ipynb
+UNDER CONSTRUCTION
 
 AI Assistance
-------------
+--------------
 
 For those within IDM you can use our custom GPT `Laser-GPT Jenner <https://chatgpt.com/g/g-674f5fd33aec8191bcdc1a2736fb7c8d-laser-gpt-jenner>`_
 to get help with ``laser-core``.

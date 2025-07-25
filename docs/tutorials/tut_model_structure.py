@@ -7,14 +7,16 @@
 
 # ## Overview
 # Laser-measles takes a stochastic, distrete-time approach that is
-# focused on incirporating spatial structure and data to model measles transmission.
+# focused on incorporating spatial structure and data to model measles transmission.
 #
 # laser-measles provides two primary modeling approaches:
-# - **Compartmental Model**: Population-level SEIR dynamics using aggregated patch data
-# - **ABM Model**: Individual-level simulation with stochastic agents
+# - **Compartmental/state-transision approach**: Population-level SEIR dynamics using aggregated patch data
+# - **Agent-based approach**: Individual-level simulation with stochastic agents
 #
-# The key difference lies in their data organization and LaserFrame structures.
-# You can choose which model (abm, compartmental, biweekly) to import by importing
+# The comprtmental approach is taken by the *compartmental* and *biweekly* models while the
+# agent-based is taken by the *abm* model. The key difference lies in their 
+# data organization and LaserFrame structures.
+# You can choose which model (*abm*, *compartmental*, or *biweekly*) to import by importing
 # the submodule directly from laser-measles:
 # %%
 # Importing all three models
@@ -26,13 +28,16 @@ from laser_measles.abm import Model
 
 # %% [markdown]
 # ## The BaseLaserModel and components
-# **BaseLaserModel**
+#
+# ### BaseLaserModel
+#
 # All three models inherit from the `BaseLaserModel`. This class is composed of a few main steps/methods:
 # - `.__init__`: This method is called when the model is instantiated and sets up the model's random seed (for reproducibility),
 # model clock (`start_time` and `current_date`), and performance metrics (`metrics`).
 # - `.run`: This method executes the model, running the model in discrete time steps (`num_ticks`)
 #
-# **Component and Phases**
+# ### Components and phases
+#
 # Each time step the model loops over the components that define what will happen in the simulation. Laser-measles
 # diffentiates between a `BaseComponent` and a `BasePhase`. Most components will be a `BasePhase` which is called
 # every time step. A `BaseComponent` will be called at the beginning of the simulation but not necessarily every
@@ -52,7 +57,8 @@ for c in sorted([c for c in dir(components) if 'Process' in c]):
 # %% [markdown]
 # ## Patches
 #
-# Patches exist for both the compartmental and ABM models and track the spatial
+# Patches represent a spatial unit (e.g., administraive unit) and 
+# exist for both the compartmental and ABM models. They track the spatial
 # data and aggregates in the model.
 # The `patches` use a `BasePatchLaserFrame` (or child class) for population-level aggregates.
 # %%
@@ -110,7 +116,7 @@ print(f"\nCompartmental model total infections: {comp_infections_df['cases'].sum
 
 # %% [markdown]
 # ### Key Features of patches (e.g., BasePatchLaserFrame):
-# - **`states` property**: StateArray with shape `(num_states, num_patches)`
+# - `states` **property**: StateArray with shape `(num_states, num_patches)`
 # - **Attribute access**: `states.S`, `states.E`, `states.I`, `states.R`
 # - **Population aggregates**: Each patch contains total counts by disease state
 # - **Spatial organization**: Patches represent geographic locations
