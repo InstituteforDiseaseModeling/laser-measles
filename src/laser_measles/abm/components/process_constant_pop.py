@@ -70,6 +70,9 @@ class ConstantPopProcess(BaseConstantPopProcess):
             1. Draw a random set of indices, or size size "number of births"  from the population,
         """
 
+        if self.lambda_birth == 0:
+            return
+
         patches = model.patches
         people = model.people
         populations = patches.states.sum(axis=0)
@@ -104,6 +107,7 @@ class ConstantPopProcess(BaseConstantPopProcess):
 
         # Simple initializer for ages where birth rate = mortality rate:
         # Initialize ages for existing population
-        people.date_of_birth[0 : people.count] = cast_type(
-            -1 * model.prng.exponential(1 / self.mu_death, people.count), people.date_of_birth.dtype
-        )
+        if self.mu_death > 0:
+            people.date_of_birth[0 : people.count] = cast_type(
+                -1 * model.prng.exponential(1 / self.mu_death, people.count), people.date_of_birth.dtype
+            )

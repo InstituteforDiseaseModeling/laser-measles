@@ -22,6 +22,7 @@ These tutorials are designed to highlight specific features of the library.
 
     tutorials/tut_random_numbers.ipynb
     tutorials/tut_creating_component.ipynb
+    tutorials/tut_abm_vital_dynamics.ipynb
     tutorials/tut_pydantic_component_parameters.ipynb
     tutorials/tut_state_arrays.ipynb
 

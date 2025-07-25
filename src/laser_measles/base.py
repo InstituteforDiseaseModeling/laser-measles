@@ -619,7 +619,7 @@ class BaseComponent:
 
     ModelType = TypeVar("ModelType")
 
-    def __init__(self, model: BaseLaserModel, verbose: bool = False) -> None:
+    def __init__(self, model: BaseLaserModel, verbose: bool = False, params: None = None) -> None:  # TODO: add ParamsType
         """
         Initialize the component.
 
@@ -630,6 +630,7 @@ class BaseComponent:
         self.model = model
         self.verbose = verbose
         self.initialized = False
+        self.params = params
         if not hasattr(self, "name"):
             self.name = self.__class__.__name__
 
