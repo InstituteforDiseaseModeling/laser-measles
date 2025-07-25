@@ -3,6 +3,8 @@
 #
 # The initial conditions of the simulation are dictated by demographics (e.g., population, age distribution, etc.).
 # The laser-measles package provides a number of tools to help you generate demographics for your simulation.
+# These can be used for the *abm*, *compartmental*, and *biweekly* models.
+#
 # In this tutorial, we'll download and process a shapefile of Ethiopia at administrative level 1 boundaries
 # to estimate intitial populations per patch. We will also show how we can sub-divide each boundary shape
 # into roughly equal-area patches.

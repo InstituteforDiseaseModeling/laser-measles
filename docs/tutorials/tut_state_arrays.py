@@ -10,7 +10,7 @@
 # %% [markdown]
 # ### What is a StateArray?
 #
-# StateArray is a numpy array wrapper that extends `np.ndarray` to provide attribute-based
+# `StateArray` is a numpy array wrapper that extends `np.ndarray` to provide attribute-based
 # access to epidemiological state compartments. Instead of remembering that `states[0]` is
 # Susceptible and `states[1]` is Infectious, you can use intuitive names like `states.S`
 # and `states.I`.
@@ -23,7 +23,7 @@ from laser_measles.utils import StateArray
 # %% [markdown]
 # ### Construction
 #
-# StateArray is constructed with two parameters:
+# `StateArray` is constructed with two parameters:
 # - `input_array`: A numpy array (typically 2D with shape `(num_states, num_patches)`)
 # - `state_names`: A list of state compartment names
 
@@ -49,7 +49,7 @@ print("State names:", states._state_names)
 # %% [markdown]
 # ### Data storage
 #
-# StateArray uses standard numpy array storage with additional metadata:
+# `StateArray` uses standard numpy array storage with additional metadata:
 # - The underlying data is stored as a regular numpy array
 # - `_state_names` stores the list of state compartment names
 # - `_state_indices` provides a mapping from names to array indices
@@ -61,7 +61,7 @@ print("State indices mapping:", states._state_indices)
 # %% [markdown]
 # ### Access patterns
 #
-# StateArray supports both traditional numeric indexing and intuitive attribute access:
+# `StateArray` supports both traditional numeric indexing and intuitive attribute access:
 
 # %%
 # Numeric access (backward compatible)
@@ -81,12 +81,12 @@ print("Same data?", np.array_equal(states[0], states.S))
 # %% [markdown]
 # ### Usage in patches LaserFrame
 #
-# In laser-measles models, StateArray is used as the `states` property of the patches
-# LaserFrame. This provides a convenient interface for accessing and modifying
+# In laser-measles models, `StateArray` is used as the `states` property of the patches
+# `LaserFrame`. This provides a convenient interface for accessing and modifying
 # epidemiological compartments across spatial patches.
 
 # %%
-# Example showing how models initialize StateArray
+# Example showing how models initialize `StateArray`
 # (This mimics what happens in actual model initialization)
 
 # Simulate patch populations
@@ -109,7 +109,7 @@ print(f"Recovered: {patch_states.R}")
 # %% [markdown]
 # ### Practical examples
 #
-# StateArray supports all numpy operations while maintaining readable code:
+# `StateArray` supports all numpy operations while maintaining readable code:
 
 # %%
 # Example 1: Calculate prevalence
@@ -133,13 +133,13 @@ print("States in first patch:", patch_states[:, 0])
 # %% [markdown]
 # ### Benefits
 #
-# StateArray provides several key advantages:
+# `StateArray` provides several key advantages:
 #
 # 1. **Readable Code**: `states.S` is more intuitive than `states[0]`
 # 2. **Maintainability**: Adding/removing states doesn't break numeric indices
 # 3. **Backward Compatibility**: Existing code using numeric indexing still works
 # 4. **Full NumPy Support**: All numpy operations work seamlessly
-# 5. **Error Prevention**: Typos in state names raise AttributeError immediately
+# 5. **Error Prevention**: Typos in state names raise `AttributeError` immediately
 # 6. **Flexibility**: Works with different model types (SIR, SEIR, etc.)
 
 # %%
@@ -159,7 +159,7 @@ print("SEIRS state names:", seirs_states._state_names)
 # %% [markdown]
 # ## Summary
 #
-# StateArray is a wrapper that makes epidemiological modeling code more readable
+# `StateArray` is a wrapper that makes epidemiological modeling code more readable
 # and maintainable. It provides intuitive access to disease compartments while preserving
 # all the performance and functionality of numpy arrays. In laser-measles, it
-# is used for the patches LaserFrame.
+# is used for the patches `LaserFrame`.
