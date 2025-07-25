@@ -34,7 +34,7 @@ class BaseInitializeEquilibriumStatesProcess(BasePhase):
         """
         states = model.patches.states
         population = states.S + states.R
-        
+
         if self.params.R0 <= 1.0:
             # For R0 <= 1, no endemic equilibrium exists - all population stays susceptible
             states.S = population

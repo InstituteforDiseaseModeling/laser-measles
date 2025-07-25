@@ -1,4 +1,5 @@
 """Parameters for the biweekly model."""
+
 import json
 from collections import OrderedDict
 

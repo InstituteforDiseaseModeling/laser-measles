@@ -167,7 +167,6 @@ class BaseLaserModel(ABC):
     ScenarioType = TypeVar("ScenarioType")
     ParamsType = TypeVar("ParamsType", bound=ParamsProtocol)
 
-    
     def __init__(self, scenario: pl.DataFrame | BaseScenario, params: BaseModelParams, name: str) -> None:
         """
         Initialize the model with common attributes.
