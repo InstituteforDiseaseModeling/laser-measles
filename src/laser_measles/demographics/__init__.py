@@ -6,8 +6,10 @@ from .raster_patch import RasterPatchGenerator
 from .raster_patch import RasterPatchParams
 from .shapefiles import get_shapefile_dataframe
 from .shapefiles import plot_shapefile_dataframe
+from .wpp import WPP
 
 __all__ = [
+    "WPP",
     "GADMShapefile",
     "RasterPatchGenerator",
     "RasterPatchParams",
