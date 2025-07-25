@@ -5,4 +5,5 @@ from laser_measles.components import BaseCaseSurveillanceTracker
 class CaseSurveillanceParams(BaseCaseSurveillanceParams): ...
 
 
-class CaseSurveillanceTracker(BaseCaseSurveillanceTracker): ...
+class CaseSurveillanceTracker(BaseCaseSurveillanceTracker):
+    """Tracks detected cases in the model."""
