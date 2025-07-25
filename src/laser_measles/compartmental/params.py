@@ -1,3 +1,5 @@
+"""Parameters for the compartmental SEIR model with daily timesteps."""
+
 import json
 from collections import OrderedDict
 

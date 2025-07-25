@@ -18,4 +18,5 @@ class BaseInfectionParams(BaseModel):
     mixing_scale: float = Field(default=0.001, description="Mixing scale", ge=0.0)
 
 
-class BaseInfectionProcess(BasePhase, ABC): ...
+class BaseInfectionProcess(BasePhase, ABC):
+    """Base class for infection (transmission and disease progression)."""

@@ -97,7 +97,7 @@ ABM Model
 Core Model
 ----------
 
-Agent based model
+Agent based model:
 
 .. autosummary::
    :toctree: _autosummary
@@ -169,7 +169,7 @@ Compartmental Model
 Core Model
 ----------
 
-Compartmental model with daily timesteps
+Compartmental model with daily timesteps:
 
 .. autosummary::
    :toctree: _autosummary
@@ -286,17 +286,6 @@ Components unique to the Biweekly model:
 Utilities
 ---------
 
-Biweekly model utilities and mixing functions:
-
-.. autosummary::
-   :toctree: _autosummary
-   :template: custom-function-template.rst
-   :nosignatures:
-
-   mixing
-
-----
-
 Core Framework
 ==============
 
@@ -329,7 +318,7 @@ Core utilities and computation functions:
    pretty_laserframe
 
 ----
-
+   
 Demographics Package
 ====================
 

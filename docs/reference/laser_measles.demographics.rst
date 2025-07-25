@@ -56,3 +56,11 @@ laser\_measles.demographics.shapefiles module
    :members:
    :show-inheritance:
    :undoc-members:
+
+laser\_measles.demographics.wpp module
+--------------------------------------
+
+.. automodule:: laser_measles.demographics.wpp
+   :members:
+   :show-inheritance:
+   :undoc-members:
