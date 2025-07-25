@@ -16,6 +16,7 @@ from scipy.interpolate import make_interp_spline
 from laser_measles.abm.model import ABMModel
 from laser_measles.base import BasePhase
 from laser_measles.utils import cast_type
+from laser_measles.demographics.wpp import WPP
 
 
 class WPPVitalDynamicsParams(BaseModel):
@@ -29,16 +30,7 @@ class WPPVitalDynamicsProcess(BasePhase):
         if params is None:
             params = WPPVitalDynamicsParams()
         self.params = params
-
-        # Get WPP population information from pyvd
-        pop_input = pyvd.make_pop_dat(self.params.country_code.upper())
-        self.year_vec = pop_input[0, :]
-        self.pop_mat = pop_input[1:, :] + 0.1  # age_bins x years
-        self.vd_tup = pyvd.demog_vd_calc(
-            self.year_vec, self.year_vec[0], self.pop_mat
-        )  # ('mort_year', 'mort_mat', 'birth_rate', 'br_mult_x', 'br_mult_y')
-        self.age_vec = np.concatenate([np.array(pyvd.constants.MORT_XVAL)[::2], [pyvd.constants.MORT_XVAL[-1]]])  # in days
-        self.pyramid_spline = make_interp_spline(self.year_vec, self.pop_mat, axis=1)
+        self.wpp = WPP(self.params.country_code)
 
         # re-initialize people frame with correct capacity
         capacity = self.calculate_capacity(model=model)
@@ -66,7 +58,7 @@ class WPPVitalDynamicsProcess(BasePhase):
         # initialize age distribution
         # TODO: Capture this in the demographics submodule
         # Interpolate to starting year
-        pyramid = self.pyramid_spline(self.params.year)
+        pyramid = self.wpp.get_population_pyramid(self.params.year)
         # Create sampler
         sampler = AliasedDistribution(pyramid)
         # Sample from the distribution
@@ -75,7 +67,7 @@ class WPPVitalDynamicsProcess(BasePhase):
         ages = np.zeros(len(samples), dtype=np.int32)
         for bin_idx in np.arange(len(pyramid)):
             mask = samples == bin_idx
-            ages[mask] = np.random.randint(self.age_vec[bin_idx], self.age_vec[bin_idx + 1], size=mask.sum())
+            ages[mask] = np.random.randint(self.wpp.age_vec[bin_idx], self.wpp.age_vec[bin_idx + 1], size=mask.sum())
         people.date_of_birth[: len(people)] = -ages
 
         # initialize active
@@ -101,15 +93,15 @@ class WPPVitalDynamicsProcess(BasePhase):
 
         # Deaths (get the index of the current year in the birth and mortality data vectors)
         # year_idx = np.argmin(np.abs(model.current_date.year  - self.year_vec)) # using NN
-        year_idx = np.where(self.year_vec < model.current_date.year)[0][-1]  # using most recent entry
+        year_idx = np.where(self.wpp.year_vec < model.current_date.year)[0][-1]  # using most recent entry
         # get indices of active people
         idx = np.where(people.active)[0]
         # calculate current age (ticks) of active people
         ages = tick - people.date_of_birth[idx]
 
         # age bin indices
-        age_bin_idx = np.digitize(x=ages, bins=self.age_vec) - 1
-        mort_rates = self.vd_tup.mort_mat[::2, year_idx][age_bin_idx]
+        age_bin_idx = np.digitize(x=ages, bins=self.wpp.age_vec) - 1
+        mort_rates = self.wpp.vd_tup.mort_mat[::2, year_idx][age_bin_idx]
         death_idx = idx[np.random.random(len(ages)) < mort_rates]
 
         # mark as not active
@@ -129,7 +121,7 @@ class WPPVitalDynamicsProcess(BasePhase):
         i_end = 0
         for patch_id in range(len(model.patches)):
             patch_pop = patch_pops[patch_id]
-            births = np.random.poisson(lam=patch_pop * self.vd_tup.birth_rate * self.vd_tup.br_mult_y[year_idx])
+            births = np.random.poisson(lam=patch_pop * self.wpp.vd_tup.birth_rate * self.wpp.vd_tup.br_mult_y[year_idx])
             i_end = i_start + births
             people.active[idx[i_start:i_end]] = True
             people.date_of_birth[idx[i_start:i_end]] = tick
@@ -140,14 +132,10 @@ class WPPVitalDynamicsProcess(BasePhase):
             model.patches.states.S[patch_id] += births
 
     def calculate_wpp_total_pop(self, year: int) -> int:
-        assert year >= self.year_vec[0], f"Year index {year} is out of bounds (too early)"
-        assert year <= self.year_vec[-1], f"Year index {year} is out of bounds (too late)"
-        return int(np.sum(self.pyramid_spline(year)))
+        return int(np.sum(self.wpp.get_population_pyramid(year)))
 
     def calculate_capacity(self, model: ABMModel, buffer: float = 0.05) -> int:
         sim_end_date = timedelta(days=model.params.num_ticks * model.params.time_step_days) + model.current_date
-        assert sim_end_date.year >= self.year_vec[0], f"Year index {sim_end_date.year} is out of bounds (too early)"
-        assert sim_end_date.year <= self.year_vec[-1], f"Year index {sim_end_date.year} is out of bounds (too late)"
         return int(
             model.scenario["pop"].sum()
             * (self.calculate_wpp_total_pop(sim_end_date.year) / self.calculate_wpp_total_pop(model.current_date.year))
