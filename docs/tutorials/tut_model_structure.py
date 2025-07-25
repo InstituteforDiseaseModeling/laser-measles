@@ -14,7 +14,7 @@
 # - **Agent-based approach**: Individual-level simulation with stochastic agents
 #
 # The comprtmental approach is taken by the *compartmental* and *biweekly* models while the
-# agent-based is taken by the *abm* model. The key difference lies in their 
+# agent-based is taken by the *abm* model. The key difference lies in their
 # data organization and LaserFrame structures.
 # You can choose which model (*abm*, *compartmental*, or *biweekly*) to import by importing
 # the submodule directly from laser-measles:
@@ -57,7 +57,7 @@ for c in sorted([c for c in dir(components) if 'Process' in c]):
 # %% [markdown]
 # ## Patches
 #
-# Patches represent a spatial unit (e.g., administraive unit) and 
+# Patches represent a spatial unit (e.g., administraive unit) and
 # exist for both the compartmental and ABM models. They track the spatial
 # data and aggregates in the model.
 # The `patches` use a `BasePatchLaserFrame` (or child class) for population-level aggregates.
