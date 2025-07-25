@@ -85,7 +85,7 @@ def test_initial_age_pyramid(WPPModelZeroTicks):
     idx = np.where(WPPModelZeroTicks.people.active)[0]
     model_pyramid = np.histogram(0 - WPPModelZeroTicks.people.date_of_birth[idx], bins=age_bins)[0]
     vd = WPPModelZeroTicks.get_component(WPPVitalDynamicsProcess)[0]
-    wpp_pyramid = vd.pyramid_spline(WPPModelZeroTicks.start_time.year)
+    wpp_pyramid = vd.wpp.get_population_pyramid(WPPModelZeroTicks.start_time.year)
     if DEBUG:
         debug_plot_age_pyramid(WPPModelZeroTicks, age_bins, model_pyramid, wpp_pyramid)
     model_pyramid_samples = reconstruct_from_histogram(age_bins, model_pyramid)
@@ -104,8 +104,8 @@ def test_pop_agreement(WPPModel):
 @pytest.mark.slow
 def test_wpp_vital_dynamics(WPPModel):
     vd = WPPModel.get_component(WPPVitalDynamicsProcess)[0]
-    initial_pyramid = vd.pyramid_spline(WPPModel.start_time.year)
-    final_pyramid = vd.pyramid_spline(WPPModel.start_time.year + WPPModel.params.num_ticks // 365)
+    initial_pyramid = vd.wpp.get_population_pyramid(WPPModel.start_time.year)
+    final_pyramid = vd.wpp.get_population_pyramid(WPPModel.start_time.year + WPPModel.params.num_ticks // 365)
     wpp_growth_rate = (final_pyramid.sum() - initial_pyramid.sum()) / initial_pyramid.sum()
     model_growth_rate = (WPPModel.people.active.sum() - WPPModel.scenario["pop"].sum()) / WPPModel.scenario["pop"].sum()
     assert np.isclose(model_growth_rate, wpp_growth_rate, atol=2e-2)

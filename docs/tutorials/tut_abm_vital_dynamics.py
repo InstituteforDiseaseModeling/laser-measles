@@ -5,7 +5,7 @@
 # vital dynamics (births, deaths, and age structure) into the ABM model.
 #
 # Vital dynamics is an essential component of modeling measles transmission, particularly
-# the birth rate. The ABM model is the best for modeling age-based transmission so this
+# the birth rate. The ABM model is the best for modeling age-pbased transmission so this
 # tutorial goes over some of the components you can use to setup the models.
 #
 # We start with some basic imports
