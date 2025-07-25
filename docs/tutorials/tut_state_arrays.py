@@ -5,7 +5,7 @@
 # convenient access to epidemiological state compartments.
 
 # %% [markdown]
-# ## Section 1: StateArray Fundamentals
+# ## Section 1: StateArray fundamentals
 
 # %% [markdown]
 # ### What is a StateArray?
@@ -47,7 +47,7 @@ print("StateArray shape:", states.shape)
 print("State names:", states._state_names)
 
 # %% [markdown]
-# ### Data Storage
+# ### Data storage
 #
 # StateArray uses standard numpy array storage with additional metadata:
 # - The underlying data is stored as a regular numpy array
@@ -59,7 +59,7 @@ print("Underlying data type:", type(states.view(np.ndarray)))
 print("State indices mapping:", states._state_indices)
 
 # %% [markdown]
-# ### Access Patterns
+# ### Access patterns
 #
 # StateArray supports both traditional numeric indexing and intuitive attribute access:
 
@@ -76,10 +76,10 @@ print("Infectious (attribute):", states.I)
 print("Same data?", np.array_equal(states[0], states.S))
 
 # %% [markdown]
-# ## Section 2: StateArray in Practice
+# ## Section 2: StateArray in practice
 
 # %% [markdown]
-# ### Usage in Patches LaserFrame
+# ### Usage in patches LaserFrame
 #
 # In laser-measles models, StateArray is used as the `states` property of the patches
 # LaserFrame. This provides a convenient interface for accessing and modifying
@@ -107,7 +107,7 @@ print(f"Infectious: {patch_states.I}")
 print(f"Recovered: {patch_states.R}")
 
 # %% [markdown]
-# ### Practical Examples
+# ### Practical examples
 #
 # StateArray supports all numpy operations while maintaining readable code:
 

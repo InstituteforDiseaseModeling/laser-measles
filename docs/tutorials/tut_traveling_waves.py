@@ -35,7 +35,7 @@ import laser_measles as lm
 np.random.seed(42)
 
 # %% [markdown]
-# ## Creating a Synthetic Spatial Network
+# ## Creating a synthetic spatial network
 #
 # First, we'll create a synthetic network of towns distributed on a 2D plane.
 # We'll use a realistic spatial distribution with one major city and smaller towns
@@ -125,7 +125,7 @@ print(f"Population range: {scenario_df['pop'].min():,} to {scenario_df['pop'].ma
 print(f"Distance range: {scenario_df['distance_km'].min():.1f} to {scenario_df['distance_km'].max():.1f} km")
 
 # %% [markdown]
-# ## Visualizing the Spatial Network
+# ## Visualizing the spatial network
 #
 # Let's visualize our synthetic spatial network to understand the town distribution
 # and population sizes.
@@ -160,7 +160,7 @@ plt.tight_layout()
 plt.show()
 
 # %% [markdown]
-# ## Setting Up the Epidemic Model
+# ## Setting up the epidemic model
 #
 # Now we'll create the compartmental model with spatial mixing to simulate
 # measles transmission across our spatial network.
@@ -239,7 +239,7 @@ def run_traveling_wave_simulation(scenario_df, mixing_scale=0.005, num_ticks=365
 
 
 # %% [markdown]
-# ## Running the Base Simulation
+# ## Running the base simulation
 #
 # Let's run our first simulation with a moderate mixing scale to observe
 # the traveling wave pattern.
@@ -253,7 +253,7 @@ print(f"Total simulation days: {state_results1['tick'].max()}")
 print(f"Total cases recorded: {case_results1['cases'].sum()}")
 
 # %% [markdown]
-# ## Analyzing Infection Peaks and Wave Speed
+# ## Analyzing infection peaks and wave speed
 #
 # Now we'll analyze the timing of infection peaks in each town to calculate
 # the wave speed. We'll look for the day when each town experiences its
@@ -345,7 +345,7 @@ else:
     print("Insufficient data for wave speed calculation")
 
 # %% [markdown]
-# ## Visualizing the Traveling Wave
+# ## Visualizing the traveling wave
 #
 # Let's create visualizations to show the traveling wave pattern and
 # the relationship between distance and time-to-peak.
@@ -440,7 +440,7 @@ plt.tight_layout()
 plt.show()
 
 # %% [markdown]
-# ## Effect of Spatial Mixing Parameter (κ)
+# ## Effect of spatial mixing parameter (κ)
 #
 # Now let's investigate how the spatial mixing parameter (κ) affects
 # wave speed and synchrony. We'll run simulations with different mixing
@@ -479,7 +479,7 @@ for mixing_scale in mixing_scales:
         print("  Insufficient data for wave speed calculation")
 
 # %% [markdown]
-# ## Comparing Results Across Different κ Values
+# ## Comparing results across different κ values
 #
 # Let's visualize how the mixing parameter affects wave speed and
 # epidemic dynamics.
@@ -559,7 +559,7 @@ plt.tight_layout()
 plt.show()
 
 # %% [markdown]
-# ## Summary of Results
+# ## Summary of results
 #
 # Let's summarize the key findings from our traveling wave analysis.
 
@@ -596,7 +596,7 @@ print("  • Linear relationship between distance and time-to-peak")
 print("  • Spatial structure strongly influences epidemic dynamics")
 
 # %% [markdown]
-# ## Scientific Interpretation
+# ## Scientific interpretation
 #
 # ### Traveling Wave Dynamics
 #
@@ -637,7 +637,7 @@ print("  • Spatial structure strongly influences epidemic dynamics")
 # from empirical data.
 
 # %% [markdown]
-# ## Exercises for Further Exploration
+# ## Exercises for further exploration
 #
 # 1. **Network Structure**: Try different spatial network configurations (linear chains,
 #    clustered networks, scale-free networks) and observe how they affect wave patterns.
