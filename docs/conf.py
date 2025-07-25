@@ -43,7 +43,7 @@ autosummary_generate = True  # Turn on sphinx.ext.autosummary
 autosummary_ignore_module_all = False  # Respect __all__
 autodoc_member_order = "bysource"  # Keep original ordering
 add_module_names = False  # NB, does not work
-autodoc_inherit_docstrings = False  # Stops sublcasses from including docs from parent classes
+autodoc_inherit_docstrings = True  # Allow subclasses to inherit docs from parent classes
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
