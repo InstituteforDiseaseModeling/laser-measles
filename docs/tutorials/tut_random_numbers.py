@@ -5,7 +5,7 @@
 # Understanding this is crucial for debugging, testing, and scientific reproducibility.
 
 # %% [markdown]
-# ## Core Concepts
+# ## Core concepts
 #
 # ### Model Seeding
 #
@@ -69,7 +69,7 @@ print("Model 2 random numbers:", random2)
 print("Are they identical?", np.allclose(random1, random2))
 
 # %% [markdown]
-# ## Usage Patterns
+# ## Usage patterns
 #
 # ### Using model.prng in Components
 #
@@ -156,7 +156,7 @@ infected = transmission_example(model, forces, susceptible_agents)
 print("Newly infected agents:", infected)
 
 # %% [markdown]
-# ## Best Practices
+# ## Best practices
 #
 # ### When to Use Each Approach
 #

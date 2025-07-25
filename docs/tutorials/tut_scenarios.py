@@ -1,5 +1,5 @@
 # %% [markdown]
-# # Creating model scenarios
+# # Creating Model Scenarios
 #
 # The initial conditions of the simulation are dictated by demographics (e.g., population, age distribution, etc.).
 # The laser-measles package provides a number of tools to help you generate demographics for your simulation.

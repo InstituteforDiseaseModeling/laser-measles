@@ -1,5 +1,5 @@
 # %% [markdown]
-# # Model structure
+# # Model Structure
 #
 # This tutorial goes over how a laser-measles models run.
 # It compares the structure of compartmental and agent-based models,
@@ -25,7 +25,7 @@ from laser_measles.biweekly import BiweeklyModel, BiweeklyParams
 from laser_measles.abm import Model
 
 # %% [markdown]
-# ## The BaseLaserModel and Components
+# ## The BaseLaserModel and components
 # **BaseLaserModel**
 # All three models inherit from the `BaseLaserModel`. This class is composed of a few main steps/methods:
 # - `.__init__`: This method is called when the model is instantiated and sets up the model's random seed (for reproducibility),
@@ -166,7 +166,7 @@ print(f"\nABM model total infections: {abm_infections_df['cases'].sum()}")
 # - **Stochastic processes**: Each agent processed individually
 
 # %% [markdown]
-# ## Key Differences
+# ## Key differences
 #
 # | Aspect | Compartmental | ABM |
 # |--------|---------------|-----|
@@ -179,7 +179,7 @@ print(f"\nABM model total infections: {abm_infections_df['cases'].sum()}")
 # | **Memory Usage** | Lower (aggregates) | Higher (individual records) |
 
 # %% [markdown]
-# ## When to Use Each Model
+# ## When to use each model
 #
 # **Use a Patches model only (e.g., Compartmental Model) when:**
 # - Analyzing population-level dynamics

@@ -1,5 +1,5 @@
 # %% [markdown]
-# # Parameter validation
+# # Parameter Validation
 #
 # This tutorial demonstrates the strengths of using Pydantic's BaseModel to define simulation
 # parameters. Pydantic provides type
@@ -31,7 +31,7 @@ from laser_measles.biweekly.components import InfectionParams
 from laser_measles.biweekly.components import SIACalendarParams
 
 # %% [markdown]
-# ## Type Validation and Default Values
+# ## Type validation and default values
 #
 # Pydantic automatically validates parameter types and provides clear default values
 
@@ -53,7 +53,7 @@ print(f"  seasonality: {custom_infection_params.seasonality}")
 print(f"  season_start: {custom_infection_params.season_start}")
 
 # %% [markdown]
-# ## Range Constraints and Validation
+# ## Range constraints and validation
 #
 # Pydantic enforces numerical constraints automatically
 
@@ -86,7 +86,7 @@ except ValidationError:
     print(traceback.format_exc())
 
 # %% [markdown]
-# ## Self-Documenting Parameters
+# ## Self-documenting parameters
 # Pydantic Field descriptions provide built-in documentation
 
 # %%
@@ -103,7 +103,7 @@ for field_name, field_info in ImportationPressureParams.model_fields.items():
     print(f"  {field_name}: {field_info.description} (default: {field_info.default})")
 
 # %% [markdown]
-# ## Complex Parameter Types
+# ## Complex parameter types
 # Pydantic handles complex types like DataFrames and functions with proper configuration
 
 # %%
@@ -141,7 +141,7 @@ print(f"  Schedule shape: {sia_params.sia_schedule.shape}")
 print(f"  Filter function test: {sia_params.filter_fn('country:north_state:lga1')}")
 
 # %% [markdown]
-# ## Parameter Serialization and Persistence
+# ## Parameter serialization and persistence
 # Pydantic makes it easy to save and load parameter configurations
 
 # %%
@@ -167,7 +167,7 @@ from_json = ImportationPressureParams.model_validate_json(json_str)
 print(f"From JSON matches: {from_json == importation_params}")
 
 # %% [markdown]
-# ## Parameter Validation in Practice
+# ## Parameter validation in practice
 # Let's see how validation helps prevent common configuration errors
 
 # %%
@@ -206,7 +206,7 @@ print(
 )
 
 # %% [markdown]
-# ## Parameter Inheritance and Customization
+# ## Parameter inheritance and customization
 # You can easily extend parameter classes for specialized use cases
 
 # %%
@@ -239,7 +239,7 @@ except ValidationError as e:
     print(f"\n✗ Extended validation works: {e.errors()[0]['msg']}")
 
 # %% [markdown]
-# ## Configuration Management
+# ## Configuration management
 #
 # Pydantic makes it easy to manage multiple parameter sets for different scenarios
 
@@ -286,7 +286,7 @@ def compare_scenarios(scenario1, scenario2, param_type):
 compare_scenarios("baseline", "high_transmission", "infection")
 
 # %% [markdown]
-# ## IDE Support and Type Hints
+# ## IDE support and type hints
 #
 # Pydantic provides excellent IDE support with autocomplete and type checking
 

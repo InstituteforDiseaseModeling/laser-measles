@@ -13,7 +13,7 @@ import laser_measles as lm
 from laser_measles.base import BasePhase
 
 # %% [markdown]
-# ## Component Architecture
+# ## Component architecture
 #
 # Components in laser-measles follow a standard pattern:
 # 1. **Parameter Class**: Pydantic model defining component parameters
@@ -21,7 +21,7 @@ from laser_measles.base import BasePhase
 # 3. **Integration**: Add to model's component list and run simulation
 
 # %% [markdown]
-# ## Creating the PIRI Component
+# ## Creating the PIRI component
 #
 # Let's create a component that implements Periodic Intensification of Routine Immunization (PIRI)
 # to simulate vaccination campaigns that temporarily boost MCV1 coverage for newborn vaccination.
@@ -107,7 +107,7 @@ class PIRIProcess(BasePhase):
 
 
 # %% [markdown]
-# ## Testing the Component
+# ## Testing the component
 #
 # Let's create two simulations: one with the PIRI component and one without,
 # to see the impact on disease transmission.
@@ -183,7 +183,7 @@ def run_simulation(use_piri: bool = True, num_ticks: int = 365 * 10) -> tuple:
 
 
 # %% [markdown]
-# ## Comparison of Results
+# ## Comparison of results
 #
 # Let's run both simulations and compare the outcomes.
 
@@ -224,7 +224,7 @@ print(f"With PIRI:  {peak_with_piri:,}")
 print(f"Reduction:     {peak_no_piri - peak_with_piri:,} ({100 * (peak_no_piri - peak_with_piri) / peak_no_piri:.1f}%)")
 
 # %% [markdown]
-# ## Key Insights
+# ## Key insights
 #
 # This tutorial demonstrates:
 #
@@ -242,7 +242,7 @@ print(f"Reduction:     {peak_no_piri - peak_with_piri:,} ({100 * (peak_no_piri -
 # are born during boost periods.
 
 # %% [markdown]
-# ## Best Practices
+# ## Best practices
 #
 # When creating components:
 # - Use Pydantic BaseModel for parameters with proper validation

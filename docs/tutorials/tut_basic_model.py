@@ -1,5 +1,5 @@
 # %% [markdown]
-# # Creating and running models
+# # Creating And Running Models
 #
 # This tutorial demonstrates how to initialize and run a model using
 # the laser-measles framework.
@@ -85,7 +85,7 @@ except ValueError:
     traceback.print_exc()
 
 # %% [markdown]
-# ## Initialize Model Parameters and Components
+# ## Initialize model parameters and components
 # The Model is passed parameters that set the overall behavior of the simulation.
 # For example, the duration of the simulation (`num_ticks`) and the random seed for
 # reproducibility (`seed`). However, the processes included in the simulation (e.g.,
@@ -134,7 +134,7 @@ biweekly_model.add_component(components.StateTracker)
 print(f"Model has {len(biweekly_model.components)} components:\n{biweekly_model.components}")
 
 # %% [markdown]
-# ## Components vs Instances
+# ## Components vs instances
 #
 # Note that when we setup the `model.components` we pass a reference to the component Class (e.g., `components.VitalDynamicsProcess`) and not instances of the Class itself
 # (e.g., `components.VitalDynamicsProcess()`). The `Model` creates instances of the class and those are stored in the `model.instances` attribute. This is why if you want to
@@ -144,7 +144,7 @@ print(f"Model has {len(biweekly_model.components)} components:\n{biweekly_model.
 print(biweekly_model.instances)
 
 # %% [markdown]
-# ## Run the Simulation
+# ## Run the simulation
 #
 # Execute the model for the specified number of time steps.
 # Since we set verbose=True we will get additional timing information.
@@ -206,7 +206,7 @@ for state in compartmental_model.params.states:
     print(f"{state}: {getattr(compartmental_model.patches.states, state).sum():,}")
 
 # %% [markdown]
-# ## Visualize Results
+# ## Visualize results
 #
 # Generate plots to analyze the simulation results, including time series
 # of disease states and spatial distribution of the final epidemic.
