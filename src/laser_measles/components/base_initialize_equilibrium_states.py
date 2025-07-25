@@ -2,6 +2,7 @@
 Component for initializing the population in each of the model states by rough equilibrium of R0.
 """
 
+import numpy as np
 from pydantic import BaseModel
 from pydantic import Field
 
@@ -33,5 +34,12 @@ class BaseInitializeEquilibriumStatesProcess(BasePhase):
         """
         states = model.patches.states
         population = states.S + states.R
-        states.S = population / self.params.R0
-        states.R = population * (1 - 1 / self.params.R0)
+        
+        if self.params.R0 <= 1.0:
+            # For R0 <= 1, no endemic equilibrium exists - all population stays susceptible
+            states.S = population
+            states.R = np.zeros_like(population)
+        else:
+            # Normal case: R0 > 1, endemic equilibrium exists
+            states.S = population / self.params.R0
+            states.R = population * (1 - 1 / self.params.R0)
