@@ -6,4 +6,6 @@ class CaseSurveillanceParams(BaseCaseSurveillanceParams): ...
 
 
 class CaseSurveillanceTracker(BaseCaseSurveillanceTracker): ...
+
+
 """Component for tracking detected cases in the model."""

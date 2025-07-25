@@ -6,5 +6,4 @@ class PopulationTracker(BasePopulationTracker):
     """Tracks the population size of each patch."""
 
 
-class PopulationTrackerParams(BasePopulationTrackerParams):
-     ...
+class PopulationTrackerParams(BasePopulationTrackerParams): ...

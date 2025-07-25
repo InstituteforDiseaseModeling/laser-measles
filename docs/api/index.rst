@@ -318,7 +318,7 @@ Core utilities and computation functions:
    pretty_laserframe
 
 ----
-   
+
 Demographics Package
 ====================
 
