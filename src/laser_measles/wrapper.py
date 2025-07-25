@@ -303,7 +303,7 @@ def pretty_laserframe(cls):
 
         def __repr__(self):
             """Override __repr__ to use the wrapper formatting."""
-            return f"{self.__class__.__name__}({self._laserframe!r})"
+            return f"{self.__class__.__name__}({super().__repr__()})"
 
         def print_laserframe(self, max_items=None):
             """Add the print_laserframe method."""
