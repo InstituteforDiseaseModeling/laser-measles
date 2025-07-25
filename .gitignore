@@ -93,3 +93,4 @@ docs/tutorials/*.ipynb
 
 # Temp
 examples/
+.cursor/
