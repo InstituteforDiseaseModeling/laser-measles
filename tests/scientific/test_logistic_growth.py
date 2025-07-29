@@ -23,7 +23,7 @@ from laser_measles.base import BasePhase
 # drop ABM, TODO: create SI conversion for the module
 MEASLES_MODULES = [module for module in MEASLES_MODULES if module != "laser_measles.abm"]
 
-SEED = np.random.randint(1000000)
+SEED = 42
 RNG = np.random.default_rng(SEED)
 
 
@@ -113,7 +113,7 @@ def test_no_vital_dynamics(measles_module, num_reps):
 
     problem_params = PropertySet(
         {
-            "population_size": 10_000,
+            "population_size": 1_000_000,
             "beta": 2 / 14,
             "num_days": 730,  # in days
             "initial_infections": 1,

@@ -5,10 +5,13 @@ Component defining the TransmissionProcess, which models the transmission of mea
 import numpy as np
 from pydantic import BaseModel
 from pydantic import Field
+from typing import Any
 
 from laser_measles.abm.model import ABMModel
 from laser_measles.base import BasePhase
 from laser_measles.migration import init_gravity_diffusion
+from laser_measles.mixing.base import BaseMixing
+from laser_measles.mixing.gravity import GravityMixing
 from laser_measles.utils import cast_type
 
 # Import numba conditionally for the numba implementation
@@ -102,6 +105,8 @@ else:
 
 class TransmissionParams(BaseModel):
     """Parameters specific to the transmission process component."""
+    
+    model_config = {"arbitrary_types_allowed": True}
 
     beta: float = Field(default=1.0, description="Base transmission rate", ge=0.0)
     seasonality: float = Field(default=1.0, description="Seasonality factor", ge=0.0, le=1.0)
@@ -110,6 +115,7 @@ class TransmissionParams(BaseModel):
     exp_sigma: float = Field(default=2.0, description="Exposure sigma (days)", gt=0.0)
     distance_exponent: float = Field(default=1.5, description="Distance exponent", ge=0.0)
     mixing_scale: float = Field(default=0.001, description="Mixing scale", ge=0.0)
+    mixer: Any = Field(default_factory=lambda: GravityMixing(), description="Mixing object")
 
     @property
     def mu_underlying(self) -> float:
@@ -150,7 +156,9 @@ class TransmissionProcess(BasePhase):
         super().__init__(model, verbose)
 
         self.params = params if params is not None else TransmissionParams()
-        self._mixing = None
+
+        # Set mixer scenario
+        self.params.mixer.scenario = model.scenario
 
         # add new properties to the laserframes
         assert hasattr(model.people, "susceptibility")  # susceptibility factor
@@ -189,9 +197,9 @@ class TransmissionProcess(BasePhase):
         # transfer between and w/in patches
         # NB: this assumes that the mixing matrix is properly normalized
         # i.e., that the sum of each row is 1 (self.mixing.sum(axis=1) == 1)
-        forces = (beta_effective * patches.states.I) @ self.mixing
+        forces = (beta_effective * patches.states.I) @ self.params.mixer.mixing_matrix
 
-        # normalize by the population
+        # normalize by the population of the patch
         forces /= patches.states.sum(axis=0)
         np.negative(forces, out=forces)
         np.expm1(forces, out=forces)  # exp(x) - 1
