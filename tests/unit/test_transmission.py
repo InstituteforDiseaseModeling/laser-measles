@@ -55,7 +55,7 @@ class ChainTransmissionProcess(lm.base.BaseComponent):
         if hasattr(c[0], "mixing"):
             c[0].mixing = np.diag(np.ones(num_patches - 1), k=1)
         elif hasattr(c[0], "transmission"):
-            c[0].transmission.mixing = np.diag(np.ones(num_patches - 1), k=1)
+            c[0].transmission.params.mixer._mixing_matrix = np.diag(np.ones(num_patches - 1), k=1)
         else:
             raise ValueError("No mixing attribute found")
 

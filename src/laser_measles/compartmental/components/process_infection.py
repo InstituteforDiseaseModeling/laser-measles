@@ -101,13 +101,16 @@ class InfectionProcess(BaseInfectionProcess):
         total_patch_pop = np.maximum(total_patch_pop, 1)
 
         # Calculate prevalence of infectious individuals in each patch
-        prevalence = states.I / total_patch_pop  # I_j / N_j
+        prevalence = states.I # / total_patch_pop  # I_j / N_j
 
         # Calculate force of infection with seasonal variation
         seasonal_factor = 1 + self.params.seasonality * np.sin(2 * np.pi * (tick - self.params.season_start) / 365.0)
         lambda_i = (
             (self.params.beta * seasonal_factor * prevalence) @ self.mixing  # recall mixing is pij: i -> j
         )
+
+        # normalize by the population of the patch
+        lambda_i /= total_patch_pop
 
         # Stochastic transitions using binomial sampling
 

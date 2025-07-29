@@ -71,13 +71,16 @@ class InfectionProcess(BaseInfectionProcess):
         states = model.patches.states
 
         # prevalence in each patch
-        prevalence = states.I / states.sum(axis=0)  # I_j / N_j
+        prevalence = states.I #/ states.sum(axis=0)  # I_j / N_j
 
         lambda_i = (
             self.params.beta_per_tick
             * (1 + self.params.seasonality * np.sin(2 * np.pi * (tick - self.params.season_start) / 26.0))
             * prevalence
         ) @ self.mixing
+
+        # normalize by the population of the patch
+        lambda_i /= states.sum(axis=0)
 
         prob = 1 - np.exp(-lambda_i)  # already per-susceptible
         dI = model.prng.binomial(states[0], prob).astype(states.dtype)

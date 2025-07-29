@@ -2,6 +2,7 @@ from abc import ABC
 from abc import abstractmethod
 
 import numpy as np
+import polars as pl
 
 
 class BaseMixing(ABC):
@@ -10,10 +11,18 @@ class BaseMixing(ABC):
     """
 
     def __init__(self, scenario, params):
-        self.scenario = scenario
+        self._scenario = scenario
         self.params = params
         self._migration_matrix = None
         self._mixing_matrix = None
+
+    @property
+    def scenario(self) -> pl.DataFrame:
+        return self._scenario
+
+    @scenario.setter
+    def scenario(self, scenario: pl.DataFrame) -> None:
+        self._scenario = scenario
 
     @property
     def migration_matrix(self) -> np.ndarray:
