@@ -52,8 +52,8 @@ class ChainTransmissionProcess(lm.base.BaseComponent):
         assert len(c) == 1, "There should be exactly one infection process"
         assert c[0].initialized, "Infection process must be initialized"
         num_patches = len(model.scenario)
-        if hasattr(c[0], "mixing"):
-            c[0].mixing = np.diag(np.ones(num_patches - 1), k=1)
+        if hasattr(c[0].params, "mixer"):
+            c[0].params.mixer._mixing_matrix = np.diag(np.ones(num_patches - 1), k=1)
         elif hasattr(c[0], "transmission"):
             c[0].transmission.params.mixer._mixing_matrix = np.diag(np.ones(num_patches - 1), k=1)
         else:

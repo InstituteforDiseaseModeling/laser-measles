@@ -4,10 +4,12 @@ Component for simulating the SEIR infection process in the compartmental model.
 
 import numpy as np
 from pydantic import Field
+from typing import Any
 
 from laser_measles.base import BaseLaserModel
 from laser_measles.components import BaseInfectionParams
 from laser_measles.components import BaseInfectionProcess
+from laser_measles.mixing.gravity import GravityMixing
 from laser_measles.migration import init_gravity_diffusion
 from laser_measles.utils import cast_type
 
@@ -15,13 +17,15 @@ from laser_measles.utils import cast_type
 class InfectionParams(BaseInfectionParams):
     """Parameters specific to the SEIR infection process component."""
 
+    model_config = {"arbitrary_types_allowed": True}
+
+
     beta: float = Field(default=1.0, description="Base transmission rate", ge=0.0)
     exp_mu: float = Field(default=6.0, description="Exposure mean", gt=0.0)
     inf_mu: float = Field(default=8.0, description="Infection mean", gt=0.0)
     seasonality: float = Field(default=0.0, description="Seasonality factor, default is no seasonality", ge=0.0, le=1.0)
     season_start: float = Field(default=0, description="Season start day (0-364)", ge=0, le=364)
-    distance_exponent: float = Field(default=1.5, description="Distance exponent", ge=0.0)
-    mixing_scale: float = Field(default=0.001, description="Mixing scale", ge=0.0)
+    mixer: Any = Field(default_factory=lambda: GravityMixing(), description="Mixing object")
 
     @property
     def sigma(self) -> float:
@@ -88,7 +92,9 @@ class InfectionProcess(BaseInfectionProcess):
         super().__init__(model, verbose)
 
         self.params = params if params is not None else InfectionParams()
-        self._mixing = None
+
+        # set the scenario for the mixing object
+        self.params.mixer.scenario = model.scenario
 
     def __call__(self, model: BaseLaserModel, tick: int) -> None:
         # Get state counts: states is (4, num_patches) for [S, E, I, R]
@@ -106,7 +112,7 @@ class InfectionProcess(BaseInfectionProcess):
         # Calculate force of infection with seasonal variation
         seasonal_factor = 1 + self.params.seasonality * np.sin(2 * np.pi * (tick - self.params.season_start) / 365.0)
         lambda_i = (
-            (self.params.beta * seasonal_factor * prevalence) @ self.mixing  # recall mixing is pij: i -> j
+            (self.params.beta * seasonal_factor * prevalence) @ self.params.mixer.mixing_matrix  # recall mixing is pij: i -> j
         )
 
         # normalize by the population of the patch
@@ -139,18 +145,18 @@ class InfectionProcess(BaseInfectionProcess):
 
         return
 
-    @property
-    def mixing(self) -> np.ndarray:
-        """Returns the mixing matrix, initializing if necessary"""
-        if self._mixing is None:
-            self._mixing = init_gravity_diffusion(self.model.scenario, self.params.mixing_scale, self.params.distance_exponent)
-        return self._mixing
+    # @property
+    # def mixing(self) -> np.ndarray:
+    #     """Returns the mixing matrix, initializing if necessary"""
+    #     if self._mixing is None:
+    #         self._mixing = init_gravity_diffusion(self.model.scenario, self.params.mixing_scale, self.params.distance_exponent)
+    #     return self._mixing
 
-    @mixing.setter
-    def mixing(self, mixing: np.ndarray) -> None:
-        """Sets the mixing matrix"""
-        self._mixing = mixing
+    # @mixing.setter
+    # def mixing(self, mixing: np.ndarray) -> None:
+    #     """Sets the mixing matrix"""
+    #     self._mixing = mixing
 
-    def _initialize(self, model: BaseLaserModel) -> None:
-        """Initializes the mixing component"""
-        self.mixing = init_gravity_diffusion(model.scenario, self.params.mixing_scale, self.params.distance_exponent)
+    # def _initialize(self, model: BaseLaserModel) -> None:
+    #     """Initializes the mixing component"""
+    #     self.mixing = init_gravity_diffusion(model.scenario, self.params.mixing_scale, self.params.distance_exponent)

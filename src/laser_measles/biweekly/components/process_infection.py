@@ -1,10 +1,12 @@
 import numpy as np
 from pydantic import Field
+from typing import Any
 
 from laser_measles.base import BaseLaserModel
 from laser_measles.biweekly.mixing import init_gravity_diffusion
 from laser_measles.components import BaseInfectionParams
 from laser_measles.components import BaseInfectionProcess
+from laser_measles.mixing.gravity import GravityMixing
 
 
 class InfectionParams(BaseInfectionParams):
@@ -15,8 +17,7 @@ class InfectionParams(BaseInfectionParams):
     )  # beta = R0 / (mean infectious period)
     seasonality: float = Field(default=0.0, description="Seasonality factor, default is no seasonality", ge=0.0, le=1.0)
     season_start: int = Field(default=0, description="Season start tick (0-25)", ge=0, le=25)
-    distance_exponent: float = Field(default=1.5, description="Distance exponent", ge=0.0)
-    mixing_scale: float = Field(default=0.001, description="Mixing scale", ge=0.0)
+    mixer: Any = Field(default_factory=lambda: GravityMixing(), description="Mixing object")
 
     @property
     def beta_per_tick(self) -> float:
@@ -64,7 +65,7 @@ class InfectionProcess(BaseInfectionProcess):
         if params is None:
             params = InfectionParams()
         self.params = params
-        self._mixing = None
+        self.params.mixer.scenario = model.scenario
 
     def __call__(self, model: BaseLaserModel, tick: int) -> None:
         # state counts
@@ -77,7 +78,7 @@ class InfectionProcess(BaseInfectionProcess):
             self.params.beta_per_tick
             * (1 + self.params.seasonality * np.sin(2 * np.pi * (tick - self.params.season_start) / 26.0))
             * prevalence
-        ) @ self.mixing
+        ) @ self.params.mixer.mixing_matrix
 
         # normalize by the population of the patch
         lambda_i /= states.sum(axis=0)
@@ -94,19 +95,3 @@ class InfectionProcess(BaseInfectionProcess):
         states[0] -= dI  # remove new infections from S
 
         return
-
-    @property
-    def mixing(self) -> np.ndarray:
-        """Returns the mixing matrix, initializing if necessary"""
-        if self._mixing is None:
-            self._mixing = init_gravity_diffusion(self.model.scenario, self.params.mixing_scale, self.params.distance_exponent)
-        return self._mixing
-
-    @mixing.setter
-    def mixing(self, mixing: np.ndarray) -> None:
-        """Sets the mixing matrix"""
-        self._mixing = mixing
-
-    def _initialize(self, model: BaseLaserModel) -> None:
-        """Initializes the mixing component"""
-        self.mixing = init_gravity_diffusion(model.scenario, self.params.mixing_scale, self.params.distance_exponent)
