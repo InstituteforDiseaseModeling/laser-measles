@@ -2,15 +2,15 @@
 Component for simulating the SEIR infection process in the compartmental model.
 """
 
+from typing import Any
+
 import numpy as np
 from pydantic import Field
-from typing import Any
 
 from laser_measles.base import BaseLaserModel
 from laser_measles.components import BaseInfectionParams
 from laser_measles.components import BaseInfectionProcess
 from laser_measles.mixing.gravity import GravityMixing
-from laser_measles.migration import init_gravity_diffusion
 from laser_measles.utils import cast_type
 
 
@@ -18,7 +18,6 @@ class InfectionParams(BaseInfectionParams):
     """Parameters specific to the SEIR infection process component."""
 
     model_config = {"arbitrary_types_allowed": True}
-
 
     beta: float = Field(default=1.0, description="Base transmission rate", ge=0.0)
     exp_mu: float = Field(default=6.0, description="Exposure mean", gt=0.0)
@@ -107,7 +106,7 @@ class InfectionProcess(BaseInfectionProcess):
         total_patch_pop = np.maximum(total_patch_pop, 1)
 
         # Calculate prevalence of infectious individuals in each patch
-        prevalence = states.I # / total_patch_pop  # I_j / N_j
+        prevalence = states.I  # / total_patch_pop  # I_j / N_j
 
         # Calculate force of infection with seasonal variation
         seasonal_factor = 1 + self.params.seasonality * np.sin(2 * np.pi * (tick - self.params.season_start) / 365.0)

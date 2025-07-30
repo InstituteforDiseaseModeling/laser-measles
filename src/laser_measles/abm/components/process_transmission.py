@@ -2,15 +2,15 @@
 Component defining the TransmissionProcess, which models the transmission of measles in a population.
 """
 
+from typing import Any
+
 import numpy as np
 from pydantic import BaseModel
 from pydantic import Field
-from typing import Any
 
 from laser_measles.abm.model import ABMModel
 from laser_measles.base import BasePhase
 from laser_measles.migration import init_gravity_diffusion
-from laser_measles.mixing.base import BaseMixing
 from laser_measles.mixing.gravity import GravityMixing
 from laser_measles.utils import cast_type
 
@@ -105,7 +105,7 @@ else:
 
 class TransmissionParams(BaseModel):
     """Parameters specific to the transmission process component."""
-    
+
     model_config = {"arbitrary_types_allowed": True}
 
     beta: float = Field(default=1.0, description="Base transmission rate", ge=0.0)
