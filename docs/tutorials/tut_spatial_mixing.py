@@ -60,8 +60,7 @@ sns.set_palette("husl")
 scenario = synthetic.two_cluster_scenario(
     n_nodes_per_cluster=20,  # Smaller for clearer visualization
     cluster_size_std=2.0,    # More spread out clusters
-    pop_mean=1000,           # Moderate population size
-    pop_std=200
+    seed=42
 )
 
 print(f"Scenario created with {len(scenario)} patches")
