@@ -113,8 +113,6 @@ class TransmissionParams(BaseModel):
     season_start: float = Field(default=0.0, description="Seasonality phase", ge=0, le=364)
     exp_mu: float = Field(default=6.0, description="Exposure mean (days)", gt=0.0)
     exp_sigma: float = Field(default=2.0, description="Exposure sigma (days)", gt=0.0)
-    distance_exponent: float = Field(default=1.5, description="Distance exponent", ge=0.0)
-    mixing_scale: float = Field(default=0.001, description="Mixing scale", ge=0.0)
     mixer: Any = Field(default_factory=lambda: GravityMixing(), description="Mixing object")
 
     @property

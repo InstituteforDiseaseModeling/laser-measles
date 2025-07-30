@@ -3,6 +3,7 @@ from abc import abstractmethod
 
 import numpy as np
 import polars as pl
+from laser_core.migration import distance
 
 
 class BaseMixing(ABC):
@@ -64,7 +65,22 @@ class BaseMixing(ABC):
         """
         ...
 
-    @abstractmethod
+    def trips_into(self) -> np.ndarray:
+        """Returns the number of trips into each patch per tick."""
+        return self.scenario["pop"].to_numpy() @ self.migration_matrix
+
+    def trips_out_of(self) -> np.ndarray:
+        """Returns the number of trips out of each patch per tick."""
+        return np.sum(self.migration_matrix * self.scenario["pop"].to_numpy()[:, np.newaxis], axis=1)
+
+    def get_distances(self) -> np.ndarray:
+        return distance(
+            self.scenario["lat"].to_numpy(),
+            self.scenario["lon"].to_numpy(),
+            self.scenario["lat"].to_numpy(),
+            self.scenario["lon"].to_numpy(),
+        )
+
     def get_mixing_matrix(self) -> np.ndarray:
         """
         Initialize a mixing matrix for population mixing.
@@ -73,12 +89,16 @@ class BaseMixing(ABC):
         mixing of a given patch to all other patches e.g., [i,j] = [from_i, to_j].
         It also includes internal mixing within a patch.
         """
-        ...
+        # copy the migration matrix
+        mixing_matrix = self.migration_matrix.copy() # reduce memory
 
-    def trips_into(self) -> np.ndarray:
-        """Returns the number of trips into each patch per tick."""
-        return self.scenario["pop"].to_numpy() @ self.migration_matrix
+        # sum the probability of travel over all target patches (j) for fixed row (i)
+        row_sums = mixing_matrix.sum(axis=1)
 
-    def trips_out_of(self) -> np.ndarray:
-        """Returns the number of trips out of each patch per tick."""
-        return np.sum(self.migration_matrix * self.scenario["pop"].to_numpy()[:, np.newaxis], axis=1)
+        if np.any(row_sums > 1):
+            raise ValueError("Migration matrix has row sums greater than 1")
+
+        # fill diagonals so that rows sum to 1
+        np.fill_diagonal(mixing_matrix, 1 - row_sums)
+
+        return mixing_matrix
