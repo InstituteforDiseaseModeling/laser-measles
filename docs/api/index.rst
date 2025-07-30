@@ -352,3 +352,39 @@ Tools for handling raster data and patch generation:
 
    RasterPatchParams
    RasterPatchGenerator
+
+----
+
+Mixing Models
+=============
+
+.. currentmodule:: laser_measles.mixing
+
+Spatial mixing models for population movement and disease transmission between geographic patches:
+
+Base Classes
+------------
+
+Abstract base class that defines the interface for all mixing models:
+
+.. autosummary::
+   :toctree: _autosummary
+   :template: custom-function-template.rst
+   :nosignatures:
+
+   BaseMixing
+
+Mixing Implementations
+----------------------
+
+Specific mixing model implementations for different types of population movement:
+
+.. autosummary::
+   :toctree: _autosummary
+   :template: custom-function-template.rst
+   :nosignatures:
+
+   GravityMixing
+   StoufferMixing
+   RadiationMixing
+   CompetingDestinationsMixing
