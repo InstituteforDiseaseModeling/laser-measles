@@ -35,9 +35,7 @@ class RadiationMixing(BaseMixing):
         if len(self.scenario) == 1:
             return np.array([[0.0]])
         distances = self.get_distances()
-        mat = radiation(
-            self.scenario["pop"].to_numpy(), distances, k=1.0, include_home=self.params.include_home
-        )  # TODO: find a better k?
+        mat = radiation(self.scenario["pop"].to_numpy(), distances, k=1.0, include_home=self.params.include_home)  # TODO: find a better k?
         # normalize w/ k
         nrm = self.params.k / (np.sum(mat * self.scenario["pop"].to_numpy()[:, np.newaxis], axis=1) / self.scenario["pop"].to_numpy())
         mat *= nrm

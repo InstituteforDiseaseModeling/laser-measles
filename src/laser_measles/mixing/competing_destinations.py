@@ -18,6 +18,7 @@ class CompetingDestinationsParams(BaseModel):
     k: float = Field(default=0.01, description="Scale parameter (avg trip probability)", ge=0, le=1)
     delta: float = Field(default=0.0, description="Destination selection parameter")
 
+
 class CompetingDestinationsMixing(BaseMixing):
     """
     Competing destinations mixing model.
@@ -33,7 +34,13 @@ class CompetingDestinationsMixing(BaseMixing):
             return np.array([[0.0]])
         distances = self.get_distances()
         mat = competing_destinations(
-            self.scenario["pop"].to_numpy(), distances, k=1.0, a=self.params.a - 1, b=self.params.b, c=self.params.c, delta=self.params.delta
+            self.scenario["pop"].to_numpy(),
+            distances,
+            k=1.0,
+            a=self.params.a - 1,
+            b=self.params.b,
+            c=self.params.c,
+            delta=self.params.delta,
         )  # TODO: find a better k?
         # normalize w/ k
         nrm = self.params.k / (np.sum(mat * self.scenario["pop"].to_numpy()[:, np.newaxis], axis=1) / self.scenario["pop"].to_numpy())

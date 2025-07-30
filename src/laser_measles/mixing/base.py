@@ -90,7 +90,7 @@ class BaseMixing(ABC):
         It also includes internal mixing within a patch.
         """
         # copy the migration matrix
-        mixing_matrix = self.migration_matrix.copy() # reduce memory
+        mixing_matrix = self.migration_matrix.copy()  # reduce memory
 
         # sum the probability of travel over all target patches (j) for fixed row (i)
         row_sums = mixing_matrix.sum(axis=1)

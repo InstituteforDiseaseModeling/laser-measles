@@ -1,9 +1,9 @@
-import numpy as np
-from pydantic import Field
 from typing import Any
 
+import numpy as np
+from pydantic import Field
+
 from laser_measles.base import BaseLaserModel
-from laser_measles.biweekly.mixing import init_gravity_diffusion
 from laser_measles.components import BaseInfectionParams
 from laser_measles.components import BaseInfectionProcess
 from laser_measles.mixing.gravity import GravityMixing
@@ -72,7 +72,7 @@ class InfectionProcess(BaseInfectionProcess):
         states = model.patches.states
 
         # prevalence in each patch
-        prevalence = states.I #/ states.sum(axis=0)  # I_j / N_j
+        prevalence = states.I  # / states.sum(axis=0)  # I_j / N_j
 
         lambda_i = (
             self.params.beta_per_tick
