@@ -36,7 +36,7 @@ def read(*names, **kwargs):
 
 setup(
     # name="laser-measles",
-    # version="0.7.2-dev2",
+    # version="0.7.2-dev3",
     # license="MIT",
     # description="Spatial models of measles implemented with the LASER toolkit.",
     long_description="{}\n{}".format(
