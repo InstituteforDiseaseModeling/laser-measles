@@ -17,7 +17,7 @@ from laser_measles.utils import cast_type
 class InfectionParams(BaseInfectionParams):
     """Parameters specific to the SEIR infection process component."""
 
-    model_config = {"arbitrary_types_allowed": True}
+    model_config = {"arbitrary_types_allowed": True}  # noqa: RUF012
 
     beta: float = Field(default=1.0, description="Base transmission rate", ge=0.0)
     exp_mu: float = Field(default=6.0, description="Exposure mean", gt=0.0)
