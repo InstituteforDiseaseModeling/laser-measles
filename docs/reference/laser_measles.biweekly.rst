@@ -25,14 +25,6 @@ laser\_measles.biweekly.base module
    :show-inheritance:
    :undoc-members:
 
-laser\_measles.biweekly.mixing module
--------------------------------------
-
-.. automodule:: laser_measles.biweekly.mixing
-   :members:
-   :show-inheritance:
-   :undoc-members:
-
 laser\_measles.biweekly.model module
 ------------------------------------
 

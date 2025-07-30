@@ -372,7 +372,7 @@ Abstract base class that defines the interface for all mixing models:
    :template: custom-function-template.rst
    :nosignatures:
 
-   BaseMixing
+   base.BaseMixing
 
 Mixing Implementations
 ----------------------
@@ -384,7 +384,7 @@ Specific mixing model implementations for different types of population movement
    :template: custom-function-template.rst
    :nosignatures:
 
-   GravityMixing
-   StoufferMixing
-   RadiationMixing
-   CompetingDestinationsMixing
+   gravity.GravityMixing
+   stouffer.StoufferMixing
+   radiation.RadiationMixing
+   competing_destinations.CompetingDestinationsMixing
