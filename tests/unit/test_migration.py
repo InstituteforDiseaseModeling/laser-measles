@@ -39,7 +39,6 @@ def test_mean_field_migration_elements(mixer):
 
 @pytest.mark.parametrize("mixer", [mean_field_3pop_model, mean_field_2pop_model])
 def test_mean_field_migration_normalization(mixer):
-    mig_mat = mixer().migration_matrix
     # assert normalization was correct
     assert mixer().params.k == (mixer().trips_out_of().sum() / mixer().scenario["pop"].sum())
 
