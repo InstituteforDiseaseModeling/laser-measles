@@ -6,7 +6,7 @@ using agent-based and compartmental models with various spatial and temporal con
 """
 
 # ruff: noqa: F401, F403, E402
-__version__ = "0.7.2-dev2"
+__version__ = "0.7.2-dev3"
 
 # --- Exports ---
 MEASLES_MODULES = ["laser_measles.abm", "laser_measles.compartmental", "laser_measles.biweekly"]
