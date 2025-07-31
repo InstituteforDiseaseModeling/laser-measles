@@ -24,7 +24,7 @@
 #    - Formula: `k * (pop_source^(a-1)) * (pop_target^b) * (distance^(-c))`
 #    - Good for modeling general mobility patterns
 #
-# 2. **Radiation Model**: Based on radiation theory of human mobility 
+# 2. **Radiation Model**: Based on radiation theory of human mobility
 #    - Less dependent on specific parameter tuning
 #    - Often performs well for real-world mobility data
 #
@@ -68,23 +68,23 @@ cluster_scenario = synthetic.two_cluster_scenario(
 def create_linear_chain_scenario(n_nodes=30, seed=42):
     """Create a linear chain of nodes to highlight radiation vs gravity differences"""
     np.random.seed(seed)
-    
+
     # Create nodes in a line with some random variation
     x_coords = np.linspace(0, 10, n_nodes) + np.random.normal(0, 0.1, n_nodes)
     y_coords = np.random.normal(0, 0.2, n_nodes)  # Small y variation
-    
+
     # Create population gradient - larger populations at the ends
     base_pop = 1000
     pop_multiplier = 1 + 3 * (np.abs(np.linspace(-1, 1, n_nodes)))  # U-shaped
     populations = (base_pop * pop_multiplier).astype(int)
-    
+
     # Create vaccination coverage (uniform for simplicity)
     mcv1_coverage = np.full(n_nodes, 0.85)
-    
+
     return pl.DataFrame({
         'id': [f"node_{i}" for i in range(n_nodes)],
         'lat': y_coords,
-        'lon': x_coords, 
+        'lon': x_coords,
         'pop': populations,
         'mcv1': mcv1_coverage
     })
@@ -100,20 +100,20 @@ print(f"Total population: {scenario['pop'].sum():,}")
 fig, axes = plt.subplots(1, 2, figsize=(15, 6))
 
 # Plot cluster scenario
-axes[0].scatter(cluster_scenario["lon"], cluster_scenario["lat"], 
-               c=cluster_scenario["pop"], s=cluster_scenario["pop"]/10, 
+axes[0].scatter(cluster_scenario["lon"], cluster_scenario["lat"],
+               c=cluster_scenario["pop"], s=cluster_scenario["pop"]/10,
                cmap="viridis", alpha=0.7, edgecolors="black")
 axes[0].set_xlabel("Longitude")
 axes[0].set_ylabel("Latitude")
 axes[0].set_title("Two-Cluster Scenario")
 axes[0].grid(True, alpha=0.3)
 
-# Plot linear scenario  
-scatter = axes[1].scatter(scenario["lon"], scenario["lat"], 
-                         c=scenario["pop"], s=scenario["pop"]/8, 
+# Plot linear scenario
+scatter = axes[1].scatter(scenario["lon"], scenario["lat"],
+                         c=scenario["pop"], s=scenario["pop"]/8,
                          cmap="viridis", alpha=0.7, edgecolors="black")
 axes[1].set_xlabel("Longitude")
-axes[1].set_ylabel("Latitude") 
+axes[1].set_ylabel("Latitude")
 axes[1].set_title("Linear Chain Scenario (Used for Analysis)")
 axes[1].grid(True, alpha=0.3)
 
@@ -162,7 +162,7 @@ params = CompartmentalParams(
 
 # Create gravity mixing with extreme parameters to show clear differences
 gravity_params = GravityParams(
-    a=1.0,    # Source population exponent  
+    a=1.0,    # Source population exponent
     b=2.0,    # Target population exponent - higher to favor large populations
     c=1.0,    # Distance decay exponent - lower for long-range connections
     k=0.01    # Overall mixing scale - higher for more mixing
@@ -254,21 +254,21 @@ def calculate_mixing_distances(scenario, mixing_matrix):
     """Calculate weighted average mixing distance for each patch"""
     coords = scenario[['lat', 'lon']].to_numpy()
     n_patches = len(coords)
-    
+
     # Calculate distance matrix
     distances = np.zeros((n_patches, n_patches))
     for i in range(n_patches):
         for j in range(n_patches):
-            distances[i, j] = np.sqrt((coords[i, 0] - coords[j, 0])**2 + 
+            distances[i, j] = np.sqrt((coords[i, 0] - coords[j, 0])**2 +
                                     (coords[i, 1] - coords[j, 1])**2)
-    
+
     # Calculate weighted average mixing distance for each patch
     mixing_distances = np.zeros(n_patches)
     for i in range(n_patches):
         weights = mixing_matrix[i, :]
         if weights.sum() > 0:
             mixing_distances[i] = np.average(distances[i, :], weights=weights)
-    
+
     return mixing_distances, distances
 
 gravity_mix_dist, distance_matrix = calculate_mixing_distances(scenario, gravity_mixing_matrix)
@@ -292,8 +292,8 @@ plt.colorbar(im2, ax=axes[0, 1], label='Mixing Probability')
 
 # Plot difference
 diff_matrix = gravity_mixing_matrix - radiation_mixing_matrix
-im3 = axes[0, 2].imshow(diff_matrix, cmap='RdBu_r', aspect='auto', 
-                       vmin=-np.max(np.abs(diff_matrix)), 
+im3 = axes[0, 2].imshow(diff_matrix, cmap='RdBu_r', aspect='auto',
+                       vmin=-np.max(np.abs(diff_matrix)),
                        vmax=np.max(np.abs(diff_matrix)))
 axes[0, 2].set_title('Difference (Gravity - Radiation)')
 axes[0, 2].set_xlabel('Destination Patch')
@@ -329,22 +329,22 @@ for idx, patch_i in enumerate(representative_patches):
     distances_from_patch = distance_matrix[patch_i, :]
     gravity_mixing_from_patch = gravity_mixing_matrix[patch_i, :]
     radiation_mixing_from_patch = radiation_mixing_matrix[patch_i, :]
-    
+
     # Sort by distance for cleaner plotting
     sort_idx = np.argsort(distances_from_patch)
     sorted_distances = distances_from_patch[sort_idx]
     sorted_gravity = gravity_mixing_from_patch[sort_idx]
     sorted_radiation = radiation_mixing_from_patch[sort_idx]
-    
-    axes[1, 2].plot(sorted_distances, sorted_gravity, '-', 
+
+    axes[1, 2].plot(sorted_distances, sorted_gravity, '-',
                    color=colors[idx], alpha=0.7, linewidth=2,
                    label=f'Gravity (Patch {patch_i})')
-    axes[1, 2].plot(sorted_distances, sorted_radiation, '--', 
+    axes[1, 2].plot(sorted_distances, sorted_radiation, '--',
                    color=colors[idx], alpha=0.7, linewidth=2,
                    label=f'Radiation (Patch {patch_i})')
 
 axes[1, 2].set_xlabel('Distance')
-axes[1, 2].set_ylabel('Mixing Probability') 
+axes[1, 2].set_ylabel('Mixing Probability')
 axes[1, 2].set_title('Mixing vs Distance (Representative Patches)')
 # axes[1, 2].legend(bbox_to_anchor=(1.05, 1), loc='upper left')
 axes[1, 2].grid(True, alpha=0.3)
@@ -361,7 +361,7 @@ print(f"Radiation model - Mean mixing distance: {radiation_mix_dist.mean():.3f} 
 # Calculate spatial coupling metrics
 gravity_off_diag = gravity_mixing_matrix.copy()
 np.fill_diagonal(gravity_off_diag, 0)
-radiation_off_diag = radiation_mixing_matrix.copy() 
+radiation_off_diag = radiation_mixing_matrix.copy()
 np.fill_diagonal(radiation_off_diag, 0)
 
 print(f"\nGravity model - Off-diagonal mixing (total spatial coupling): {gravity_off_diag.sum():.3f}")
@@ -395,14 +395,14 @@ print("(Higher Gini = more unequal mixing, more concentrated on specific connect
 # using a linear chain scenario and extreme parameter settings. Here are the key findings:
 #
 # ### Technical Configuration
-# 
+#
 # To create dramatic model differences in your analysis:
 #
 # ```python
 # # Extreme gravity parameters for demonstration
 # gravity_params = GravityParams(
 #     a=1.0,  # Source population exponent
-#     b=2.0,  # High target population attraction  
+#     b=2.0,  # High target population attraction
 #     c=1.0,  # Low distance decay for long-range connections
 #     k=0.01  # Overall mixing scale
 # )
@@ -417,9 +417,9 @@ print("(Higher Gini = more unequal mixing, more concentrated on specific connect
 # ```
 #
 # ### Key Takeaway
-# **The choice of spatial mixing model can dramatically affect both the spatial patterns 
-# and temporal dynamics of epidemic spread.** Always compare multiple models and use 
-# quantitative metrics (mixing distances, spatial coupling, epidemic velocity) to 
+# **The choice of spatial mixing model can dramatically affect both the spatial patterns
+# and temporal dynamics of epidemic spread.** Always compare multiple models and use
+# quantitative metrics (mixing distances, spatial coupling, epidemic velocity) to
 # understand how your choice affects results.
 #
 # Different mixing models represent different theories of human mobility and contact patterns.
