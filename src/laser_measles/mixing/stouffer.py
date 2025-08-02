@@ -25,7 +25,14 @@ class StoufferParams(BaseModel):
 
 class StoufferMixing(BaseMixing):
     """
-    Stouffer migration model.
+    Stouffer migration model where long distance travel is impacted by intervening opportunities.
+
+    Formula:
+        .. math::
+            M_{i,j} = k p_i^a \\sum_j \\left(\\frac{p_j}{\\sum_{k \\in \\Omega(i,j)} p_k}\\right)^b
+
+    Args:
+        include_home (bool): Whether to include home in the migration matrix
     """
 
     def __init__(self, scenario: pl.DataFrame | None = None, params: StoufferParams | None = None):
