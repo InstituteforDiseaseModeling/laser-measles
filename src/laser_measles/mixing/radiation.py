@@ -23,7 +23,16 @@ class RadiationParams(BaseModel):
 
 class RadiationMixing(BaseMixing):
     """
-    Radiation migration model.
+    Radiation migration model where outbound migration flux from origin to destination is
+    enhanced by destination population and absorbed by the density of nearer destinations.
+
+    Formula:
+        .. math::
+            M_{i,j} = k \\frac{p_i p_j}{\\left(p_i + \\sum_{k \\in \\Omega(i,j)} p_k\\right)\\left(p_i + p_j + \\sum_{k \\in \\Omega(i,j)} p_k\\right)}
+
+    Args:
+        include_home (bool): Whether to include home in the migration matrix
+        k (float): Scale parameter (avg trip probability)
     """
 
     def __init__(self, scenario: pl.DataFrame | None = None, params: RadiationParams | None = None):

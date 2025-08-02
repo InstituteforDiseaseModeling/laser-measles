@@ -11,9 +11,9 @@ class GravityParams(BaseModel):
     """
     Parameters for the gravity migration model.
 
-    network = k * (pops[:, np.newaxis] ** (a-1)) * (pops ** b) * (distances ** (-1 * c))
-
-    Defaults scale linearly with target node.
+    Formula:
+        .. math::
+            M_{i,j} = k \\cdot p_i^{a-1} \\cdot p_j^b \\cdot d_{i,j}^{-c}
 
     Args:
         a (float): Population source scale parameter

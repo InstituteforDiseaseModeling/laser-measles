@@ -21,7 +21,18 @@ class CompetingDestinationsParams(BaseModel):
 
 class CompetingDestinationsMixing(BaseMixing):
     """
-    Competing destinations mixing model.
+    Competing destinations mixing model that accounts for the effects of nearby destinations.
+
+    Formula:
+        .. math::
+            M_{i,j} = k \\frac{p_i^{a-1} p_j^b}{d_{i,j}^c} \\left(\\sum_{k \\ne i,j} \\frac{p_k^b}{d_{ik}^c}\\right)^\\delta
+
+    Where:
+        - M_{i,j}: migration flow from origin i to destination j
+        - k: calibration constant
+        - p_i, p_j, p_k: population at origins/destinations
+        - d_{i,j}, d_{ik}: distances between l  ocations
+        - a, b, c, δ: model parameters
     """
 
     def __init__(self, scenario: pl.DataFrame | None = None, params: CompetingDestinationsParams | None = None):

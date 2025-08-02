@@ -21,14 +21,15 @@
 # laser-measles provides four spatial mixing models:
 #
 # 1. **Gravity Model**: Based on gravitational attraction, depends on population sizes and distance
-#    - Formula: `k * (pop_source^(a-1)) * (pop_target^b) * (distance^(-c))`
+#    - Formula: $$M_{i,j} = k \cdot p_i^{a-1} \cdot p_j^b \cdot d_{i,j}^{-c}$$
 #    - Good for modeling general mobility patterns
 #
 # 2. **Radiation Model**: Based on radiation theory of human mobility
 #    - Less dependent on specific parameter tuning
 #    - Often performs well for real-world mobility data
 #
-# 3. **Competing Destinations**: Extension of gravity model with destination competition
+# 3. **Competing Destinations**: Extension of gravity model with destination competition and synergistic attraction
+#    - Formula: $$M_{i,j} = k \frac{p_i^{a-1} p_j^b}{d_{i,j}^c} \left(\sum_{k \ne i,j} \frac{p_k^b}{d_{ik}^c}\right)^\delta$$
 #    - Includes delta parameter for destination selection
 #
 # 4. **Stouffer Model**: Based on intervening opportunities theory
