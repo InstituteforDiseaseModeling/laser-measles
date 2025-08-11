@@ -1,5 +1,5 @@
 """
-Component defining the DiseaseProcess, which simulates the disease progression in the ABM model with MCV1.
+Component defining the DiseaseProcess, which simulates the disease progression in the ABM model.
 """
 
 import numpy as np

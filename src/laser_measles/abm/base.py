@@ -39,7 +39,6 @@ class BaseABMScenarioSchema(pt.Model):
     lat: float  # latitude
     lon: float  # longitude
     id: str  # ids of the nodes
-    mcv1: float  # MCV1 coverage
 
 
 class BaseABMScenario(LaserMeaslesBaseScenario):
@@ -66,13 +65,6 @@ class BaseABMScenario(LaserMeaslesBaseScenario):
             if not df["lon"].dtype == pl.Float64:
                 raise ValueError("Column 'lon' must be float type")
 
-            # Validate mcv1 is float
-            if not df["mcv1"].dtype == pl.Float64:
-                raise ValueError("Column 'mcv1' must be float type")
-
-            # Validate mcv1 is between 0 and 1 (as percentages)
-            if not df["mcv1"].is_between(0, 1).all():
-                raise ValueError("Column 'mcv1' must be between 0 and 1")
 
             # Validate ids are either string or integer
             if not (df["id"].dtype == pl.String or df["id"].dtype == pl.Int64):

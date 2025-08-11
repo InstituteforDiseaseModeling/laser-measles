@@ -16,19 +16,24 @@ from laser_measles.base import BasePhase
 from laser_measles.demographics.wpp import WPP
 from laser_measles.utils import cast_type
 
+from laser_measles.events import EventMixin
+
 
 class WPPVitalDynamicsParams(BaseModel):
     country_code: str = Field(default="nga", description="Country code (ISO3)")
     year: int = Field(default=2000, description="Year to initialize the age distribution")
 
 
-class WPPVitalDynamicsProcess(BasePhase):
+class WPPVitalDynamicsProcess(BasePhase, EventMixin):
     def __init__(self, model, verbose: bool = False, params: WPPVitalDynamicsParams | None = None) -> None:
         super().__init__(model, verbose)
         if params is None:
             params = WPPVitalDynamicsParams()
         self.params = params
         self.wpp = WPP(self.params.country_code)
+        
+        # Initialize event mixin
+        self.__init_event_mixin__()
 
         # re-initialize people frame with correct capacity
         capacity = self.calculate_capacity(model=model)
@@ -40,13 +45,10 @@ class WPPVitalDynamicsProcess(BasePhase):
         self.null_value = np.iinfo(date_of_birth_dtype).max
 
         if model.params.num_ticks >= self.null_value:
-            raise ValueError("Simulation is too long; birth and vaccination dates must be able to store the number of ticks")
+            raise ValueError("Simulation is too long; birth dates must be able to store the number of ticks")
 
         people.add_scalar_property("active", dtype=np.bool, default=False)
         people.add_scalar_property("date_of_birth", dtype=date_of_birth_dtype, default=self.null_value)
-        people.add_scalar_property("date_of_vaccination", dtype=np.uint32, default=self.null_value)
-
-        self.vaccination_queue: SortedQueue = SortedQueue(capacity=capacity, values=people.date_of_vaccination)
 
         # initialize patch id
         patch_ids = np.concatenate([np.full(pop, i) for i, pop in enumerate(model.scenario["pop"].to_numpy())])
@@ -112,15 +114,43 @@ class WPPVitalDynamicsProcess(BasePhase):
                 model.patches.states[:, patch_id] -= cast_type(
                     np.bincount(people.state[patch_idx], minlength=len(model.params.states)), model.patches.states.dtype
                 )
+        
+        # Emit death event with details about who died
+        if len(death_idx) > 0:
+            # Get ages at death and mortality rates for the deceased agents
+            death_ages = ages[np.isin(idx, death_idx)]
+            death_mort_rates = mort_rates[np.isin(idx, death_idx)]
+            
+            self.emit_event(
+                event_type='deaths',
+                tick=tick,
+                data={
+                    'agent_indices': death_idx.tolist(),
+                    'patch_ids': people.patch_id[death_idx].tolist(),
+                    'states': people.state[death_idx].tolist(),
+                    'num_deaths': len(death_idx),
+                    'ages': death_ages.tolist(),
+                    'mortality_rates': death_mort_rates.tolist()
+                }
+            )
 
         # Births
         idx = np.where(~people.active)[0]
         i_start = 0
         i_end = 0
+        patch_births = []
+        birth_agent_indices = []
+        
         for patch_id in range(len(model.patches)):
             patch_pop = patch_pops[patch_id]
             births = np.random.poisson(lam=patch_pop * self.wpp.vd_tup.birth_rate * self.wpp.vd_tup.br_mult_y[year_idx])
+            patch_births.append(births)
             i_end = i_start + births
+            
+            # Store agent indices for this patch's births
+            if births > 0:
+                birth_agent_indices.extend(idx[i_start:i_end].tolist())
+                
             people.active[idx[i_start:i_end]] = True
             people.date_of_birth[idx[i_start:i_end]] = tick
             people.state[idx[i_start:i_end]] = model.params.states.index("S")
@@ -128,6 +158,20 @@ class WPPVitalDynamicsProcess(BasePhase):
             i_start = i_end
             # update state counts
             model.patches.states.S[patch_id] += births
+        
+        # Emit birth event with details about new births
+        total_births = sum(patch_births)
+        if total_births > 0:
+            self.emit_event(
+                event_type='births',
+                tick=tick,
+                data={
+                    'agent_indices': birth_agent_indices,
+                    'patch_births': patch_births,
+                    'total_births': total_births,
+                    'birth_rate': self.wpp.vd_tup.birth_rate * self.wpp.vd_tup.br_mult_y[year_idx]
+                }
+            )
 
     def calculate_wpp_total_pop(self, year: int) -> int:
         return int(np.sum(self.wpp.get_population_pyramid(year)))

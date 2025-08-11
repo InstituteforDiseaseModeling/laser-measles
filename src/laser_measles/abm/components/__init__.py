@@ -77,3 +77,28 @@ __all__.extend(["SIACalendarParams", "SIACalendarProcess"])
 from .tracker_age_pyramid import AgePyramidTracker, AgePyramidTrackerParams
 
 __all__.extend(["AgePyramidTracker", "AgePyramidTrackerParams"])
+
+# Event System Examples
+# ---------------------
+
+from .tracker_death_monitor import DeathMonitorTracker, DeathMonitorParams, DeathAwareComponent
+
+__all__.extend(["DeathMonitorTracker", "DeathMonitorParams", "DeathAwareComponent"])
+
+from .tracker_birth_monitor import BirthMonitorTracker, BirthMonitorParams, BirthAwareComponent
+
+__all__.extend(["BirthMonitorTracker", "BirthMonitorParams", "BirthAwareComponent"])
+
+# MCV1 Vaccination
+# ----------------
+
+from .process_mcv1 import MCV1Params, ProcessMCV1
+
+__all__.extend(["MCV1Params", "ProcessMCV1"])
+
+# Maternal Immunity
+# -----------------
+
+from .process_maternal_immunity import MaternalImmunityParams, ProcessMaternalImmunity
+
+__all__.extend(["MaternalImmunityParams", "ProcessMaternalImmunity"])
