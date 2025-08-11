@@ -1,27 +1,19 @@
 """
-Base classes for laser-measles components and models.
+Base classes for laser-measles simulation models.
 
-This module contains the base classes for laser-measles components and models.
-
-The BaseComponent class is the base class for all laser-measles components.
-It provides a uniform interface for all components with a __call__(model, tick) method
-for execution during simulation loops.
-
-The BaseLaserModel class is the base class for all laser-measles models.
+This module provides the foundational classes and protocols that define the
+interface and common functionality for all laser-measles simulation models.
 """
 
 from __future__ import annotations
 
-from abc import ABC
-from abc import abstractmethod
-from datetime import datetime
-from datetime import timedelta
-from typing import Any
-from typing import Protocol
-from typing import TypeVar
-
 import alive_progress
+from abc import ABC, abstractmethod
+from datetime import datetime, timedelta
+from typing import Any, Protocol, TypeVar
+
 import matplotlib.pyplot as plt
+import numpy as np
 import polars as pl
 from laser_core.laserframe import LaserFrame
 from laser_core.random import seed as seed_prng
@@ -36,6 +28,7 @@ from laser_measles.utils import get_laserframe_properties
 from laser_measles.utils import select_implementation
 from laser_measles.wrapper import PrettyComponentsList
 from laser_measles.wrapper import pretty_laserframe
+from laser_measles.events import EventBus, ModelEvent
 
 
 class ParamsProtocol(Protocol):
@@ -212,6 +205,10 @@ class BaseLaserModel(ABC):
         # Attribute for subclasses to specify scenario wrapper
         self.scenario_wrapper_class: type[BaseScenario] | None = None
 
+        # Initialize event system
+        self.event_bus = EventBus()
+        self.current_tick = 0
+
     def __repr__(self) -> str:
         """
         Return a string representation of the model, showing key attributes.
@@ -356,6 +353,14 @@ class BaseLaserModel(ABC):
         if self.params.verbose:
             print(f"Completed the {self.name} model at {self._tfinish}…")
             self._print_timing_summary()
+        
+        # Emit model completion event
+        self.event_bus.emit(self._create_model_event('model_complete', tick=self.current_tick))
+        
+        if self.params.verbose:
+            stats = self.event_bus.get_stats()
+            print(f"Event system stats: {stats['events_emitted']} events emitted, "
+                  f"{stats['total_subscribers']} active subscribers")
 
     def time_elapsed(self, units: str = "days") -> int | float:
         """
@@ -388,6 +393,9 @@ class BaseLaserModel(ABC):
             if hasattr(instance, "_initialize") and hasattr(instance, "initialized"):
                 instance._initialize(self)
                 instance.initialized = True
+        
+        # Emit model initialization event
+        self.event_bus.emit(self._create_model_event('model_init', tick=0))
 
     def get_tick_date(self, tick: int) -> datetime:
         """
@@ -552,13 +560,19 @@ class BaseLaserModel(ABC):
 
     def _execute_tick(self, tick: int) -> None:
         """
-        Execute a single tick.
+        Execute a single tick with event emission.
 
         Can be overridden by subclasses for custom behavior.
 
         Args:
             tick: The current tick number.
         """
+        # Update current tick for event context
+        self.current_tick = tick
+        
+        # Emit tick start event
+        self.event_bus.emit(self._create_model_event('tick_start', tick=tick))
+        
         timing = [tick]
         for phase in self.phases:
             tstart = datetime.now(tz=None)  # noqa: DTZ005
@@ -570,6 +584,9 @@ class BaseLaserModel(ABC):
 
         # Update current date by time_step_days
         self.current_date += timedelta(days=self.params.time_step_days)
+        
+        # Emit tick end event
+        self.event_bus.emit(self._create_model_event('tick_end', tick=tick))
 
     def _print_timing_summary(self) -> None:
         """
@@ -603,11 +620,52 @@ class BaseLaserModel(ABC):
             except ImportError:
                 print("Timing summary requires pandas or polars")
 
-    @abstractmethod
     def _setup_components(self) -> None:
         """
-        Hook for subclasses to perform additional component setup.
+        Setup components with event capabilities.
+        
+        This method is called after components are instantiated to provide
+        them with access to the event bus if they support it.
         """
+        if self.params.verbose:
+            print(f"Setting up event capabilities for {len(self.instances)} components...")
+        
+        # Initialize event capabilities for components that support it
+        for instance in self.instances:
+            if hasattr(instance, 'set_event_bus'):
+                if self.params.verbose:
+                    print(f"  Setting event bus for {type(instance).__name__}")
+                instance.set_event_bus(self.event_bus)
+            elif hasattr(instance, '__init_event_mixin__'):
+                if self.params.verbose:
+                    print(f"  Initializing event mixin for {type(instance).__name__}")
+                instance.__init_event_mixin__(self.event_bus)
+
+    def _create_model_event(self, event_type: str, tick: int, **kwargs):
+        """
+        Create a model lifecycle event.
+        
+        Args:
+            event_type: Type of model event
+            tick: Current tick
+            **kwargs: Additional event data
+            
+        Returns:
+            ModelEvent instance
+        """
+        data = dict(kwargs)
+        data.update({
+            'model_name': self.name,
+            'num_patches': len(self.scenario) if hasattr(self, 'scenario') else 0,
+            'num_people': len(self.people) if hasattr(self, 'people') else 0
+        })
+        
+        return ModelEvent(
+            event_type=event_type,
+            source=self,
+            tick=tick,
+            data=data
+        )
 
 
 class BaseComponent:

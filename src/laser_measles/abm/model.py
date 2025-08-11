@@ -15,7 +15,6 @@ from laser_measles.utils import StateArray
 
 from . import components
 from .params import ABMParams
-from laser_measles.events import EventBus
 from .base import BaseABMScenario
 
 
@@ -44,10 +43,6 @@ class ABMModel(BaseLaserModel):
             None
         """
         super().__init__(scenario, params, name)
-
-        # Initialize event system
-        self.event_bus = EventBus()
-        self.current_tick = 0
 
         if self.params.verbose:
             print(f"Initializing the {name} model with {len(scenario)} patches…")
@@ -189,27 +184,6 @@ class ABMModel(BaseLaserModel):
         yield
         return
 
-    def _setup_components(self) -> None:
-        """
-        Setup components with event capabilities.
-        
-        This method is called after components are instantiated to provide
-        them with access to the event bus if they support it.
-        """
-        if self.params.verbose:
-            print(f"Setting up event capabilities for {len(self.instances)} components...")
-        
-        # Initialize event capabilities for components that support it
-        for instance in self.instances:
-            if hasattr(instance, 'set_event_bus'):
-                if self.params.verbose:
-                    print(f"  Setting event bus for {type(instance).__name__}")
-                instance.set_event_bus(self.event_bus)
-            elif hasattr(instance, '__init_event_mixin__'):
-                if self.params.verbose:
-                    print(f"  Initializing event mixin for {type(instance).__name__}")
-                instance.__init_event_mixin__(self.event_bus)
-
     def _initialize(self) -> None:
         """
         Setup birth component registration for generic model.
@@ -222,78 +196,14 @@ class ABMModel(BaseLaserModel):
             self.prepend_component(components.NoBirthsProcess)
 
         super()._initialize()
-        
-        # Emit model initialization event
-        self.event_bus.emit(self._create_model_event('model_init', tick=0))
 
         return
 
-    def _execute_tick(self, tick: int) -> None:
-        """
-        Execute a single tick with event emission.
-        
-        Overrides the base method to emit tick start/end events and
-        track the current tick for event context.
-        
-        Args:
-            tick: The current tick number.
-        """
-        # Update current tick for event context
-        self.current_tick = tick
-        
-        # Emit tick start event
-        self.event_bus.emit(self._create_model_event('tick_start', tick=tick))
-        
-        # Execute the standard tick processing
-        super()._execute_tick(tick)
-        
-        # Emit tick end event
-        self.event_bus.emit(self._create_model_event('tick_end', tick=tick))
 
-    def _create_model_event(self, event_type: str, tick: int, **kwargs):
-        """
-        Create a model lifecycle event.
-        
-        Args:
-            event_type: Type of model event
-            tick: Current tick
-            **kwargs: Additional event data
-            
-        Returns:
-            ModelEvent instance
-        """
-        from laser_measles.events import ModelEvent
-        
-        data = dict(kwargs)
-        data.update({
-            'model_name': self.name,
-            'num_patches': len(self.scenario) if hasattr(self, 'scenario') else 0,
-            'num_people': len(self.people) if hasattr(self, 'people') else 0
-        })
-        
-        return ModelEvent(
-            event_type=event_type,
-            source=self,
-            tick=tick,
-            data=data
-        )
 
-    def run(self) -> None:
-        """
-        Execute the model with event emission.
-        
-        Overrides the base method to emit model completion events.
-        """
-        # Call the parent run method
-        super().run()
-        
-        # Emit model completion event
-        self.event_bus.emit(self._create_model_event('model_complete', tick=self.current_tick))
-        
-        if self.params.verbose:
-            stats = self.event_bus.get_stats()
-            print(f"Event system stats: {stats['events_emitted']} events emitted, "
-                  f"{stats['total_subscribers']} active subscribers")
+
+
+
 
 
 # Alias for backwards compatibility
