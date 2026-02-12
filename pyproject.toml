@@ -51,6 +51,7 @@ classifiers = [
     "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: Implementation :: CPython",
     "Topic :: Utilities",
 ]
@@ -69,7 +70,7 @@ laser-measles = "laser_measles.cli:app"
 extend-exclude = ["static", "ci/templates", "docs/tutorials/not_ready/*", "docs/tutorials/convert_tutorials.py", "docs/tutorials/tut_*.py"]
 line-length = 140
 src = ["src", "tests"]
-target-version = "py311"
+target-version = "py312"
 
 [tool.ruff.lint.per-file-ignores]
 "ci/*" = ["S", "PLC0415"]
