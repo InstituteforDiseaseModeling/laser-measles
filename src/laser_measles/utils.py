@@ -30,8 +30,8 @@ from collections.abc import Callable
 from functools import wraps
 
 import numpy as np
-from laser_core.laserframe import LaserFrame
-from laser_core.migration import distance
+from laser.core.laserframe import LaserFrame
+from laser.core.migration import distance
 
 
 def assert_row_vector(vec: np.ndarray) -> None:

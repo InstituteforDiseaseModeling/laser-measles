@@ -39,7 +39,7 @@ For development installation with all dependencies (recommended: use `uv` for fa
 
 **Major Dependencies:**
 
-* ``laser-core>=0.5.1``: Core LASER framework
+* ``laser-core>=1.0.0``: Core LASER framework
 * ``pydantic>=2.11.5``: Parameter validation and serialization
 * ``polars>=1.30.0``: High-performance data manipulation
 * ``alive-progress>=3.2.0``: Progress bars and status indicators

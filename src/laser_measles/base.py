@@ -23,8 +23,8 @@ from typing import TypeVar
 import alive_progress
 import matplotlib.pyplot as plt
 import polars as pl
-from laser_core.laserframe import LaserFrame
-from laser_core.random import seed as seed_prng
+from laser.core.laserframe import LaserFrame
+from laser.core.random import seed as seed_prng
 from matplotlib.backends.backend_pdf import PdfPages
 from matplotlib.figure import Figure
 from pydantic import BaseModel

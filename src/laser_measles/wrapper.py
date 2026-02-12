@@ -8,7 +8,7 @@ Classes:
 from typing import Any
 
 import numpy as np
-from laser_core.laserframe import LaserFrame
+from laser.core.laserframe import LaserFrame
 
 from .utils import get_laserframe_properties
 

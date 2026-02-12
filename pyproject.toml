@@ -4,11 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "laser-measles"
-version = "0.7.2-dev3"
+version = "0.8.0-dev1"
 
 dependencies = [
   "numba>=0.61.0",
-  "laser-core>=0.5.1",
+  "laser-core>=1.0.0",
   "diskcache>=5.6.3",
   "appdirs>=1.4.4",
   "pydantic>=2.11.5",
@@ -117,7 +117,7 @@ force-single-line = true
 quote-style = "double"
 
 [tool.bumpversion]
-current_version = "0.7.2-dev3"
+current_version = "0.8.0-dev1"
 parse = """(?x)
     (?P<major>0|[1-9]\\d*)\\.
     (?P<minor>0|[1-9]\\d*)\\.

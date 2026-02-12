@@ -216,7 +216,7 @@ state_tracker = model.get_instance(StateTracker)[0]
 ## Dependencies
 
 Core dependencies:
-- `laser-core>=0.5.1`: Core LASER framework
+- `laser-core>=1.0.0`: Core LASER framework
 - `pydantic>=2.11.5`: Parameter validation
 - `polars>=1.30.0`: DataFrame operations
 - `alive-progress>=3.2.0`: Progress bars

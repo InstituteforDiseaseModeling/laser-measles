@@ -26,9 +26,9 @@ model = CompartmentalModel(scenario, params)
 print(f"Model PRNG seeded with: {params.seed}")
 
 # %% [markdown]
-# ### How laser_core Handles Seeding
+# ### How laser.core Handles Seeding
 #
-# Behind the scenes, laser-measles uses `laser_core.random.seed()` to create the random number generator.
+# Behind the scenes, laser-measles uses `laser.core.random.seed()` to create the random number generator.
 # This function does two important things:
 #
 # 1. **Creates a NumPy Generator**: Returns a `numpy.random.Generator` object seeded with the given value
@@ -37,7 +37,7 @@ print(f"Model PRNG seeded with: {params.seed}")
 # This ensures both `model.prng` and `np.random` operations are reproducible.
 
 # %%
-from laser_core.random import seed as seed_prng
+from laser.core.random import seed as seed_prng
 
 # This is what happens inside `BaseLaserModel.__init__`:
 prng = seed_prng(42)

@@ -1,6 +1,6 @@
 import numpy as np
 import polars as pl
-from laser_core.migration import gravity
+from laser.core.migration import gravity
 from pydantic import BaseModel
 from pydantic import Field
 

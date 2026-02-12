@@ -3,7 +3,7 @@ Component defining the VitalDynamicsProcess, which simulates the vital dynamics 
 """
 
 import numpy as np
-from laser_core import SortedQueue
+from laser.core import SortedQueue
 from pydantic import Field
 
 from laser_measles.abm.model import ABMModel

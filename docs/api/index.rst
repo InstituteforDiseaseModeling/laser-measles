@@ -361,7 +361,7 @@ Mixing Models
 .. currentmodule:: laser_measles.mixing
 
 Spatial mixing models for population movement and disease transmission between geographic patches
-(see `laser-core <https://docs.idmod.org/projects/laser/en/latest>`_ for more details):
+(see `laser-core <https://laser.idmod.org/laser-generic/>`_ for more details):
 
 Base Classes
 ------------

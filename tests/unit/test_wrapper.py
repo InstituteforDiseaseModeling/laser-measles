@@ -5,7 +5,7 @@ Test script for LaserFrameWrapper functionality.
 from typing import Protocol
 
 import numpy as np
-from laser_core.laserframe import LaserFrame
+from laser.core.laserframe import LaserFrame
 
 from laser_measles.wrapper import PrettyLaserFrameWrapper
 
