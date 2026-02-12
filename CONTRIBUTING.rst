@@ -98,6 +98,92 @@ To run all the test environments in *parallel*::
 
     tox -p auto
 
+Building Documentation
+======================
+
+HTML Documentation
+------------------
+
+Using tox (default Python 3.12)::
+
+    tox -e docs
+
+Using specific Python version (e.g., Python 3.11)::
+
+    TOXPYTHON=python3.11 tox -e docs
+
+Manual build without tox::
+
+    # Create virtual environment with desired Python version
+    python3.11 -m venv .venv-docs
+    source .venv-docs/bin/activate
+
+    # Install package and documentation dependencies
+    pip install --upgrade pip
+    pip install -e .
+    pip install -r docs/requirements.txt
+    pip install jupytext
+
+    # Download pandoc (required for notebook conversion)
+    curl -L https://github.com/jgm/pandoc/releases/download/3.7.0.2/pandoc-3.7.0.2-linux-amd64.tar.gz -o pandoc.tar.gz
+    tar -xzf pandoc.tar.gz
+    cp pandoc-3.7.0.2/bin/pandoc .venv-docs/bin/
+
+    # Convert tutorial Python files to Jupyter notebooks
+    cd docs/tutorials && bash create_ipynb.sh && cd ../..
+
+    # Generate API documentation and build HTML
+    sphinx-apidoc -f -o docs/reference --module-first src/laser_measles
+    sphinx-build -E -b html docs dist/docs
+
+The HTML documentation will be available at ``dist/docs/index.html``.
+
+PDF Documentation
+-----------------
+
+Building PDF documentation requires LaTeX, which can be provided via Docker.
+
+Step 1: Build LaTeX source files::
+
+    source .venv-docs/bin/activate
+    sphinx-build -b latex docs dist/latex
+
+Step 2: Compile LaTeX to PDF using Docker::
+
+    # First compilation pass
+    docker run --rm -v "$(pwd)/dist/latex:/work" -w /work texlive/texlive:latest \
+        pdflatex -interaction=nonstopmode laser-measles.tex
+
+    # Second pass to resolve cross-references
+    docker run --rm -v "$(pwd)/dist/latex:/work" -w /work texlive/texlive:latest \
+        pdflatex -interaction=nonstopmode laser-measles.tex
+
+    # Third pass for final resolution
+    docker run --rm -v "$(pwd)/dist/latex:/work" -w /work texlive/texlive:latest \
+        pdflatex -interaction=nonstopmode laser-measles.tex
+
+The PDF documentation will be available at ``dist/latex/laser-measles.pdf``.
+
+**Note:** The first time you run the Docker command, it will download the texlive image (~4GB), which may take several minutes.
+
+Complete PDF Build from Scratch::
+
+    # One-liner for full HTML + PDF build with Python 3.11
+    python3.11 -m venv .venv-docs && \
+    source .venv-docs/bin/activate && \
+    pip install --upgrade pip && \
+    pip install -e . && \
+    pip install -r docs/requirements.txt jupytext && \
+    curl -L https://github.com/jgm/pandoc/releases/download/3.7.0.2/pandoc-3.7.0.2-linux-amd64.tar.gz -o pandoc.tar.gz && \
+    tar -xzf pandoc.tar.gz && \
+    cp pandoc-3.7.0.2/bin/pandoc .venv-docs/bin/ && \
+    cd docs/tutorials && bash create_ipynb.sh && cd ../.. && \
+    sphinx-apidoc -f -o docs/reference --module-first src/laser_measles && \
+    sphinx-build -E -b html docs dist/docs && \
+    sphinx-build -b latex docs dist/latex && \
+    docker run --rm -v "$(pwd)/dist/latex:/work" -w /work texlive/texlive:latest \
+        sh -c "pdflatex -interaction=nonstopmode laser-measles.tex && pdflatex -interaction=nonstopmode laser-measles.tex"
+
 Version Management
 ==================
 
