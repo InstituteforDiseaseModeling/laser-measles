@@ -6,8 +6,8 @@ enforces age structure with age based mortality
 from datetime import timedelta
 
 import numpy as np
-from laser_core import SortedQueue
-from laser_core.demographics import AliasedDistribution
+from laser.core import SortedQueue
+from laser.core.demographics import AliasedDistribution
 from pydantic import BaseModel
 from pydantic import Field
 

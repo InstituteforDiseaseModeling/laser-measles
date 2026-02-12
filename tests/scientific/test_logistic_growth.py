@@ -13,7 +13,7 @@ import importlib
 import numpy as np
 import polars as pl
 import pytest
-from laser_core import PropertySet
+from laser.core import PropertySet
 
 import laser_measles as lm
 from laser_measles import MEASLES_MODULES

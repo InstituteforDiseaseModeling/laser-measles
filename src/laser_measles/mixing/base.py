@@ -3,7 +3,7 @@ from abc import abstractmethod
 
 import numpy as np
 import polars as pl
-from laser_core.migration import distance
+from laser.core.migration import distance
 
 
 class BaseMixing(ABC):

@@ -31,7 +31,7 @@ pip install -e ".[dev]"
 
 ## Dependencies
 
-- **Core**: laser-core>=0.5.1, pydantic>=2.11.5, polars>=1.30.0
+- **Core**: laser-core>=1.0.0, pydantic>=2.11.5, polars>=1.30.0
 - **Development**: pytest, ruff, mypy
 - **Documentation**: sphinx, sphinx-autodoc-typehints
 - **Examples**: jupyter, seaborn, optuna

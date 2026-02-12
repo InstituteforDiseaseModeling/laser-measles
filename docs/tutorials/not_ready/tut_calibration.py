@@ -2,7 +2,7 @@ import os
 
 import numpy as np
 import pandas as pd
-from laser_core.propertyset import PropertySet
+from laser.core.propertyset import PropertySet
 
 from laser_measles.abm import Model
 from laser_measles.abm.components import BirthsConstantPopProcess

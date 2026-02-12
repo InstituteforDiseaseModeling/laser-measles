@@ -22,7 +22,7 @@ Functions:
 """
 
 import numpy as np
-from laser_core.migration import distance
+from laser.core.migration import distance
 
 
 def calc_distances(latitudes: np.ndarray, longitudes: np.ndarray, verbose: bool = False) -> np.ndarray:

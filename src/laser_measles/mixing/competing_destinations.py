@@ -1,6 +1,6 @@
 import numpy as np
 import polars as pl
-from laser_core.migration import competing_destinations
+from laser.core.migration import competing_destinations
 from pydantic import BaseModel
 from pydantic import Field
 
