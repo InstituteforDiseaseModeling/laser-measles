@@ -12,6 +12,7 @@ The BaseLaserModel class is the base class for all laser-measles models.
 
 from __future__ import annotations
 
+import gc
 from abc import ABC
 from abc import abstractmethod
 from datetime import datetime
@@ -404,35 +405,12 @@ class BaseLaserModel(ABC):
         """
         try:
             # Clear LaserFrame objects
-            if hasattr(self, "patches") and self.patches is not None:
-                # Clear all properties from the LaserFrame
-                if hasattr(self.patches, "_properties"):
-                    for prop_name in list(self.patches._properties.keys()):
-                        setattr(self.patches, prop_name, None)
-                    self.patches._properties.clear()
+            for key, value in list(vars(self).items()):
+                if isinstance(value, LaserFrame):
+                    delattr(self, key)
 
-                # Reset LaserFrame capacity and count
-                if hasattr(self.patches, "_capacity"):
-                    self.patches._capacity = 0
-                if hasattr(self.patches, "_count"):
-                    self.patches._count = 0
-
-                self.patches = None
-
-            if hasattr(self, "people") and self.people is not None:
-                # Clear all properties from the LaserFrame
-                if hasattr(self.people, "_properties"):
-                    for prop_name in list(self.people._properties.keys()):
-                        setattr(self.people, prop_name, None)
-                    self.people._properties.clear()
-
-                # Reset LaserFrame capacity and count
-                if hasattr(self.people, "_capacity"):
-                    self.people._capacity = 0
-                if hasattr(self.people, "_count"):
-                    self.people._count = 0
-
-                self.people = None
+            # Do a garbage collection pass to free up memory from deleted LaserFrames
+            gc.collect()
 
             # Clear component instances and their references
             if hasattr(self, "instances"):
@@ -446,7 +424,7 @@ class BaseLaserModel(ABC):
                             attr_value = getattr(instance, attr_name, None)
                             if hasattr(attr_value, "__len__") and not callable(attr_value):
                                 try:
-                                    setattr(instance, attr_name, None)
+                                    delattr(instance, attr_name)
                                 except (AttributeError, TypeError):
                                     pass  # Skip if attribute is read-only
                 self.instances.clear()
