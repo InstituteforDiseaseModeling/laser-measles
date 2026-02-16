@@ -248,10 +248,7 @@ def get_laserframe_properties(laserframe: LaserFrame):
     """
     Get the scalar and vector properties of a laserframe that are numpy arrays.
     """
-    properties = set()
-    for key, value in laserframe.__dict__.items():
-        if isinstance(value, np.ndarray) and value.shape[-1] == laserframe._capacity:
-            properties.add(key)
+    properties = set(laserframe._properties.keys())
     return properties
 
 

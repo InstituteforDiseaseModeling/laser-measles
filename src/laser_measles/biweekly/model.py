@@ -59,7 +59,7 @@ class BiweeklyModel(BaseLaserModel):
         self.patches = PatchLaserFrame(capacity=len(scenario))
 
         # Create the state vector for each of the patches (3, num_patches)
-        self.patches.add_vector_property("states", len(self.params.states))  # S, I, R
+        self.patches.add_array_property("states", shape=(len(self.params.states), len(scenario)))  # S, I, R
 
         # Wrap the states array with StateArray for attribute access
         self.patches.states = StateArray(self.patches.states, state_names=self.params.states)
