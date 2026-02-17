@@ -31,7 +31,10 @@ End-to-end tutorials
 ---------------------
 These tutorials are designed to show you how to use the library to solve a problem.
 
-UNDER CONSTRUCTION
+.. toctree::
+    :maxdepth: 1
+
+    tutorials/tut_vaccination.ipynb
 
 AI Assistance
 --------------
