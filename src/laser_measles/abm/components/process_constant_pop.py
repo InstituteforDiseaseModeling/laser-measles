@@ -91,11 +91,18 @@ class ConstantPopProcess(BaseConstantPopProcess):
 
         # update state counters
         patches.states -= cast_type(deaths, patches.states.dtype)
-        patches.states.S += cast_type(births, patches.states.dtype)
+        # Count births per patch from the actual agents being reborn (they keep their patch_id)
+        actual_births_per_patch = np.bincount(people.patch_id[idx], minlength=num_patches)
+        patches.states.S += cast_type(actual_births_per_patch, patches.states.dtype)
 
         # Births, set date of birth and state to 0 (susceptible)
         people.date_of_birth[idx] = tick  # set to current tick
         people.state[idx] = model.params.states.index("S")  # set to susceptible
+        # Reset timers to prevent phantom state transitions from leftover timers
+        if hasattr(people, "etimer"):
+            people.etimer[idx] = 0
+        if hasattr(people, "itimer"):
+            people.itimer[idx] = 0
 
     def _initialize(self, model: ABMModel) -> None:
         """
