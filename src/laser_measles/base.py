@@ -55,10 +55,43 @@ class ParamsProtocol(Protocol):
 
 class BaseModelParams(BaseModel):
     """
-    Base parameters for all laser-measles models.
+    Base parameter schema for all laser-measles simulation models.
 
-    This class provides common parameters that are shared across all model types.
-    Model-specific parameter classes should inherit from this class.
+    This class defines configuration options that are common across all
+    model variants. Subclasses must extend this class and implement
+    model-specific properties.
+
+    Validation behavior:
+        - Extra/unknown fields are forbidden.
+        - `start_time` must be a string in "YYYY-MM" format (year and month only).
+        - `num_ticks` represents discrete simulation steps, not calendar days.
+          The duration of each tick is determined by the subclass implementation
+          of `time_step_days`.
+
+    Attributes:
+        seed (int):
+            Random seed used to initialize all stochastic processes.
+            Ensures reproducibility of simulation results.
+
+        start_time (str):
+            Simulation start time in "YYYY-MM" format (e.g., "2000-01").
+            Day values are not supported; the model assumes the first day
+            of the given month unless otherwise defined by subclasses.
+
+        num_ticks (int):
+            Total number of discrete time steps to simulate.
+            The total simulated duration equals:
+                num_ticks × time_step_days
+
+        verbose (bool):
+            If True, prints detailed logging output during execution.
+
+        show_progress (bool):
+            If True, displays a progress bar during simulation runs.
+
+        use_numba (bool):
+            If True, enables numba JIT acceleration when available.
+            Falls back to pure Python if numba is unavailable.
     """
 
     model_config = ConfigDict(extra="forbid")
