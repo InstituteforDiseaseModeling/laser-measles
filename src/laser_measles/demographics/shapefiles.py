@@ -121,7 +121,7 @@ def get_shapefile_dataframe(shapefile_path: str | Path) -> pl.DataFrame:
 
 def plot_shapefile_dataframe(df: pl.DataFrame, ax: plt.Axes | None = None, plot_kwargs: dict | None = None) -> plt.Figure:
     if ax is None:
-        fig, ax = plt.subplots()
+        _fig, ax = plt.subplots()
     if plot_kwargs is None:
         plot_kwargs = {}
     default_plot_kwargs = {
