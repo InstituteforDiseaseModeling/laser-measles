@@ -6,10 +6,10 @@ import numpy as np
 from laser.core import SortedQueue
 from pydantic import Field
 
-from laser_measles.abm.model import ABMModel
-from laser_measles.components import BaseVitalDynamicsParams
-from laser_measles.components import BaseVitalDynamicsProcess
-from laser_measles.utils import cast_type
+from laser.measles.abm.model import ABMModel
+from laser.measles.components import BaseVitalDynamicsParams
+from laser.measles.components import BaseVitalDynamicsProcess
+from laser.measles.utils import cast_type
 
 
 class VitalDynamicsParams(BaseVitalDynamicsParams):

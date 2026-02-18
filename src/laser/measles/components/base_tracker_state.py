@@ -8,9 +8,9 @@ from matplotlib.figure import Figure
 from pydantic import BaseModel
 from pydantic import Field
 
-from laser_measles.base import BaseLaserModel
-from laser_measles.base import BasePhase
-from laser_measles.base import StateArray
+from laser.measles.base import BaseLaserModel
+from laser.measles.base import BasePhase
+from laser.measles.base import StateArray
 
 
 class BaseStateTrackerParams(BaseModel):

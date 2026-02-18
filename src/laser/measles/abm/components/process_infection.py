@@ -6,9 +6,9 @@ import numpy as np
 from matplotlib.figure import Figure
 from pydantic import Field
 
-from laser_measles.abm.model import ABMModel
-from laser_measles.components import BaseInfectionParams
-from laser_measles.components import BaseInfectionProcess
+from laser.measles.abm.model import ABMModel
+from laser.measles.components import BaseInfectionParams
+from laser.measles.components import BaseInfectionProcess
 
 from .process_disease import DiseaseParams
 from .process_disease import DiseaseProcess

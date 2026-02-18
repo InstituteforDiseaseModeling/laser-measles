@@ -7,12 +7,12 @@ import polars as pl
 from matplotlib import pyplot as plt
 from matplotlib.figure import Figure
 
-from laser_measles.abm.base import BaseABMScenario
-from laser_measles.abm.base import PatchLaserFrame
-from laser_measles.abm.base import PeopleLaserFrame
-from laser_measles.base import BaseLaserModel
-from laser_measles.base import BaseScenario
-from laser_measles.utils import StateArray
+from laser.measles.abm.base import BaseABMScenario
+from laser.measles.abm.base import PatchLaserFrame
+from laser.measles.abm.base import PeopleLaserFrame
+from laser.measles.base import BaseLaserModel
+from laser.measles.base import BaseScenario
+from laser.measles.utils import StateArray
 
 from . import components
 from .params import ABMParams

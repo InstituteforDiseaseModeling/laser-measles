@@ -6,11 +6,11 @@ import numpy as np
 import polars as pl
 import pytest
 
-from laser_measles.abm import Model as ABMModel
-from laser_measles.abm.params import ABMParams
-from laser_measles.biweekly import BiweeklyModel
-from laser_measles.biweekly import BiweeklyParams
-from laser_measles.biweekly.base import BaseScenario
+from laser.measles.abm import Model as ABMModel
+from laser.measles.abm.params import ABMParams
+from laser.measles.biweekly import BiweeklyModel
+from laser.measles.biweekly import BiweeklyParams
+from laser.measles.biweekly.base import BaseScenario
 
 
 def create_test_scenario():

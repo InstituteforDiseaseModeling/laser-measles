@@ -4,7 +4,7 @@ from laser.core.migration import radiation
 from pydantic import BaseModel
 from pydantic import Field
 
-from laser_measles.mixing.base import BaseMixing
+from laser.measles.mixing.base import BaseMixing
 
 
 class RadiationParams(BaseModel):

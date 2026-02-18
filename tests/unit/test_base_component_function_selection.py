@@ -7,8 +7,8 @@ from unittest.mock import patch
 
 import pytest
 
-from laser_measles.abm.params import ABMParams
-from laser_measles.base import BaseComponent
+from laser.measles.abm.params import ABMParams
+from laser.measles.base import BaseComponent
 
 
 def numpy_test_func(x, y):

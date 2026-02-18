@@ -1,5 +1,5 @@
-from laser_measles.components import BaseStateTracker
-from laser_measles.components import BaseStateTrackerParams
+from laser.measles.components import BaseStateTracker
+from laser.measles.components import BaseStateTrackerParams
 
 
 class StateTrackerParams(BaseStateTrackerParams):

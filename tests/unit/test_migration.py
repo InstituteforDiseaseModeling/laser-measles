@@ -6,8 +6,8 @@ A 2D matrix, M, representing the interaction network, where each element network
 import polars as pl
 import pytest
 
-from laser_measles.mixing.gravity import GravityMixing
-from laser_measles.mixing.gravity import GravityParams
+from laser.measles.mixing.gravity import GravityMixing
+from laser.measles.mixing.gravity import GravityParams
 
 
 def mean_field_2pop_model():

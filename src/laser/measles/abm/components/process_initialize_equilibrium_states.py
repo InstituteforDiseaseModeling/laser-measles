@@ -5,11 +5,11 @@ Component for initializing the population in each of the model states by rough e
 import numpy as np
 import polars as pl
 
-from laser_measles.abm.base import PatchLaserFrame
-from laser_measles.abm.base import PeopleLaserFrame
-from laser_measles.abm.model import ABMModel
-from laser_measles.components import BaseInitializeEquilibriumStatesParams
-from laser_measles.components import BaseInitializeEquilibriumStatesProcess
+from laser.measles.abm.base import PatchLaserFrame
+from laser.measles.abm.base import PeopleLaserFrame
+from laser.measles.abm.model import ABMModel
+from laser.measles.components import BaseInitializeEquilibriumStatesParams
+from laser.measles.components import BaseInitializeEquilibriumStatesProcess
 
 
 class InitializeEquilibriumStatesParams(BaseInitializeEquilibriumStatesParams):

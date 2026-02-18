@@ -1,5 +1,5 @@
-from laser_measles.components import BaseFadeOutTracker
-from laser_measles.components import BaseFadeOutTrackerParams
+from laser.measles.components import BaseFadeOutTracker
+from laser.measles.components import BaseFadeOutTrackerParams
 
 
 class FadeOutTracker(BaseFadeOutTracker):

@@ -31,8 +31,8 @@ The compartmental model uses:
 ```python
 import polars as pl
 import numpy as np
-from laser_measles.compartmental import BaseScenario, CompartmentalModel, CompartmentalParams
-from laser_measles.compartmental.components import InfectionProcess, StateTracker
+from laser.measles.compartmental import BaseScenario, CompartmentalModel, CompartmentalParams
+from laser.measles.compartmental.components import InfectionProcess, StateTracker
 
 # Create scenario data
 scenario_data = pl.DataFrame({

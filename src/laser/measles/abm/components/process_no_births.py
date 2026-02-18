@@ -5,10 +5,10 @@ Process for setting a static population (no vital dynamics).
 import numpy as np
 import polars as pl
 
-from laser_measles.abm.model import ABMModel
-from laser_measles.base import BaseLaserModel
-from laser_measles.components import BaseVitalDynamicsParams
-from laser_measles.components import BaseVitalDynamicsProcess
+from laser.measles.abm.model import ABMModel
+from laser.measles.base import BaseLaserModel
+from laser.measles.components import BaseVitalDynamicsParams
+from laser.measles.components import BaseVitalDynamicsProcess
 
 
 class NoBirthsParams(BaseVitalDynamicsParams):

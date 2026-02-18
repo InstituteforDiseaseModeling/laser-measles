@@ -7,8 +7,8 @@ from unittest.mock import Mock
 
 import pytest
 
-from laser_measles.base import BaseComponent
-from laser_measles.base import BaseLaserModel
+from laser.measles.base import BaseComponent
+from laser.measles.base import BaseLaserModel
 
 
 class MockModel:
@@ -160,8 +160,8 @@ class TestBaseComponentIntegration:
         """Test that existing biweekly components still work with refactored BaseComponent."""
         try:
             # Test importing some biweekly components
-            from laser_measles.biweekly.components.process_infection import InfectionProcess
-            from laser_measles.biweekly.components.tracker_state import StateTracker
+            from laser.measles.biweekly.components.process_infection import InfectionProcess
+            from laser.measles.biweekly.components.tracker_state import StateTracker
 
             MockModel()
 
@@ -175,8 +175,8 @@ class TestBaseComponentIntegration:
     def test_components_utility_still_works(self):
         """Test that the components utility module still works with the refactored BaseComponent."""
         try:
-            from laser_measles.components import component
-            from laser_measles.components import create_component
+            from laser.measles.components import component
+            from laser.measles.components import create_component
 
             # These should not raise import errors
             assert callable(component)

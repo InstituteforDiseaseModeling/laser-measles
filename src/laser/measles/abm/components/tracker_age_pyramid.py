@@ -10,8 +10,8 @@ from pydantic import BaseModel
 from pydantic import Field
 from pydantic import field_validator
 
-from laser_measles.abm.model import ABMModel
-from laser_measles.base import BasePhase
+from laser.measles.abm.model import ABMModel
+from laser.measles.base import BasePhase
 
 
 class AgePyramidTrackerParams(BaseModel):

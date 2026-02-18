@@ -3,7 +3,7 @@ from abc import ABC
 from pydantic import BaseModel
 from pydantic import Field
 
-from laser_measles.base import BasePhase
+from laser.measles.base import BasePhase
 
 
 class BaseInfectionParams(BaseModel):

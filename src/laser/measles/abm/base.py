@@ -6,9 +6,9 @@ import numpy as np
 import patito as pt
 import polars as pl
 
-from laser_measles.base import BasePatchLaserFrame
-from laser_measles.base import BasePeopleLaserFrame
-from laser_measles.base import BaseScenario as LaserMeaslesBaseScenario
+from laser.measles.base import BasePatchLaserFrame
+from laser.measles.base import BasePeopleLaserFrame
+from laser.measles.base import BaseScenario as LaserMeaslesBaseScenario
 
 
 class PeopleLaserFrame(BasePeopleLaserFrame):

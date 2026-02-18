@@ -3,7 +3,7 @@ import importlib
 import polars as pl
 import pytest
 
-from laser_measles import MEASLES_MODULES
+from laser.measles import MEASLES_MODULES
 
 
 def test_api_import():

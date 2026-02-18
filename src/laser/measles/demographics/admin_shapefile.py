@@ -7,8 +7,8 @@ from pathlib import Path
 import alive_progress
 from rastertoolkit import shape_subdivide
 
-from laser_measles.demographics import shapefiles
-from laser_measles.demographics.base import BaseShapefile
+from laser.measles.demographics import shapefiles
+from laser.measles.demographics.base import BaseShapefile
 
 
 class AdminShapefile(BaseShapefile):

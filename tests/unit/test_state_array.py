@@ -5,7 +5,7 @@ Tests for StateArray functionality in utils.py
 import numpy as np
 import pytest
 
-from laser_measles.utils import StateArray
+from laser.measles.utils import StateArray
 
 
 class TestStateArray:

@@ -32,11 +32,11 @@ from pydantic import BaseModel
 from pydantic import ConfigDict
 from pydantic import Field
 
-from laser_measles.utils import StateArray
-from laser_measles.utils import get_laserframe_properties
-from laser_measles.utils import select_implementation
-from laser_measles.wrapper import PrettyComponentsList
-from laser_measles.wrapper import pretty_laserframe
+from laser.measles.utils import StateArray
+from laser.measles.utils import get_laserframe_properties
+from laser.measles.utils import select_implementation
+from laser.measles.wrapper import PrettyComponentsList
+from laser.measles.wrapper import pretty_laserframe
 
 
 class ParamsProtocol(Protocol):

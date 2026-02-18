@@ -9,9 +9,9 @@ from pydantic import BaseModel
 from pydantic import Field
 from pydantic import field_validator
 
-from laser_measles.base import BaseComponent
-from laser_measles.base import BaseLaserModel
-from laser_measles.utils import cast_type
+from laser.measles.base import BaseComponent
+from laser.measles.base import BaseLaserModel
+from laser.measles.utils import cast_type
 
 
 class BaseInfectionSeedingParams(BaseModel):

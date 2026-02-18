@@ -3,10 +3,10 @@ from typing import Any
 import numpy as np
 from pydantic import Field
 
-from laser_measles.base import BaseLaserModel
-from laser_measles.components import BaseInfectionParams
-from laser_measles.components import BaseInfectionProcess
-from laser_measles.mixing.gravity import GravityMixing
+from laser.measles.base import BaseLaserModel
+from laser.measles.components import BaseInfectionParams
+from laser.measles.components import BaseInfectionProcess
+from laser.measles.mixing.gravity import GravityMixing
 
 
 class InfectionParams(BaseInfectionParams):

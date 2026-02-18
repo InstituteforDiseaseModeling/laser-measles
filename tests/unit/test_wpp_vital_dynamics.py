@@ -7,10 +7,10 @@ import pytest
 import pyvd
 from scipy import stats
 
-from laser_measles.abm.components import WPPVitalDynamicsProcess
-from laser_measles.abm.model import ABMModel
-from laser_measles.abm.model import ABMParams
-from laser_measles.scenarios.synthetic import two_patch_scenario
+from laser.measles.abm.components import WPPVitalDynamicsProcess
+from laser.measles.abm.model import ABMModel
+from laser.measles.abm.model import ABMParams
+from laser.measles.scenarios.synthetic import two_patch_scenario
 
 
 def is_debugger_active():

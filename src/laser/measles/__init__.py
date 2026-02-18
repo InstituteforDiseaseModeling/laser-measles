@@ -9,7 +9,7 @@ using agent-based and compartmental models with various spatial and temporal con
 __version__ = "0.8.0-dev1"
 
 # --- Exports ---
-MEASLES_MODULES = ["laser_measles.abm", "laser_measles.compartmental", "laser_measles.biweekly"]
+MEASLES_MODULES = ["laser.measles.abm", "laser.measles.compartmental", "laser.measles.biweekly"]
 
 from .api import *
 from .api import __all__
