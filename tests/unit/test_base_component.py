@@ -98,8 +98,8 @@ class TestBaseComponent:
         str_repr = str(component)
         expected = (
             "Base class for all laser-measles components.\n\n"
-            "Components follow a uniform interface with __call__(model, tick) method\n"
-            "for execution during simulation loops."
+            "    Components follow a uniform interface with __call__(model, tick) method\n"
+            "    for execution during simulation loops."
         )
         assert str_repr == expected
 
@@ -111,8 +111,8 @@ class TestBaseComponent:
         str_repr = str(component)
         expected = (
             "A test component with a custom docstring.\n\n"
-            "This component is used for testing the __str__ method\n"
-            "functionality with child class docstrings."
+            "    This component is used for testing the __str__ method\n"
+            "    functionality with child class docstrings."
         )
         assert str_repr == expected
 
@@ -124,8 +124,8 @@ class TestBaseComponent:
         str_repr = str(component)
         expected = (
             "Base class for all laser-measles components.\n\n"
-            "Components follow a uniform interface with __call__(model, tick) method\n"
-            "for execution during simulation loops."
+            "    Components follow a uniform interface with __call__(model, tick) method\n"
+            "    for execution during simulation loops."
         )
         assert str_repr == expected
 
