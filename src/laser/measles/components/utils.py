@@ -12,7 +12,7 @@ from typing import TypeVar
 
 from pydantic import BaseModel
 
-from laser_measles.base import BaseComponent
+from laser.measles.base import BaseComponent
 
 T = TypeVar("T", bound=BaseComponent)
 B = TypeVar("B", bound=BaseModel)

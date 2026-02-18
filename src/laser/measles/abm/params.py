@@ -5,7 +5,7 @@ Parameters for the ABM model.
 import json
 from collections import OrderedDict
 
-from laser_measles.base import BaseModelParams
+from laser.measles.base import BaseModelParams
 
 TIME_STEP_DAYS = 1
 STATES = ["S", "E", "I", "R"]

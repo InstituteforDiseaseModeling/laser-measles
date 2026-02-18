@@ -5,9 +5,9 @@ import polars as pl
 from pydantic import BaseModel
 from pydantic import Field
 
-from laser_measles.abm.model import ABMModel
-from laser_measles.base import BaseLaserModel
-from laser_measles.base import BasePhase
+from laser.measles.abm.model import ABMModel
+from laser.measles.base import BaseLaserModel
+from laser.measles.base import BasePhase
 
 
 class SIACalendarParams(BaseModel):

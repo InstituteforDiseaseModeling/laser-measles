@@ -3,8 +3,8 @@ import importlib
 import numpy as np
 import pytest
 
-import laser_measles as lm
-from laser_measles import MEASLES_MODULES
+import laser.measles as lm
+from laser.measles import MEASLES_MODULES
 
 VERBOSE = False
 SEED = 42

@@ -18,9 +18,9 @@ from pydantic import field_validator
 from rastertoolkit import raster_clip
 from rastertoolkit import raster_clip_weighted
 
-from laser_measles.demographics import cache
-from laser_measles.demographics import shapefiles
-from laser_measles.demographics.gadm import GADMShapefile
+from laser.measles.demographics import cache
+from laser.measles.demographics import shapefiles
+from laser.measles.demographics.gadm import GADMShapefile
 
 
 class RasterPatchParams(BaseModel):

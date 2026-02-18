@@ -3,7 +3,7 @@
 import json
 from collections import OrderedDict
 
-from laser_measles.base import BaseModelParams
+from laser.measles.base import BaseModelParams
 
 TIME_STEP_DAYS = 14
 STATES = ["S", "I", "R"]  # Compartments/states for discrete-time model

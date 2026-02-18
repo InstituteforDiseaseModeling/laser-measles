@@ -7,10 +7,10 @@ from unittest.mock import patch
 
 import pytest
 
-from laser_measles.utils import _check_numba_available
-from laser_measles.utils import _get_numba_preference
-from laser_measles.utils import dual_implementation
-from laser_measles.utils import select_implementation
+from laser.measles.utils import _check_numba_available
+from laser.measles.utils import _get_numba_preference
+from laser.measles.utils import dual_implementation
+from laser.measles.utils import select_implementation
 
 
 def numpy_test_func(x, y):

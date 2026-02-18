@@ -4,7 +4,7 @@ from pathlib import Path
 import pytest
 from appdirs import user_cache_dir
 
-from laser_measles.demographics import gadm
+from laser.measles.demographics import gadm
 
 
 @pytest.mark.order(1)

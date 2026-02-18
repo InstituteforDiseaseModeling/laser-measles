@@ -47,11 +47,11 @@ import numpy as np
 import polars as pl
 import seaborn as sns
 
-from laser_measles.scenarios import synthetic
-from laser_measles.compartmental import CompartmentalParams, Model, components
-from laser_measles.components import create_component
-from laser_measles.mixing.gravity import GravityMixing, GravityParams
-from laser_measles.mixing.radiation import RadiationMixing, RadiationParams
+from laser.measles.scenarios import synthetic
+from laser.measles.compartmental import CompartmentalParams, Model, components
+from laser.measles.components import create_component
+from laser.measles.mixing.gravity import GravityMixing, GravityParams
+from laser.measles.mixing.radiation import RadiationMixing, RadiationParams
 
 # Set up matplotlib for better plots
 plt.style.use('default')
@@ -178,7 +178,7 @@ infection_params = components.InfectionParams(
 )
 
 # Create patch-level state tracking parameters
-from laser_measles.components.base_tracker_state import BaseStateTrackerParams
+from laser.measles.components.base_tracker_state import BaseStateTrackerParams
 patch_tracker_params = BaseStateTrackerParams(aggregation_level=0)  # Track by patch
 
 # Create and configure the model

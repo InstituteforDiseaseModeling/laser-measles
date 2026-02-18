@@ -15,10 +15,10 @@ import polars as pl
 import pytest
 from laser.core import PropertySet
 
-import laser_measles as lm
-from laser_measles import MEASLES_MODULES
-from laser_measles.base import BaseLaserModel
-from laser_measles.base import BasePhase
+import laser.measles as lm
+from laser.measles import MEASLES_MODULES
+from laser.measles.base import BaseLaserModel
+from laser.measles.base import BasePhase
 
 # drop ABM, TODO: create SI conversion for the module
 MEASLES_MODULES = [module for module in MEASLES_MODULES if module != "laser_measles.abm"]

@@ -5,12 +5,12 @@ A class to represent the biweekly model.
 import numpy as np
 import polars as pl
 
-from laser_measles.base import BaseLaserModel
-from laser_measles.biweekly.base import BaseBiweeklyScenario
-from laser_measles.biweekly.base import PatchLaserFrame
-from laser_measles.biweekly.params import BiweeklyParams
-from laser_measles.utils import StateArray
-from laser_measles.utils import cast_type
+from laser.measles.base import BaseLaserModel
+from laser.measles.biweekly.base import BaseBiweeklyScenario
+from laser.measles.biweekly.base import PatchLaserFrame
+from laser.measles.biweekly.params import BiweeklyParams
+from laser.measles.utils import StateArray
+from laser.measles.utils import cast_type
 
 
 class BiweeklyModel(BaseLaserModel):

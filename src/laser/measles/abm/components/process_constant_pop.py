@@ -4,10 +4,10 @@ Component defining the ConstantPopProcess, which handles the birth events in a m
 
 import numpy as np
 
-from laser_measles.abm.model import ABMModel
-from laser_measles.components import BaseConstantPopParams
-from laser_measles.components import BaseConstantPopProcess
-from laser_measles.utils import cast_type
+from laser.measles.abm.model import ABMModel
+from laser.measles.components import BaseConstantPopParams
+from laser.measles.components import BaseConstantPopProcess
+from laser.measles.utils import cast_type
 
 
 class ConstantPopParams(BaseConstantPopParams):

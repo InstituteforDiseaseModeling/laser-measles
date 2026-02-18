@@ -10,10 +10,10 @@ from pydantic import BaseModel
 from pydantic import Field
 from pydantic import field_validator
 
-from laser_measles.abm.base import PatchLaserFrame
-from laser_measles.abm.base import PeopleLaserFrame
-from laser_measles.base import BaseComponent
-from laser_measles.base import BaseLaserModel
+from laser.measles.abm.base import PatchLaserFrame
+from laser.measles.abm.base import PeopleLaserFrame
+from laser.measles.base import BaseComponent
+from laser.measles.base import BaseLaserModel
 
 
 class InfectionSeedingParams(BaseModel):

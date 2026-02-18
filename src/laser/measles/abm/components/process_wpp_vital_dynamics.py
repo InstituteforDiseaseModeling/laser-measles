@@ -11,10 +11,10 @@ from laser.core.demographics import AliasedDistribution
 from pydantic import BaseModel
 from pydantic import Field
 
-from laser_measles.abm.model import ABMModel
-from laser_measles.base import BasePhase
-from laser_measles.demographics.wpp import WPP
-from laser_measles.utils import cast_type
+from laser.measles.abm.model import ABMModel
+from laser.measles.base import BasePhase
+from laser.measles.demographics.wpp import WPP
+from laser.measles.utils import cast_type
 
 
 class WPPVitalDynamicsParams(BaseModel):

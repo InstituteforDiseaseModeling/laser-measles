@@ -1,8 +1,8 @@
 import numpy as np
 from pydantic import BaseModel
 
-from laser_measles.base import BaseLaserModel
-from laser_measles.base import BasePhase
+from laser.measles.base import BaseLaserModel
+from laser.measles.base import BasePhase
 
 
 class BasePopulationTrackerParams(BaseModel):

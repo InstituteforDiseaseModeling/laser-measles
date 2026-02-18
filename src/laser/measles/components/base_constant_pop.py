@@ -5,9 +5,9 @@ Component defining the ConstantPopProcess, which handles the birth events in a m
 import numpy as np
 from pydantic import Field
 
-from laser_measles.base import BaseLaserModel
-from laser_measles.components import BaseVitalDynamicsParams
-from laser_measles.components import BaseVitalDynamicsProcess
+from laser.measles.base import BaseLaserModel
+from laser.measles.components import BaseVitalDynamicsParams
+from laser.measles.components import BaseVitalDynamicsProcess
 
 
 class BaseConstantPopParams(BaseVitalDynamicsParams):

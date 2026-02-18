@@ -13,9 +13,9 @@
 # If no seed is provided, the model uses the current microsecond timestamp.
 
 # %%
-from laser_measles.compartmental.model import CompartmentalModel
-from laser_measles.compartmental.params import CompartmentalParams
-from laser_measles.scenarios.synthetic import single_patch_scenario
+from laser.measles.compartmental.model import CompartmentalModel
+from laser.measles.compartmental.params import CompartmentalParams
+from laser.measles.scenarios.synthetic import single_patch_scenario
 
 # Create scenario and parameters
 scenario = single_patch_scenario(population=10000)

@@ -50,7 +50,7 @@ templates_path = ["_templates"]
 
 # Syntax highlighting style
 pygments_style = "sphinx"
-modindex_common_prefix = ["laser_measles."]
+modindex_common_prefix = ["laser.measles."]
 
 # List of patterns, relative to source directory, to exclude
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "**.ipynb_checkpoints", "tutorials/not_ready/**"]

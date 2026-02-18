@@ -8,11 +8,11 @@ import numpy as np
 from pydantic import BaseModel
 from pydantic import Field
 
-from laser_measles.abm.model import ABMModel
-from laser_measles.base import BasePhase
-from laser_measles.migration import init_gravity_diffusion
-from laser_measles.mixing.gravity import GravityMixing
-from laser_measles.utils import cast_type
+from laser.measles.abm.model import ABMModel
+from laser.measles.base import BasePhase
+from laser.measles.migration import init_gravity_diffusion
+from laser.measles.mixing.gravity import GravityMixing
+from laser.measles.utils import cast_type
 
 # Import numba conditionally for the numba implementation
 try:

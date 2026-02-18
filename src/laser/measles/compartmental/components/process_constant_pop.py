@@ -2,9 +2,9 @@
 Component defining the ConstantPopProcess, which handles the birth events in a model with constant population - that is, births == deaths.
 """
 
-from laser_measles.components import BaseConstantPopParams
-from laser_measles.components import BaseConstantPopProcess
-from laser_measles.utils import cast_type
+from laser.measles.components import BaseConstantPopParams
+from laser.measles.components import BaseConstantPopProcess
+from laser.measles.utils import cast_type
 
 
 class ConstantPopParams(BaseConstantPopParams):

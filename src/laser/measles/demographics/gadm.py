@@ -11,8 +11,8 @@ import pycountry
 import requests
 from pydantic import model_validator
 
-from laser_measles.demographics import shapefiles
-from laser_measles.demographics.admin_shapefile import AdminShapefile
+from laser.measles.demographics import shapefiles
+from laser.measles.demographics.admin_shapefile import AdminShapefile
 
 VERSION = "4.1"
 VERSION_INT = VERSION.replace(".", "")

@@ -8,9 +8,9 @@ import numpy as np
 import polars as pl
 import pytest
 
-import laser_measles as lm
-from laser_measles import MEASLES_MODULES
-from laser_measles.base import BaseLaserModel
+import laser.measles as lm
+from laser.measles import MEASLES_MODULES
+from laser.measles.base import BaseLaserModel
 
 
 def setup_sim(scenario, params, module):

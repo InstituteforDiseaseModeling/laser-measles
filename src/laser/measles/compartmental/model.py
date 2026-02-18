@@ -34,12 +34,12 @@ Model Class:
 import numpy as np
 import polars as pl
 
-from laser_measles.base import BaseLaserModel
-from laser_measles.compartmental.base import BaseCompartmentalScenario
-from laser_measles.compartmental.base import PatchLaserFrame
-from laser_measles.compartmental.params import CompartmentalParams
-from laser_measles.utils import StateArray
-from laser_measles.utils import cast_type
+from laser.measles.base import BaseLaserModel
+from laser.measles.compartmental.base import BaseCompartmentalScenario
+from laser.measles.compartmental.base import PatchLaserFrame
+from laser.measles.compartmental.params import CompartmentalParams
+from laser.measles.utils import StateArray
+from laser.measles.utils import cast_type
 
 
 class CompartmentalModel(BaseLaserModel):

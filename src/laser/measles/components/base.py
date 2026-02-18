@@ -1,7 +1,7 @@
 from abc import abstractmethod
 
-from laser_measles.base import BaseLaserModel
-from laser_measles.base import BasePhase
+from laser.measles.base import BaseLaserModel
+from laser.measles.base import BasePhase
 
 
 class BaseVitalDynamicsProcess(BasePhase):
