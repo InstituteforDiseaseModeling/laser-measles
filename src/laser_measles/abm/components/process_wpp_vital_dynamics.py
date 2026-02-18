@@ -121,6 +121,13 @@ class WPPVitalDynamicsProcess(BasePhase):
             patch_pop = patch_pops[patch_id]
             births = np.random.poisson(lam=patch_pop * self.wpp.vd_tup.birth_rate * self.wpp.vd_tup.br_mult_y[year_idx])
             i_end = i_start + births
+
+            # if i_end > len(idx), we have more births than available slots in the people frame,
+            # which means we need to increase the count of the people frame with add()
+            if i_end > len(idx):
+                n_start, n_end = people.add(i_end - len(idx))  # add enough capacity for the excess births
+                idx = np.concatenate([idx, np.arange(n_start, n_end)])
+
             people.active[idx[i_start:i_end]] = True
             people.date_of_birth[idx[i_start:i_end]] = tick
             people.state[idx[i_start:i_end]] = model.params.states.index("S")
