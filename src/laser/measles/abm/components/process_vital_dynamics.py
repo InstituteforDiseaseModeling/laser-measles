@@ -78,6 +78,7 @@ class VitalDynamicsProcess(BaseVitalDynamicsProcess):
             births = model.prng.poisson(population * self.lambda_birth)  # in each patch
             # find indices of the people frame for initializing
             istart, iend = people.add(births.sum())
+            people.active[istart:iend] = True  # mark newborns as active
             people.date_of_birth[istart:iend] = tick  # born today
             people.susceptibility[istart:iend] = 1.0  # all newborns are susceptible TODO: add maternal immunity component
             people.date_of_vaccination[istart:iend] = tick + self._routine_immunization_delay()
