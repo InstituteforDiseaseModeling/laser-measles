@@ -87,7 +87,9 @@ class ImportationPressureProcess(BasePhase):
         for patch_idx, num_imported_cases in enumerate(imported_cases):
             # select potential new cases from the patch
             if hasattr(model.people, "active"):
-                idx = np.where(model.people.active & (model.people.patch_id == patch_idx))[0]
+                active = model.people.active[: model.people.count]
+                patch_id = model.people.patch_id[: model.people.count]
+                idx = np.where(active & (patch_id == patch_idx))[0]
             else:
                 idx = np.where(model.people.patch_id[: model.people.count] == patch_idx)[0]
             idx = model.prng.choice(idx, size=num_imported_cases, replace=False)
