@@ -87,11 +87,11 @@ class ImportationPressureProcess(BasePhase):
         for patch_idx, num_imported_cases in enumerate(imported_cases):
             # select potential new cases from the patch
             if hasattr(model.people, "active"):
-                active = model.people.active[: model.people.count]
-                patch_id = model.people.patch_id[: model.people.count]
+                active = model.people.active
+                patch_id = model.people.patch_id
                 idx = np.where(active & (patch_id == patch_idx))[0]
             else:
-                idx = np.where(model.people.patch_id[: model.people.count] == patch_idx)[0]
+                idx = np.where(model.people.patch_id == patch_idx)[0]
             idx = model.prng.choice(idx, size=num_imported_cases, replace=False)
             # filter for susceptible cases
             idx = idx[model.people.state[idx] == model.params.states.index("S")]
