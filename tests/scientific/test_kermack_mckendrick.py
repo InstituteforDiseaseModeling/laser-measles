@@ -18,8 +18,8 @@ import pytest
 from laser.core import PropertySet
 from scipy.optimize import fsolve
 
-import laser_measles as lm
-from laser_measles import MEASLES_MODULES
+import laser.measles as lm
+from laser.measles import MEASLES_MODULES
 
 SEED = np.random.randint(1000000)
 RNG = np.random.default_rng(SEED)

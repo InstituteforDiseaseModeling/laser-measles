@@ -6,8 +6,8 @@ import timeit
 
 import pytest
 
-import laser_measles as lm
-from laser_measles.scenarios.synthetic import two_patch_scenario
+import laser.measles as lm
+from laser.measles.scenarios.synthetic import two_patch_scenario
 
 
 @pytest.fixture

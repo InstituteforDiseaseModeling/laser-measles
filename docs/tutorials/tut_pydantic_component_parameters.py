@@ -23,12 +23,12 @@ import polars as pl
 from pydantic import Field
 from pydantic import ValidationError
 
-from laser_measles.biweekly.components import CaseSurveillanceParams
-from laser_measles.biweekly.components import ImportationPressureParams
+from laser.measles.biweekly.components import CaseSurveillanceParams
+from laser.measles.biweekly.components import ImportationPressureParams
 
 # Import the component parameter classes
-from laser_measles.biweekly.components import InfectionParams
-from laser_measles.biweekly.components import SIACalendarParams
+from laser.measles.biweekly.components import InfectionParams
+from laser.measles.biweekly.components import SIACalendarParams
 
 # %% [markdown]
 # ## Type validation and default values

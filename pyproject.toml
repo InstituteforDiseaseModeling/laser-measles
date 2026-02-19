@@ -1,10 +1,12 @@
 [build-system]
-requires = ["setuptools >= 61.0"]
-build-backend = "setuptools.build_meta"
+requires = ["uv_build>=0.10.0,<0.11.0"]
+build-backend = "uv_build"
 
 [project]
-name = "laser-measles"
-version = "0.8.0-dev1"
+name = "laser.measles"
+version = "0.9.0-dev1"
+license-files = ["LICENSE"]
+readme = "README.rst"
 
 dependencies = [
   "numba>=0.61.0",
@@ -25,6 +27,10 @@ dependencies = [
 ]
 
 requires-python = ">= 3.10"
+
+[tool.uv.build-backend]
+module-name = [ "laser.measles" ]
+source-include = ["AUTHORS.rst", "CHANGELOG.rst", "CONTRIBUTING.rst"]
 
 authors = [
   {name = "Christopher Lorton"},
@@ -52,6 +58,7 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: Implementation :: CPython",
     "Topic :: Utilities",
 ]
@@ -64,7 +71,7 @@ Issues = "https://github.com/InstituteforDiseaseModeling/laser-measles/issues"
 Changelog = "https://github.com/InstituteforDiseaseModeling/laser-measles/blob/master/CHANGELOG.md"
 
 [project.scripts]
-laser-measles = "laser_measles.cli:app"
+laser-measles = "laser.measles.cli:app"
 
 [tool.ruff]
 extend-exclude = ["static", "ci/templates", "docs/tutorials/not_ready/*", "docs/tutorials/convert_tutorials.py", "docs/tutorials/tut_*.py"]
@@ -117,7 +124,7 @@ force-single-line = true
 quote-style = "double"
 
 [tool.bumpversion]
-current_version = "0.8.0-dev1"
+current_version = "0.9.0-dev1"
 parse = """(?x)
     (?P<major>0|[1-9]\\d*)\\.
     (?P<minor>0|[1-9]\\d*)\\.
@@ -160,7 +167,7 @@ search = 'version = release = "{current_version}"'
 replace = 'version = release = "{new_version}"'
 
 [[tool.bumpversion.files]]
-filename = "src/laser_measles/__init__.py"
+filename = "src/laser/measles/__init__.py"
 search = '__version__ = "{current_version}"'
 replace = '__version__ = "{new_version}"'
 

@@ -8,8 +8,8 @@ import numpy as np
 import polars as pl
 import pytest
 
-import laser_measles as lm
-from laser_measles import MEASLES_MODULES
+import laser.measles as lm
+from laser.measles import MEASLES_MODULES
 
 
 def setup_sia_sim(scenario, model_params, sia_params, module):

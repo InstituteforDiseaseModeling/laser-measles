@@ -4,12 +4,12 @@ from pathlib import Path
 import pytest
 from appdirs import user_cache_dir
 
-from laser_measles.demographics import gadm
+from laser.measles.demographics import gadm
 
 
 @pytest.mark.order(1)
 def test_clear_cache_dir():
-    cache_dir = user_cache_dir("laser_measles", "gadm_test")
+    cache_dir = user_cache_dir("laser.measles", "gadm_test")
     if Path(cache_dir).exists():
         shutil.rmtree(cache_dir)
     assert not Path(cache_dir).exists()
@@ -19,7 +19,7 @@ def test_clear_cache_dir():
 @pytest.mark.order(2)
 def test_download_gadm_cuba():
     # Download Cuba's shapefile
-    cache_dir = user_cache_dir("laser_measles", "gadm_test")
+    cache_dir = user_cache_dir("laser.measles", "gadm_test")
     gadm_shapefile = gadm.GADMShapefile.download("CUB", 0, directory=cache_dir)
 
     # Verify the path exists and is a file

@@ -79,7 +79,7 @@ The ABM model provides individual-level simulation with stochastic agents, allow
 
 .. code-block:: python
 
-    from laser_measles.abm import ABMModel, ABMParams
+    from laser.measles.abm import ABMModel, ABMParams
 
     # Configure model parameters
     params = ABMParams(
@@ -110,7 +110,7 @@ The Biweekly Model is a compartmental model optimized for fast simulation and pa
 
 .. code-block:: python
 
-    from laser_measles.biweekly import BiweeklyModel, BiweeklyParams
+    from laser.measles.biweekly import BiweeklyModel, BiweeklyParams
 
     # Configure model parameters
     params = BiweeklyParams(
@@ -141,7 +141,7 @@ The Compartmental Model provides population-level SEIR dynamics with daily times
 
 .. code-block:: python
 
-    from laser_measles.compartmental import CompartmentalModel, CompartmentalParams
+    from laser.measles.compartmental import CompartmentalModel, CompartmentalParams
 
     # Configure model parameters
     params = CompartmentalParams(
@@ -179,7 +179,7 @@ The demographics package provides comprehensive geographic data handling capabil
 
 .. code-block:: python
 
-    from laser_measles.demographics import GADMShapefile, RasterPatchGenerator, RasterPatchParams
+    from laser.measles.demographics import GADMShapefile, RasterPatchGenerator, RasterPatchParams
 
     # Load administrative boundaries
     shapefile = GADMShapefile("ETH", admin_level=1)  # Ethiopia, admin level 1
@@ -222,7 +222,7 @@ Each model (ABM, Biweekly, or Compartmental) has its own set of components. See 
 
 .. code-block:: python
 
-    from laser_measles.biweekly import BiweeklyParams
+    from laser.measles.biweekly import BiweeklyParams
 
     params = BiweeklyParams(
         num_ticks=520,  # Validated as positive integer
@@ -286,7 +286,7 @@ The component system provides a uniform interface for disease dynamics with inte
 .. code-block:: python
 
     # Component with parameters using Pydantic
-    from laser_measles.components.base_infection import BaseInfectionProcess
+    from laser.measles.components.base_infection import BaseInfectionProcess
 
     class MyInfectionProcess(BaseInfectionProcess):
         def __init__(self, model, verbose=False, **params):
