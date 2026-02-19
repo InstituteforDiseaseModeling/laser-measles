@@ -43,6 +43,7 @@ def test_constant_pop_two_patch(measles_module):
     assert model.patches.states[:-1, :].sum() == scenario["pop"].sum()
 
 
+@pytest.mark.slow
 @pytest.mark.parametrize("measles_module", MEASLES_MODULES)
 def test_constant_pop_with_infection(measles_module):
     """Regression test for issue #95: model crash with ConstantPopProcess + infection components."""
