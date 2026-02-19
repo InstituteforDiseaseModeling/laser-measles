@@ -28,12 +28,12 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
-from laser_measles.compartmental import BaseScenario
-from laser_measles.compartmental import CompartmentalParams
-from laser_measles.compartmental import Model
-from laser_measles.compartmental import components
-from laser_measles.components import create_component
-from laser_measles.scenarios import synthetic
+from laser.measles.compartmental import BaseScenario
+from laser.measles.compartmental import CompartmentalParams
+from laser.measles.compartmental import Model
+from laser.measles.compartmental import components
+from laser.measles.components import create_component
+from laser.measles.scenarios import synthetic
 
 # %% [markdown]
 # ## Approach 1: Pre-existing immunity
