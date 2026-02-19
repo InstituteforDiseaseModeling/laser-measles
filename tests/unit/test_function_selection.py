@@ -7,10 +7,10 @@ from unittest.mock import patch
 
 import pytest
 
-from laser_measles.utils import _check_numba_available
-from laser_measles.utils import _get_numba_preference
-from laser_measles.utils import dual_implementation
-from laser_measles.utils import select_implementation
+from laser.measles.utils import _check_numba_available
+from laser.measles.utils import _get_numba_preference
+from laser.measles.utils import dual_implementation
+from laser.measles.utils import select_implementation
 
 
 def numpy_test_func(x, y):
@@ -33,14 +33,14 @@ class TestFunctionSelection:
 
     def test_select_implementation_prefer_numba(self):
         """Test selecting numba implementation when use_numba=True and numba available."""
-        with patch("laser_measles.utils._check_numba_available", return_value=True):
-            with patch("laser_measles.utils._get_numba_preference", return_value=True):
+        with patch("laser.measles.utils._check_numba_available", return_value=True):
+            with patch("laser.measles.utils._get_numba_preference", return_value=True):
                 selected = select_implementation(numpy_test_func, numba_test_func, use_numba=True)
                 assert selected == numba_test_func
 
     def test_select_implementation_fallback_to_numpy(self):
         """Test fallback to numpy when numba not available."""
-        with patch("laser_measles.utils._check_numba_available", return_value=False):
+        with patch("laser.measles.utils._check_numba_available", return_value=False):
             with pytest.warns(UserWarning, match="Numba is not available"):  # noqa: PT031
                 selected = select_implementation(numpy_test_func, numba_test_func, use_numba=True)
                 assert selected == numpy_test_func
@@ -58,8 +58,8 @@ class TestFunctionSelection:
         assert result == 5  # numpy: 2 + 3
 
         # Test calling with use_numba=True and mocked numba availability
-        with patch("laser_measles.utils._check_numba_available", return_value=True):
-            with patch("laser_measles.utils._get_numba_preference", return_value=True):
+        with patch("laser.measles.utils._check_numba_available", return_value=True):
+            with patch("laser.measles.utils._get_numba_preference", return_value=True):
                 result = test_func(2, 3, use_numba=True)
                 assert result == 6  # numba: 2 * 3
 

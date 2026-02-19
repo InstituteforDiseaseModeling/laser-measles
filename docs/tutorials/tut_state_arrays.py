@@ -18,7 +18,7 @@
 # %%
 import numpy as np
 
-from laser_measles.utils import StateArray
+from laser.measles.utils import StateArray
 
 # %% [markdown]
 # ### Construction

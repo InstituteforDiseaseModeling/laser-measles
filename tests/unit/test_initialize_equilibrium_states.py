@@ -10,8 +10,8 @@ import importlib
 import numpy as np
 import pytest
 
-import laser_measles as lm
-from laser_measles import MEASLES_MODULES
+import laser.measles as lm
+from laser.measles import MEASLES_MODULES
 
 
 @pytest.mark.parametrize("measles_module", MEASLES_MODULES)
@@ -142,7 +142,7 @@ def test_equilibrium_edge_cases(measles_module):
 
 def test_abm_agent_consistency():
     """Test that ABM agents are consistent with patch states."""
-    MeaslesModel = importlib.import_module("laser_measles.abm")
+    MeaslesModel = importlib.import_module("laser.measles.abm")
     scenario = MeaslesModel.BaseScenario(lm.scenarios.synthetic.two_patch_scenario())
     model = MeaslesModel.Model(scenario, MeaslesModel.Params(num_ticks=0))
     model.components = [MeaslesModel.components.InitializeEquilibriumStatesProcess]
@@ -181,7 +181,7 @@ def test_abm_agent_consistency():
 
 def test_abm_agent_state_distribution():
     """Test that ABM agents are properly distributed across patches."""
-    MeaslesModel = importlib.import_module("laser_measles.abm")
+    MeaslesModel = importlib.import_module("laser.measles.abm")
     scenario = MeaslesModel.BaseScenario(lm.scenarios.synthetic.two_patch_scenario())
     model = MeaslesModel.Model(scenario, MeaslesModel.Params(num_ticks=0))
 
@@ -215,7 +215,7 @@ def test_abm_agent_state_distribution():
 
 def test_abm_people_initialization():
     """Test that ABM people LaserFrame is properly initialized."""
-    MeaslesModel = importlib.import_module("laser_measles.abm")
+    MeaslesModel = importlib.import_module("laser.measles.abm")
     scenario = MeaslesModel.BaseScenario(lm.scenarios.synthetic.single_patch_scenario())
     model = MeaslesModel.Model(scenario, MeaslesModel.Params(num_ticks=0))
     model.components = [MeaslesModel.components.InitializeEquilibriumStatesProcess]

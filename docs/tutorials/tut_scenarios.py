@@ -19,9 +19,9 @@ from pathlib import Path
 
 from IPython.display import display
 
-from laser_measles.demographics import GADMShapefile
-from laser_measles.demographics import get_shapefile_dataframe
-from laser_measles.demographics import plot_shapefile_dataframe
+from laser.measles.demographics import GADMShapefile
+from laser.measles.demographics import get_shapefile_dataframe
+from laser.measles.demographics import plot_shapefile_dataframe
 
 # Name of the shapefile you want to use
 shapefile = Path("ETH/gadm41_ETH_1.shp")
@@ -70,8 +70,8 @@ if not output_path.exists():
 # %%
 import sciris as sc
 
-from laser_measles.demographics import RasterPatchGenerator
-from laser_measles.demographics import RasterPatchParams
+from laser.measles.demographics import RasterPatchGenerator
+from laser.measles.demographics import RasterPatchParams
 
 # Setup demographics generator
 config = RasterPatchParams(
@@ -107,7 +107,7 @@ with sc.Timer() as t:
 # You can access the cache directory using the associated module
 
 # %%
-from laser_measles.demographics import cache
+from laser.measles.demographics import cache
 
 print(f"Cache directory: {cache.get_cache_dir()}")
 

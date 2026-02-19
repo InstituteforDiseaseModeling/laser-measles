@@ -40,7 +40,7 @@ pip install -e ".[dev]"
 
 ### ABM Model
 ```python
-from laser_measles.abm import ABMModel, ABMParams
+from laser.measles.abm import ABMModel, ABMParams
 
 params = ABMParams(num_ticks=7300, seed=12345)
 model = ABMModel(scenario_data, params)
@@ -49,7 +49,7 @@ model.run()
 
 ### Biweekly Model
 ```python
-from laser_measles.biweekly import BiweeklyModel, BiweeklyParams
+from laser.measles.biweekly import BiweeklyModel, BiweeklyParams
 
 params = BiweeklyParams(num_ticks=520, seed=12345)
 model = BiweeklyModel(scenario_data, params)
@@ -58,7 +58,7 @@ model.run()
 
 ### Compartmental Model
 ```python
-from laser_measles.compartmental import CompartmentalModel, CompartmentalParams
+from laser.measles.compartmental import CompartmentalModel, CompartmentalParams
 
 params = CompartmentalParams(num_ticks=7300, seed=12345)
 model = CompartmentalModel(scenario_data, params)
@@ -73,7 +73,7 @@ The demographics package provides comprehensive geographic data handling:
 - Support for multiple geographic scales
 
 ```python
-from laser_measles.demographics import GADMShapefile, RasterPatchGenerator
+from laser.measles.demographics import GADMShapefile, RasterPatchGenerator
 
 shapefile = GADMShapefile("ETH", admin_level=1)
 generator = RasterPatchGenerator(params)

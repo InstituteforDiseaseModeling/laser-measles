@@ -22,14 +22,14 @@
 # This is useful for doing spatial aggregation of e.g., case counts.
 #
 # laser-measles comes with a few simple scenarios which you can access
-# from the `scenarios` module (e.g. `from laser_measles import scenarios`).
+# from the `scenarios` module (e.g. `from laser.measles import scenarios`).
 # For this demo we will use one of the `synthetic` scenarios.
 
 # %%
 import matplotlib.pyplot as plt
 import numpy as np
 
-from laser_measles.scenarios import synthetic
+from laser.measles.scenarios import synthetic
 
 scenario = synthetic.two_cluster_scenario(cluster_size_std=1.0)
 plt.figure(figsize=(6, 5))
@@ -59,11 +59,11 @@ scenario.head(n=3)
 # This can be done at the import level. For example, we'll start with the fastest model, the biweekly one.
 
 # %%
-from laser_measles.biweekly import BaseScenario
-from laser_measles.biweekly import BiweeklyParams
-from laser_measles.biweekly import Model
-from laser_measles.biweekly import components
-from laser_measles.components import create_component
+from laser.measles.biweekly import BaseScenario
+from laser.measles.biweekly import BiweeklyParams
+from laser.measles.biweekly import Model
+from laser.measles.biweekly import components
+from laser.measles.components import create_component
 
 # %% [markdown]
 # ## Create a scenario and parameter validation
@@ -165,10 +165,10 @@ for state in biweekly_model.params.states:
 # We can use the same syntax to create a compartmental (SEIR, daily time steps) model
 
 # %%
-from laser_measles.compartmental import BaseScenario
-from laser_measles.compartmental import CompartmentalParams
-from laser_measles.compartmental import Model
-from laser_measles.compartmental import components
+from laser.measles.compartmental import BaseScenario
+from laser.measles.compartmental import CompartmentalParams
+from laser.measles.compartmental import Model
+from laser.measles.compartmental import components
 
 # Create model parameters
 params = CompartmentalParams(

@@ -7,7 +7,7 @@ from typing import Protocol
 import numpy as np
 from laser.core.laserframe import LaserFrame
 
-from laser_measles.wrapper import PrettyLaserFrameWrapper
+from laser.measles.wrapper import PrettyLaserFrameWrapper
 
 
 class AgesAndStates(Protocol):

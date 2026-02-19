@@ -14,9 +14,9 @@
 # LaserFrame is 1 even though the scenario has an initial population of 150k.
 #
 # %%
-from laser_measles.abm.model import ABMModel
-from laser_measles.scenarios.synthetic import two_patch_scenario
-from laser_measles.abm.model import ABMParams
+from laser.measles.abm.model import ABMModel
+from laser.measles.scenarios.synthetic import two_patch_scenario
+from laser.measles.abm.model import ABMParams
 scenario = two_patch_scenario()
 params = ABMParams(seed=20250314, start_time="2000-01", num_ticks=365)
 model = ABMModel(scenario=scenario, params=params)
@@ -32,7 +32,7 @@ print(model.people)
 # initialize with the rought equilibrium distribution between S and R the laserframe is
 # initialized appropriatedly with 150k agents.
 # %%
-from laser_measles.abm.components import ConstantPopProcess
+from laser.measles.abm.components import ConstantPopProcess
 model = ABMModel(scenario=scenario, params=params)
 model.add_component(ConstantPopProcess)
 print(model.people)
@@ -40,7 +40,7 @@ print(model.people)
 # If, we run the model without adding a component that sets the vital dynamics then
 # the `NoBirthsProcess` is added by default:
 # %%
-from laser_measles.abm.components import InfectionProcess, InfectionSeedingProcess
+from laser.measles.abm.components import InfectionProcess, InfectionSeedingProcess
 model = ABMModel(scenario=scenario, params=params)
 model.components = [InfectionSeedingProcess, InfectionProcess]
 model.run()
@@ -71,7 +71,7 @@ print(f"Capacity for a constant population size: {vd.calculate_capacity(model)}"
 # The `VitalDynamicsProcess` is a constant birth / mortality rate with no
 # enforced age structure.
 #  %%
-from laser_measles.abm.components import VitalDynamicsProcess
+from laser.measles.abm.components import VitalDynamicsProcess
 vd = VitalDynamicsProcess(model)
 print(f"Capacity for the {model.params.num_ticks} tick simulation: {vd.calculate_capacity(model)}")
 print(f"len(model.people): {len(model.people)} at the start of the simulation")
