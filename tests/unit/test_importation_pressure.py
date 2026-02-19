@@ -48,6 +48,7 @@ def test_importation_pressure_two_patch(measles_module):
     assert model.patches.states.R.sum() > 1
     assert np.all(np.equal(model.patches.states.sum(axis=0), scenario["pop"].to_numpy()))
 
+
 @pytest.mark.parametrize("measles_module", ["laser_measles.abm"])
 def test_importation_with_vital_dynamics(measles_module):
     """Regression test: ImportationPressureProcess should not infect inactive (unborn) agents.
