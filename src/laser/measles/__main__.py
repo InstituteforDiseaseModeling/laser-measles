@@ -1,5 +1,5 @@
 """
-Entrypoint module, in case you use `python -mlaser_measles`.
+Entrypoint module, in case you use `python -mlaser.measles`.
 
 
 Why does this file exist, and why __main__? For more info, read:

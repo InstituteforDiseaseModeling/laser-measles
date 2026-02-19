@@ -1,4 +1,4 @@
-"""Base tracker component for laser_measles models."""
+"""Base tracker component for laser.measles models."""
 
 from abc import ABC
 from abc import abstractmethod

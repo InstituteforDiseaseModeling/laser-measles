@@ -1,7 +1,7 @@
-laser\_measles.demographics package
+laser.measles.demographics package
 ===================================
 
-.. automodule:: laser_measles.demographics
+.. automodule:: laser.measles.demographics
    :members:
    :show-inheritance:
    :undoc-members:
@@ -9,58 +9,58 @@ laser\_measles.demographics package
 Submodules
 ----------
 
-laser\_measles.demographics.admin\_shapefile module
+laser.measles.demographics.admin\_shapefile module
 ---------------------------------------------------
 
-.. automodule:: laser_measles.demographics.admin_shapefile
+.. automodule:: laser.measles.demographics.admin_shapefile
    :members:
    :show-inheritance:
    :undoc-members:
 
-laser\_measles.demographics.base module
+laser.measles.demographics.base module
 ---------------------------------------
 
-.. automodule:: laser_measles.demographics.base
+.. automodule:: laser.measles.demographics.base
    :members:
    :show-inheritance:
    :undoc-members:
 
-laser\_measles.demographics.cache module
+laser.measles.demographics.cache module
 ----------------------------------------
 
-.. automodule:: laser_measles.demographics.cache
+.. automodule:: laser.measles.demographics.cache
    :members:
    :show-inheritance:
    :undoc-members:
 
-laser\_measles.demographics.gadm module
+laser.measles.demographics.gadm module
 ---------------------------------------
 
-.. automodule:: laser_measles.demographics.gadm
+.. automodule:: laser.measles.demographics.gadm
    :members:
    :show-inheritance:
    :undoc-members:
 
-laser\_measles.demographics.raster\_patch module
+laser.measles.demographics.raster\_patch module
 ------------------------------------------------
 
-.. automodule:: laser_measles.demographics.raster_patch
+.. automodule:: laser.measles.demographics.raster_patch
    :members:
    :show-inheritance:
    :undoc-members:
 
-laser\_measles.demographics.shapefiles module
+laser.measles.demographics.shapefiles module
 ---------------------------------------------
 
-.. automodule:: laser_measles.demographics.shapefiles
+.. automodule:: laser.measles.demographics.shapefiles
    :members:
    :show-inheritance:
    :undoc-members:
 
-laser\_measles.demographics.wpp module
+laser.measles.demographics.wpp module
 --------------------------------------
 
-.. automodule:: laser_measles.demographics.wpp
+.. automodule:: laser.measles.demographics.wpp
    :members:
    :show-inheritance:
    :undoc-members:

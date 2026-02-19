@@ -21,7 +21,7 @@ def load_cache(cache_dir: str | None = None) -> diskcache.Cache:
 
 def get_cache_dir() -> str:
     """Get the cache directory for the application."""
-    return user_cache_dir("laser_measles")
+    return user_cache_dir("laser.measles")
 
 
 def clear_cache(cache_dir: str | None = None) -> None:
