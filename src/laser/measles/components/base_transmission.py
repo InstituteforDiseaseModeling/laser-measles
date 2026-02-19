@@ -1,4 +1,4 @@
-"""Base transmission component for laser_measles models.
+"""Base transmission component for laser.measles models.
 
 This module defines the common interface and parameters for transmission
 components across different model types (ABM, biweekly, compartmental).

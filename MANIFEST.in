@@ -22,11 +22,12 @@ include README.rst
 global-exclude *.py[cod] __pycache__/* *.so *.dylib *.DS_Store
 global-exclude CLAUDE.md llms.txt
 global-exclude .cursor/rules/project-rules.mdc
-global-exclude docs/api/_autosummary/* docs/reference/laser/measles.*.rst docs/tutorials/*.ipynb docs/tutorials/ETH/* docs/tutorials/CCS/* docs/tutorials/generic_template/* docs/tutorials/*.tif docs/tutorials/not_ready/*.ipynb docs/tutorials/not_ready/*.py docs/tutorials/tut_numba.py
+global-exclude src/laser/measles/server.py
 global-exclude tests/ignore/* tests/unit/test_component_factory.py
+global-exclude tests/unit/test_migration.py
+global-exclude docs/*
+global-exclude docs/api/_autosummary/* docs/reference/laser/measles.*.rst docs/tutorials/*.ipynb docs/tutorials/ETH/* docs/tutorials/CCS/* docs/tutorials/generic_template/* docs/tutorials/*.tif docs/tutorials/not_ready/*.ipynb docs/tutorials/not_ready/*.py docs/tutorials/tut_numba.py
 global-exclude docs/reference/laser/measles.rst
 global-exclude docs/tutorials/study_traveling_wave.db docs/tutorials/tut_optuna_calibration.py
-global-exclude tests/unit/test_migration.py
-global-exclude src/laser/measles/server.py
 
 recursive-exclude .devcontainer *

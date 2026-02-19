@@ -114,7 +114,7 @@ class GADMShapefile(AdminShapefile):
 if __name__ == "__main__":
     from appdirs import user_cache_dir
 
-    cache_dir = user_cache_dir("laser_measles", "tmp")
+    cache_dir = user_cache_dir("laser.measles", "tmp")
     # download to directory
     gadm = GADMShapefile.download("CUB", 2, directory=cache_dir)
     df = gadm.get_dataframe()

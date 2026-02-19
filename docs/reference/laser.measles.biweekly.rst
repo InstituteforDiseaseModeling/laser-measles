@@ -1,7 +1,7 @@
-laser\_measles.biweekly package
+laser.measles.biweekly package
 ===============================
 
-.. automodule:: laser_measles.biweekly
+.. automodule:: laser.measles.biweekly
    :members:
    :show-inheritance:
    :undoc-members:
@@ -12,31 +12,31 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
-   laser_measles.biweekly.components
+   laser.measles.biweekly.components
 
 Submodules
 ----------
 
-laser\_measles.biweekly.base module
+laser.measles.biweekly.base module
 -----------------------------------
 
-.. automodule:: laser_measles.biweekly.base
+.. automodule:: laser.measles.biweekly.base
    :members:
    :show-inheritance:
    :undoc-members:
 
-laser\_measles.biweekly.model module
+laser.measles.biweekly.model module
 ------------------------------------
 
-.. automodule:: laser_measles.biweekly.model
+.. automodule:: laser.measles.biweekly.model
    :members:
    :show-inheritance:
    :undoc-members:
 
-laser\_measles.biweekly.params module
+laser.measles.biweekly.params module
 -------------------------------------
 
-.. automodule:: laser_measles.biweekly.params
+.. automodule:: laser.measles.biweekly.params
    :members:
    :show-inheritance:
    :undoc-members:

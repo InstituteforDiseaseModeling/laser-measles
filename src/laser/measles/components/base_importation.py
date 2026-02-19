@@ -1,4 +1,4 @@
-"""Base importation component for laser_measles models."""
+"""Base importation component for laser.measles models."""
 
 from abc import ABC
 from abc import abstractmethod

@@ -56,7 +56,7 @@ static struct PyMethodDef module_functions[] = {
 
 static struct PyModuleDef moduledef = {
     PyModuleDef_HEAD_INIT,
-    "laser_measles.generic._core", /* m_name */
+    "laser.measles.generic._core", /* m_name */
     NULL,             /* m_doc */
     -1,               /* m_size */
     module_functions, /* m_methods */
