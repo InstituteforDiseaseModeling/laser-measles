@@ -48,8 +48,8 @@ def test_importation_pressure_two_patch(measles_module):
     assert model.patches.states.R.sum() > 1
     assert np.all(np.equal(model.patches.states.sum(axis=0), scenario["pop"].to_numpy()))
 
-
-def test_importation_with_vital_dynamics():
+@pytest.mark.parametrize("measles_module", ["laser_measles.abm"])
+def test_importation_with_vital_dynamics(measles_module):
     """Regression test: ImportationPressureProcess should not infect inactive (unborn) agents.
 
     Without filtering by `active`, phantom agents beyond people.count get infected,
@@ -58,8 +58,7 @@ def test_importation_with_vital_dynamics():
 
     Uses beta=0.0 to disable community transmission and isolate the importation fix.
     """
-    import laser_measles.abm as MeaslesModel
-
+    MeaslesModel = importlib.import_module(measles_module)
     scenario = MeaslesModel.BaseScenario(lm.scenarios.synthetic.two_patch_scenario())
     model = MeaslesModel.Model(scenario, MeaslesModel.Params(num_ticks=50, verbose=VERBOSE, seed=SEED))
     model.components = [
