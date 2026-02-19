@@ -47,8 +47,8 @@ class TestBaseComponentFunctionSelection:
         component = BaseComponent(mock_model)
 
         # Mock numba availability
-        with patch("laser_measles.utils._check_numba_available", return_value=True):
-            with patch("laser_measles.utils._get_numba_preference", return_value=True):
+        with patch("laser.measles.utils._check_numba_available", return_value=True):
+            with patch("laser.measles.utils._get_numba_preference", return_value=True):
                 selected = component.select_function(numpy_test_func, numba_test_func)
                 assert selected == numba_test_func
 
@@ -62,7 +62,7 @@ class TestBaseComponentFunctionSelection:
         component = BaseComponent(mock_model)
 
         # Mock numba unavailability
-        with patch("laser_measles.utils._check_numba_available", return_value=False):
+        with patch("laser.measles.utils._check_numba_available", return_value=False):
             with pytest.warns(UserWarning, match="Numba is not available"):  # noqa: PT031
                 selected = component.select_function(numpy_test_func, numba_test_func)
                 assert selected == numpy_test_func
@@ -78,7 +78,7 @@ class TestBaseComponentFunctionSelection:
         component = BaseComponent(mock_model)
 
         # Test function selection (should default to True)
-        with patch("laser_measles.utils._check_numba_available", return_value=True):
-            with patch("laser_measles.utils._get_numba_preference", return_value=True):
+        with patch("laser.measles.utils._check_numba_available", return_value=True):
+            with patch("laser.measles.utils._get_numba_preference", return_value=True):
                 selected = component.select_function(numpy_test_func, numba_test_func)
                 assert selected == numba_test_func
