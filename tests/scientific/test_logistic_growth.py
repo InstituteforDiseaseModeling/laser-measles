@@ -21,7 +21,7 @@ from laser.measles.base import BaseLaserModel
 from laser.measles.base import BasePhase
 
 # drop ABM, TODO: create SI conversion for the module
-MEASLES_MODULES = [module for module in MEASLES_MODULES if module != "laser_measles.abm"]
+MEASLES_MODULES = [module for module in MEASLES_MODULES if module != "laser.measles.abm"]
 
 SEED = 42
 RNG = np.random.default_rng(SEED)
