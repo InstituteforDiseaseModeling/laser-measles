@@ -17,7 +17,12 @@ class BaseVitalDynamicsParams(BaseModel):
 
     crude_birth_rate: float = Field(default=20.0, description="Annual crude birth rate per 1000 population", ge=0.0)
     crude_death_rate: float = Field(default=8.0, description="Annual crude death rate per 1000 population", ge=0.0)
-    mcv1_efficacy: float = Field(default=0.9, description="Efficacy of MCV1", ge=0.0, le=1.0)
+    mcv1_efficacy: float = Field(
+        default=0.9,
+        description="Efficacy of routine MCV1 vaccination for newborns. This only applies to births processed by VitalDynamicsProcess, not the existing population.",
+        ge=0.0,
+        le=1.0,
+    )
 
 
 class BaseVitalDynamicsProcess(BasePhase, ABC):
@@ -26,6 +31,22 @@ class BaseVitalDynamicsProcess(BasePhase, ABC):
 
     This phase handles the simulation of births and deaths in the population model along
     with routine vaccination (MCV1).
+
+    .. warning::
+
+        The ``mcv1`` scenario parameter **only vaccinates newborns** at each tick.
+        It does **not** immunize the existing population. In short simulations
+        (< 5 years), this produces negligible population-level immunity changes.
+
+        To model a population with pre-existing vaccine-derived immunity, either:
+
+        - Use ``InitializeEquilibriumStatesProcess`` to set an appropriate S/R
+          split at the start of the simulation, or
+        - Directly set ``states.S`` and ``states.R`` before running.
+        - Use ``SIACalendarProcess`` for discrete campaign-based vaccination.
+
+        See the *Vaccination Modeling* tutorial (``docs/tutorials/tut_vaccination.py``)
+        for detailed examples of each approach.
 
     Parameters
     ----------
@@ -39,6 +60,8 @@ class BaseVitalDynamicsProcess(BasePhase, ABC):
     Notes
     -----
     - Birth rates are calculated per tick
+    - MCV1 coverage is applied only to newborns; expect 5-10+ years of simulation
+      time before routine immunization significantly shifts population-level immunity
     """
 
     def __init__(self, model, verbose: bool = False, params: BaseVitalDynamicsParams | None = None) -> None:

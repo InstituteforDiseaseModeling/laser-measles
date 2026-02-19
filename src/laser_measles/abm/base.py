@@ -39,7 +39,7 @@ class BaseABMScenarioSchema(pt.Model):
     lat: float  # latitude
     lon: float  # longitude
     id: str  # ids of the nodes
-    mcv1: float  # MCV1 coverage
+    mcv1: float  # Routine MCV1 coverage for newborns (0.0-1.0). Only affects births via VitalDynamicsProcess; does NOT vaccinate existing population.
 
 
 class BaseABMScenario(LaserMeaslesBaseScenario):
