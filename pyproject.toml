@@ -5,6 +5,8 @@ build-backend = "uv_build"
 [project]
 name = "laser.measles"
 version = "0.9.0-dev1"
+license-files = ["LICENSE"]
+readme = "README.rst"
 
 dependencies = [
   "numba>=0.61.0",
@@ -28,6 +30,7 @@ requires-python = ">= 3.10"
 
 [tool.uv.build-backend]
 module-name = [ "laser.measles" ]
+source-include = ["AUTHORS.rst", "CHANGELOG.rst", "CONTRIBUTING.rst"]
 
 authors = [
   {name = "Christopher Lorton"},
