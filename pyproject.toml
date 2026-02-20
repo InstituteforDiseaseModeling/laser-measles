@@ -4,7 +4,7 @@ build-backend = "uv_build"
 
 [project]
 name = "laser.measles"
-version = "0.9.0-dev1"
+version = "0.9.0"
 license-files = ["LICENSE"]
 readme = "README.rst"
 
@@ -124,7 +124,7 @@ force-single-line = true
 quote-style = "double"
 
 [tool.bumpversion]
-current_version = "0.9.0-dev1"
+current_version = "0.9.0"
 parse = """(?x)
     (?P<major>0|[1-9]\\d*)\\.
     (?P<minor>0|[1-9]\\d*)\\.
