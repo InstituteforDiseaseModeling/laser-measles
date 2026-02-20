@@ -32,8 +32,47 @@ class GravityMixing(BaseMixing):
     """
     Gravity migration model.
 
-    network = (pops_from[:, np.newaxis] ** (a-1)) * (pops_to ** b) * (distances ** (-1 * c))
+    Computes a spatial mixing matrix based on patch populations and distances:
 
+    .. math::
+
+        M_{i,j} = k \\cdot p_i^{a-1} \\cdot p_j^b \\cdot d_{i,j}^{-c}
+
+    The ``scenario`` argument is optional. When this mixer is attached to a model via
+    ``InfectionParams(mixer=...)`` the model automatically sets the scenario before
+    the mixing matrix is first computed (lazy initialisation). You only need to pass
+    ``scenario`` explicitly when using the mixer standalone (e.g. to inspect the
+    matrix before running a simulation).
+
+    Parameters
+    ----------
+    scenario : pl.DataFrame or None, optional
+        Patch data with ``id``, ``lat``, ``lon``, ``pop``, and ``mcv1`` columns.
+        If ``None``, must be set before the mixing matrix is accessed (happens
+        automatically when the mixer is attached to a model component).
+    params : GravityParams or None, optional
+        Gravity model parameters. Uses :class:`GravityParams` defaults if ``None``.
+
+    Examples
+    --------
+    Typical usage — let the model set the scenario automatically:
+
+    .. code-block:: python
+
+        from laser.measles.mixing.gravity import GravityMixing, GravityParams
+        from laser.measles.compartmental import components
+        from laser.measles import create_component
+
+        mixer = GravityMixing(params=GravityParams(a=1.0, b=1.0, c=2.0, k=0.01))
+        infection_params = components.InfectionParams(beta=0.8, mixer=mixer)
+        model.components = [create_component(components.InfectionProcess, infection_params)]
+
+    Standalone usage (inspect the matrix before running):
+
+    .. code-block:: python
+
+        mixer = GravityMixing(scenario=scenario, params=GravityParams(c=2.0, k=0.01))
+        print(mixer.mixing_matrix)
     """
 
     def __init__(self, scenario: pl.DataFrame | None = None, params: GravityParams | None = None):

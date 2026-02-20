@@ -15,7 +15,26 @@ from laser.measles.utils import cast_type
 
 
 class InfectionParams(BaseInfectionParams):
-    """Parameters specific to the SEIR infection process component."""
+    """Parameters for the compartmental SEIR infection process.
+
+    Spatial mixing is configured via the ``mixer`` parameter. Any
+    :class:`~laser.measles.mixing.base.BaseMixing` subclass is accepted
+    (e.g. :class:`~laser.measles.mixing.gravity.GravityMixing`,
+    :class:`~laser.measles.mixing.radiation.RadiationMixing`).
+    The model sets the patch scenario on the mixer automatically at
+    initialisation, so passing ``scenario=`` to the mixer at construction
+    is not required.
+
+    Example::
+
+        from laser.measles.mixing.gravity import GravityMixing, GravityParams
+
+        infection_params = InfectionParams(
+            beta=0.8,
+            seasonality=0.2,
+            mixer=GravityMixing(params=GravityParams(a=1.0, b=1.0, c=2.0, k=0.01)),
+        )
+    """
 
     model_config = {"arbitrary_types_allowed": True}  # noqa: RUF012
 
@@ -24,7 +43,7 @@ class InfectionParams(BaseInfectionParams):
     inf_mu: float = Field(default=8.0, description="Infection mean", gt=0.0)
     seasonality: float = Field(default=0.0, description="Seasonality factor, default is no seasonality", ge=0.0, le=1.0)
     season_start: float = Field(default=0, description="Season start day (0-364)", ge=0, le=364)
-    mixer: Any = Field(default_factory=lambda: GravityMixing(), description="Mixing object")
+    mixer: Any = Field(default_factory=lambda: GravityMixing(), description="Spatial mixing model")
 
     @property
     def sigma(self) -> float:
