@@ -35,6 +35,10 @@ var
 venv*/
 wheelhouse
 
+# Documentation build artifacts
+pandoc*.tar.gz
+pandoc-*/
+
 # Installer logs
 pip-log.txt
 

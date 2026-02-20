@@ -1,8 +1,11 @@
 import polars as pl
+import pytest
 from laser.core import LaserFrame
 from laser.core import PropertySet
+from pydantic import ValidationError
 
 import laser.measles as lm
+from laser.measles.abm.params import ABMParams
 from laser.measles.base import BaseLaserModel
 from laser.measles.base import BaseScenario
 
@@ -37,6 +40,26 @@ def test_laserframe():
 
     # Initialization test
     TestModel()
+
+
+@pytest.mark.parametrize(
+    "invalid",
+    [
+        "YYYY-MM",  # literal placeholder text
+        "2000-01-01",  # includes day
+        "2000",  # year only
+        "01-2000",  # wrong order
+        "not-a-date",  # garbage
+    ],
+)
+def test_invalid_start_time_raises(invalid):
+    with pytest.raises(ValidationError, match="start_time"):
+        ABMParams(start_time=invalid)
+
+
+def test_valid_start_time_accepted():
+    params = ABMParams(start_time="2000-01")
+    assert params.start_time == "2000-01"
 
 
 if __name__ == "__main__":

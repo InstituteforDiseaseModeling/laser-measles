@@ -116,7 +116,8 @@ class BaseCaseSurveillanceTracker(BasePhase):
         Returns:
             DataFrame with columns:
                 - tick: Time step
-                - group_id: Group identifier (if aggregated) or node_id (if not aggregated)
+                - patch_id: Patch/group identifier.  Matches the ``id`` column of the scenario
+                  DataFrame at the requested ``aggregation_level``.
                 - cases: Number of reported cases
         """
         # Create a list to store the data
@@ -124,8 +125,8 @@ class BaseCaseSurveillanceTracker(BasePhase):
 
         # For each tick and group, add the reported cases
         for tick in range(self.model.params.num_ticks):
-            for group_idx, group_id in enumerate(self.group_ids):
-                data.append({"tick": tick, "group_id": group_id, "cases": self.reported_cases[group_idx, tick]})
+            for group_idx, patch_id in enumerate(self.group_ids):
+                data.append({"tick": tick, "patch_id": patch_id, "cases": self.reported_cases[group_idx, tick]})
         # Create DataFrame
         return pl.DataFrame(data)
 
@@ -148,7 +149,7 @@ class BaseCaseSurveillanceTracker(BasePhase):
         pdf = df.to_pandas()
 
         # Create pivot table for heatmap
-        pivot_df = pdf.pivot(index="group_id", columns="tick", values="cases")
+        pivot_df = pdf.pivot(index="patch_id", columns="tick", values="cases")
 
         # Create figure and axis if not provided
         if fig is None:
