@@ -314,4 +314,3 @@ While avoiding:
 * Stochastic edge cases
 
 It is minimal but truly spatial.
-
