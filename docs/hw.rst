@@ -1,4 +1,4 @@
-Quick Start: Spatial ABM 
+Quick Start: Spatial ABM
 ========================
 
 This tutorial introduces the Agent-Based Model (ABM) in
