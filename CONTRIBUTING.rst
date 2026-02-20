@@ -133,7 +133,7 @@ Manual build without tox::
     cd docs/tutorials && bash create_ipynb.sh && cd ../..
 
     # Generate API documentation and build HTML
-    sphinx-apidoc -f -o docs/reference --module-first src/laser_measles
+    sphinx-apidoc -f -o docs/reference --module-first src/laser/measles
     sphinx-build -E -b html docs dist/docs
 
 The HTML documentation will be available at ``dist/docs/index.html``.
