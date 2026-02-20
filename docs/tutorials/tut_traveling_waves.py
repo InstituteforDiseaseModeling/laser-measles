@@ -276,7 +276,7 @@ def analyze_wave_speed(case_results, scenario_df):
     peak_data = []
 
     for patch_id in scenario_df["id"]:
-        patch_cases = case_results.filter(pl.col("group_id") == str(patch_id))
+        patch_cases = case_results.filter(pl.col("patch_id") == str(patch_id))
 
         if len(patch_cases) == 0 or patch_cases["cases"].sum() == 0:
             continue
@@ -414,7 +414,7 @@ if len(peak_analysis1) > 0:
         selected_patches.append(sorted_by_distance["id"][idx])
 
 for patch_id in selected_patches:
-    patch_cases = case_results1.filter(pl.col("group_id") == str(patch_id))
+    patch_cases = case_results1.filter(pl.col("patch_id") == str(patch_id))
     if len(patch_cases) > 0:
         town_info = scenario_df.filter(pl.col("id") == str(patch_id))
         distance = town_info["distance_km"][0]

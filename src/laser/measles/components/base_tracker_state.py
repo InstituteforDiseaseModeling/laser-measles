@@ -18,12 +18,30 @@ class BaseStateTrackerParams(BaseModel):
 
     Attributes:
         filter_fn: Function to filter which nodes to include in aggregation.
-        aggregation_level: Number of levels to use for aggregation (e.g., 2 for country:state:lga).
-                          Use -1 to sum over all patches (default behavior).
+        aggregation_level: Controls the geographic level at which states are reported.
+
+            - ``-1`` (default): Sum over all patches; ``get_dataframe()`` returns a single
+              row per tick/state with ``patch_id="all_patches"``.
+            - ``0``: Aggregate to the top level of the node-ID hierarchy (e.g. ``"NG"`` from
+              ``"NG:KN:LGA"``).
+            - ``N >= 0``: Keep the first ``N+1`` colon-separated components of the node ID
+              (e.g. ``aggregation_level=1`` → ``"NG:KN"`` from ``"NG:KN:LGA"``).
+
+            To get **per-patch** data, set ``aggregation_level`` to the depth of your hierarchy
+            minus one.  For flat IDs (no ``":"``), ``aggregation_level=0`` gives per-patch rows.
+            The ``patch_id`` column in ``get_dataframe()`` matches the ``id`` column of the
+            scenario DataFrame at the requested hierarchy level.
     """
 
     filter_fn: Callable[[str], bool] = Field(default=lambda x: True, description="Function to filter which nodes to include in aggregation")
-    aggregation_level: int = Field(default=-1, description="Number of levels to use for aggregation. Use -1 to sum over all patches")
+    aggregation_level: int = Field(
+        default=-1,
+        description=(
+            "Geographic aggregation level. -1 = sum all patches; "
+            "N >= 0 = keep first N+1 colon-separated ID components. "
+            "Use the hierarchy depth minus one to get per-patch rows."
+        ),
+    )
 
 
 class BaseStateTracker(BasePhase):
@@ -222,7 +240,9 @@ class BaseStateTracker(BasePhase):
             DataFrame with columns:
                 - tick: Time step
                 - state: State name (S, E, I, R, etc.)
-                - group_id: Group identifier (if aggregated) or "all_patches" (if summed)
+                - patch_id: Patch/group identifier.  Matches the ``id`` column of the scenario
+                  DataFrame at the requested ``aggregation_level``, or ``"all_patches"`` when
+                  ``aggregation_level=-1`` (the default).
                 - count: Number of individuals in this state
         """
         data = []
@@ -231,19 +251,19 @@ class BaseStateTracker(BasePhase):
             for state_idx, state_name in enumerate(self.model.params.states):
                 if self.params.aggregation_level >= 0:
                     # For each group
-                    for group_idx, group_id in enumerate(self.group_ids):
+                    for group_idx, patch_id in enumerate(self.group_ids):
                         data.append(
                             {
                                 "tick": tick,
                                 "state": state_name,
-                                "group_id": group_id,
+                                "patch_id": patch_id,
                                 "count": self.state_tracker[state_idx, tick, group_idx],
                             }
                         )
                 else:
                     # Single aggregated value
                     data.append(
-                        {"tick": tick, "state": state_name, "group_id": "all_patches", "count": self.state_tracker[state_idx, tick, 0]}
+                        {"tick": tick, "state": state_name, "patch_id": "all_patches", "count": self.state_tracker[state_idx, tick, 0]}
                     )
 
         return pl.DataFrame(data)
