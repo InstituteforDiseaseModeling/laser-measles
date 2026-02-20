@@ -64,7 +64,7 @@ bash create_ipynb.sh
 cd ../..
 
 # 5. Generate API documentation
-sphinx-apidoc -f -o docs/reference --module-first src/laser_measles
+sphinx-apidoc -f -o docs/reference --module-first src/laser/measles
 
 # 6. Build HTML documentation
 sphinx-build -E -b html docs dist/docs
