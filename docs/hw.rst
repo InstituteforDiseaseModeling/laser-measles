@@ -1,5 +1,5 @@
-Spatial ABM "Hello World"
-==========================
+Quick Start: Spatial ABM "Hello World"
+=====================================
 
 This tutorial presents a minimal but fully spatial **Agent-Based Model (ABM)** measles simulation using *laser-measles*.
 
@@ -294,8 +294,8 @@ This clearly shows:
 * Differential attack rates
 * Timing differences across patches
 
-Why This is a Proper Spatial "Hello World"
-------------------------------------------
+Features Exercised
+------------------
 
 This example demonstrates:
 
