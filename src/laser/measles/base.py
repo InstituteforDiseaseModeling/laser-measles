@@ -82,7 +82,7 @@ class BaseModelParams(BaseModel):
         num_ticks (int):
             Total number of discrete time steps to simulate.
             The total simulated duration equals:
-                num_ticks × time_step_days
+                num_ticks x time_step_days
 
         verbose (bool):
             If True, prints detailed logging output during execution.

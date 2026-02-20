@@ -133,7 +133,7 @@ Manual build without tox::
     cd docs/tutorials && bash create_ipynb.sh && cd ../..
 
     # Generate API documentation and build HTML
-    sphinx-apidoc -f -o docs/reference --module-first src/laser_measles
+    sphinx-apidoc -f -o docs/reference --module-first src/laser/measles
     sphinx-build -E -b html docs dist/docs
 
 The HTML documentation will be available at ``dist/docs/index.html``.
@@ -178,7 +178,7 @@ Complete PDF Build from Scratch::
     tar -xzf pandoc.tar.gz && \
     cp pandoc-3.7.0.2/bin/pandoc .venv-docs/bin/ && \
     cd docs/tutorials && bash create_ipynb.sh && cd ../.. && \
-    sphinx-apidoc -f -o docs/reference --module-first src/laser_measles && \
+    sphinx-apidoc -f -o docs/reference --module-first src/laser/measles && \
     sphinx-build -E -b html docs dist/docs && \
     sphinx-build -b latex docs dist/latex && \
     docker run --rm -v "$(pwd)/dist/latex:/work" -w /work texlive/texlive:latest \
