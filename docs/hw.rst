@@ -1,112 +1,50 @@
-Spatial ABM “Hello World”
-==========================
+Quick Start: Spatial ABM 
+========================
 
-This tutorial presents a minimal but fully spatial Agent-Based Model (ABM)
-measles simulation using ``laser-measles``.
+This tutorial introduces the Agent-Based Model (ABM) in
+``laser-measles`` using a minimal spatial example.
 
-Unlike a well-mixed “hello world,” this example demonstrates:
+This is the **first example script**, so we explain:
 
-- Multiple spatial patches
+- How scenarios are constructed
+- How an ABM model is created
+- How components define model behavior
+- How spatial mixing works
+- How to track and visualize results
+
+The model we build is intentionally simple:
+
+- 8 spatial patches arranged in a line
 - Heterogeneous population sizes
-- Explicit gravity-based spatial mixing
-- Infection seeded in a single patch
-- Global and patch-level SEIR tracking
-- Spatial visualization of epidemic spread
+- Infection seeded in one patch
+- Gravity-based spatial mixing
+- No births, no waning immunity
+- 50 simulated days
 
-This example is intentionally pedagogical rather than epidemiologically calibrated.
+The goal is clarity, not realism.
 
-Overview
---------
+------------------------------------------------------------
+1. Scenario Construction
+------------------------------------------------------------
 
-We construct:
+Every laser-measles model begins with a **scenario**.
 
-- 8 patches arranged in a linear chain
-- Different population sizes per patch
-- Moderate gravity-based mixing (not fully well-mixed)
-- No births and no waning immunity
-- A short simulation (50 days)
+A scenario is a Polars DataFrame with one row per spatial patch.
 
-The goal is to illustrate **spatial propagation of infection**
-without introducing demographic complexity.
+Required columns:
 
-Key Concept: Mixing in the ABM Model
--------------------------------------
+- ``id`` — unique patch identifier
+- ``lat`` — latitude
+- ``lon`` — longitude
+- ``pop`` — population size
+- ``mcv1`` — routine vaccination coverage
 
-In the ABM model, spatial mixing is handled differently than in the
-compartmental model.
-
-In the **compartmental model**, mixing is configured by passing an explicit
-``mixer=`` object (e.g. ``GravityMixing``) into ``InfectionParams``.
-
-In contrast, the **ABM model does not accept a ``mixer=`` argument**
-in ``InfectionParams``.
-
-Instead:
-
-- ``distance_exponent`` controls the distance decay of gravity mixing.
-- ``mixing_scale`` controls the overall magnitude of cross-patch mixing.
-
-Internally, the ABM model automatically constructs a gravity mixing model
-using those parameters.
-
-This is an important distinction:
-
-- Compartmental → You pass a mixer explicitly.
-- ABM → Gravity mixing is built automatically from parameters.
-
-What Mixing Means in ABM
-------------------------
-
-In the ABM:
-
-- Individuals have a ``patch_id``.
-- They do **not physically move** between patches.
-- Instead, infectious pressure is redistributed via a mixing matrix.
-
-Mechanically:
-
-1. Infectious agents are counted in each patch.
-2. A gravity-based mixing matrix distributes infectious pressure across patches.
-3. Each susceptible agent experiences a probability of infection based on
-   the mixed force of infection for their patch.
-
-Thus:
-
-Mixing modifies **infection probability**, not agent location.
-
-Script
-------
-
-Below is the complete working example.
+In this example, we create 8 patches arranged along a straight line.
 
 .. code-block:: python
 
-    """
-    hello_world_spatial_abm.py
-
-    Minimal spatial ABM measles demo with multiple patches and gravity-based mixing.
-
-    Features:
-    - 8 spatial patches arranged in a line
-    - Heterogeneous population sizes
-    - Infection seeded in one patch
-    - Gravity-based mixing (configured via distance_exponent + mixing_scale)
-    - Patch-level state tracking
-    - Clean SEIR + spatial visualization
-    """
-
     import polars as pl
     import numpy as np
-    import matplotlib.pyplot as plt
-
-    from laser.measles.abm import ABMModel, ABMParams, components
-    from laser.measles import create_component
-    from laser.measles.components.base_tracker_state import BaseStateTrackerParams
-
-
-    # ---------------------------------------------------------
-    # Create simple spatial scenario
-    # ---------------------------------------------------------
 
     def create_linear_scenario():
 
@@ -133,214 +71,258 @@ Below is the complete working example.
 
         return scenario
 
+Here:
 
-    # ---------------------------------------------------------
-    # Main simulation
-    # ---------------------------------------------------------
+- Latitude is fixed at 0.
+- Longitude increases linearly.
+- Populations vary substantially.
 
-    def main():
+This creates a simple 1-dimensional spatial structure.
 
-        print("🌍 Creating spatial scenario...")
+------------------------------------------------------------
+2. Creating the ABM Model
+------------------------------------------------------------
 
-        scenario = create_linear_scenario()
-        total_pop = scenario["pop"].sum()
+We now instantiate the ABM model.
 
-        print(f"Total population: {int(total_pop):,}")
+.. code-block:: python
 
-        params = ABMParams(
-            num_ticks=50,
-            seed=42,
-            start_time="2000-01"
-        )
+    from laser.measles.abm import ABMModel, ABMParams
 
-        model = ABMModel(
-            scenario=scenario,
-            params=params
-        )
+    params = ABMParams(
+        num_ticks=50,
+        seed=42,
+        start_time="2000-01"
+    )
 
-        # -----------------------------------------------------
-        # Gravity mixing configured CORRECTLY for ABM
-        # -----------------------------------------------------
-        #
-        # In ABM, InfectionParams does NOT accept `mixer=`.
-        #
-        # Gravity mixing is controlled via:
-        #   - distance_exponent
-        #   - mixing_scale
-        #
-        # These parameters internally configure a GravityMixing model.
-        # -----------------------------------------------------
+    model = ABMModel(
+        scenario=scenario,
+        params=params
+    )
 
-        infection_params = components.InfectionParams(
-            beta=20.0,
-            seasonality=0.0,
-            distance_exponent=20.0,   # strong distance decay
-            mixing_scale=0.01         # moderate mixing scale
-        )
+Key parameters:
 
-        seeding_params = components.InfectionSeedingParams(
-            target_patches=["patch_7"],
-            infections_per_patch=5
-        )
+``num_ticks``
+    Number of days to simulate.
 
-        model.components = [
+``seed``
+    Ensures reproducibility.
 
-            components.NoBirthsProcess,
+``start_time``
+    Calendar start date (used by seasonal forcing and campaigns).
 
-            create_component(components.InfectionSeedingProcess, seeding_params),
+Unlike compartmental models, the ABM maintains
+an explicit individual-level population internally.
 
-            create_component(components.InfectionProcess, infection_params),
+------------------------------------------------------------
+3. Components: The Engine of the Model
+------------------------------------------------------------
 
-            components.StateTracker,
+In laser-measles, **components define model behavior**.
 
-            create_component(
-                components.StateTracker,
-                BaseStateTrackerParams(aggregation_level=0)
-            ),
-        ]
+Each tick, the model executes its components in order.
 
-        print("🚀 Running spatial epidemic...")
-        model.run()
-        print("✅ Simulation complete!")
+We will use:
 
-        trackers = model.get_instance(components.StateTracker)
-        global_tracker = trackers[0]
-        patch_tracker = trackers[1]
+- ``NoBirthsProcess`` — disable births
+- ``InfectionSeedingProcess`` — seed infection
+- ``InfectionProcess`` — handle transmission and progression
+- ``StateTracker`` — record SEIR states
 
-        global_df = global_tracker.get_dataframe()
-        global_results = (
-            global_df
-            .pivot(index="tick", on="state", values="count")
-            .sort("tick")
-        )
+------------------------------------------------------------
+4. Spatial Mixing in the ABM
+------------------------------------------------------------
 
-        time = global_results["tick"].to_numpy()
-        S = global_results["S"].to_numpy()
-        E = global_results["E"].to_numpy()
-        I = global_results["I"].to_numpy()
-        R = global_results["R"].to_numpy()
+This is the most important new concept.
 
-        final_R = model.patches.states.R
-        patch_pops = scenario["pop"].to_numpy()
-        attack_rates = final_R / patch_pops
+Spatial mixing determines how infectious individuals
+in one patch influence infection risk in other patches.
 
-        state_array = patch_tracker.state_tracker
-        I_index = model.params.states.index("I")
-        num_patches = state_array.shape[2]
+Important distinction:
 
-        fig, axes = plt.subplots(1, 3, figsize=(18, 5))
+Compartmental model
+    Accepts an explicit ``mixer=`` object.
 
-        axes[0].plot(time, S / total_pop, label="S")
-        axes[0].plot(time, E / total_pop, label="E")
-        axes[0].plot(time, I / total_pop, label="I")
-        axes[0].plot(time, R / total_pop, label="R")
-        axes[0].set_title("Global SEIR")
-        axes[0].set_xlabel("Days")
-        axes[0].legend()
-        axes[0].grid(alpha=0.3)
+ABM model
+    Does NOT accept ``mixer=`` in ``InfectionParams``.
 
-        axes[1].scatter(
-            scenario["lon"],
-            np.zeros(len(scenario)),
-            c=attack_rates,
-            s=patch_pops / 2000,
-            cmap="Reds",
-            edgecolors="black"
-        )
-        axes[1].set_title("Spatial Attack Rates")
-        axes[1].set_xlabel("Patch Position")
-        axes[1].set_yticks([])
-        axes[1].grid(alpha=0.3)
+Instead, the ABM automatically constructs a
+gravity mixing model using two parameters:
 
-        for patch_i in range(num_patches):
-            axes[2].plot(
-                state_array[I_index, :, patch_i],
-                label=f"P{patch_i}",
-                alpha=0.8
-            )
-
-        axes[2].set_title("Patch-Level Infectious Curves")
-        axes[2].set_xlabel("Days")
-        axes[2].grid(alpha=0.3)
-
-        plt.tight_layout()
-        plt.show()
-
-        print("\n🎉 Spatial hello world complete!")
-
-
-    if __name__ == "__main__":
-        main()
-
-
-Interpreting the Mixing Parameters
-----------------------------------
-
-``distance_exponent`` (gravity decay)
-    Controls how strongly distance suppresses mixing.
-
-    Higher values → infection stays local.
-
-    Lower values → infection spreads more easily across space.
+``distance_exponent``
+    Controls how quickly mixing declines with distance.
 
 ``mixing_scale``
-    Controls overall cross-patch contact rate.
-
-    Larger values → more spatial coupling.
-
-    Smaller values → more isolated patches.
-
-Because the ABM operates at the individual level,
-mixing influences **per-agent infection probability**,
-rather than directly transferring compartment counts.
-
-Comparison with Compartmental Model
-------------------------------------
-
-In the compartmental model:
-
-.. code-block:: python
-
-    InfectionParams(
-        beta=...,
-        mixer=GravityMixing(...)
-    )
-
-You explicitly pass a mixer.
-
-In ABM:
-
-.. code-block:: python
-
-    InfectionParams(
-        beta=...,
-        distance_exponent=...,
-        mixing_scale=...
-    )
-
-No ``mixer=`` argument exists.
-
-Internally, ABM constructs its own gravity mixer.
+    Controls the overall magnitude of cross-patch mixing.
 
 This design simplifies usage but reduces flexibility.
 
-Summary
--------
+Here is the correct ABM configuration:
 
-This example demonstrates:
+.. code-block:: python
 
-- Spatial structure
-- Gravity mixing in ABM
-- Patch-level tracking
-- Visual epidemic wave propagation
+    infection_params = components.InfectionParams(
+        beta=20.0,
+        seasonality=0.0,
+        distance_exponent=20.0,
+        mixing_scale=0.01
+    )
 
-It is minimal but truly spatial.
+Interpretation:
 
-To extend this example, you could:
+Large ``distance_exponent`` (20)
+    Very strong local transmission. Patches mostly mix with neighbors.
 
-- Add births (``VitalDynamicsProcess``)
-- Add SIA campaigns
-- Compare different gravity decay parameters
-- Switch to the compartmental model for comparison
+Small ``mixing_scale`` (0.01)
+    Moderate cross-patch infection pressure.
 
-``laser-measles`` supports all of these within the same component architecture.
+Mechanically, the ABM does the following each day:
+
+1. Count infectious agents in each patch.
+2. Construct a gravity-based mixing matrix.
+3. Compute force of infection per patch.
+4. Apply infection probability to each susceptible agent.
+
+Agents do not move between patches.
+Mixing changes infection probability only.
+
+------------------------------------------------------------
+5. Seeding Infection
+------------------------------------------------------------
+
+We seed 5 infections in the last patch:
+
+.. code-block:: python
+
+    seeding_params = components.InfectionSeedingParams(
+        target_patches=["patch_7"],
+        infections_per_patch=5
+    )
+
+This allows us to observe spatial spread outward from one location.
+
+------------------------------------------------------------
+6. Assembling the Model
+------------------------------------------------------------
+
+We now attach components in execution order.
+
+.. code-block:: python
+
+    model.components = [
+
+        components.NoBirthsProcess,
+
+        create_component(
+            components.InfectionSeedingProcess,
+            seeding_params
+        ),
+
+        create_component(
+            components.InfectionProcess,
+            infection_params
+        ),
+
+        components.StateTracker,
+
+        create_component(
+            components.StateTracker,
+            BaseStateTrackerParams(aggregation_level=0)
+        ),
+    ]
+
+The second ``StateTracker`` records patch-level data.
+
+------------------------------------------------------------
+7. Running the Simulation
+------------------------------------------------------------
+
+.. code-block:: python
+
+    model.run()
+
+This advances the simulation for 50 days.
+
+------------------------------------------------------------
+8. Extracting Results
+------------------------------------------------------------
+
+StateTracker stores results in a structured array:
+
+Shape:
+    (num_states, num_ticks, num_patches)
+
+We extract:
+
+- Global SEIR curves
+- Final recovered counts
+- Patch-level infectious trajectories
+
+------------------------------------------------------------
+9. Visualization
+------------------------------------------------------------
+
+We generate three panels:
+
+1. Global SEIR fractions
+2. Spatial attack rates
+3. Patch-level infectious curves
+
+The spatial attack rate shows which patches experienced
+the highest cumulative infection.
+
+The patch-level infectious curves show the
+temporal spread of infection across space.
+
+------------------------------------------------------------
+What This Example Demonstrates
+------------------------------------------------------------
+
+This script introduces:
+
+- Scenario construction
+- ABM instantiation
+- Component architecture
+- Individual-level transmission
+- Spatial mixing mechanics
+- State tracking
+- Visualization
+
+While remaining:
+
+- Deterministic in structure
+- Simple in design
+- Free of demographic complexity
+
+------------------------------------------------------------
+How This Differs from the Compartmental Model
+------------------------------------------------------------
+
+Mixing configuration differs:
+
+Compartmental:
+    ``InfectionParams(mixer=GravityMixing(...))``
+
+ABM:
+    ``InfectionParams(distance_exponent=..., mixing_scale=...)``
+
+Mechanically:
+
+Compartmental:
+    Mixing redistributes infection pressure across aggregated compartments.
+
+ABM:
+    Mixing modifies per-agent infection probability.
+
+------------------------------------------------------------
+Next Steps
+------------------------------------------------------------
+
+You could extend this model by:
+
+- Adding births (``VitalDynamicsProcess``)
+- Adding vaccination campaigns (``SIACalendarProcess``)
+- Increasing spatial resolution
+- Comparing ABM vs compartmental mixing behavior
+
+This concludes the spatial ABM quick start.
