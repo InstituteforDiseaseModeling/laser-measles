@@ -1,5 +1,15 @@
 .. include:: tutorials/README.rst
 
+Quick Start
+-----------
+New to laser-measles? Start here. This single example walks through a complete
+spatial ABM from scenario construction to visualization.
+
+.. toctree::
+    :maxdepth: 1
+
+    tutorials/tut_quickstart_hello_world.ipynb
+
 Beginning tutorials
 -------------------
 These tutorials are designed to get you started with the basics of the library.

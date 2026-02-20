@@ -100,7 +100,12 @@ The Biweekly Model is a compartmental model optimized for fast simulation and pa
 
 **Key Characteristics:**
 
-* **Compartmental approach**: SEIR (Susceptible-Exposed-Infected-Recovered) compartmental model structure
+* **Compartmental approach**: SIR (Susceptible-Infected-Recovered) structure.
+  The exposed (E) compartment is omitted because the 14-day timestep is
+  comparable to measles' typical incubation period (~10-14 days), making
+  the distinction between exposed and infectious states negligible at this
+  temporal resolution. For detailed SEIR dynamics with explicit incubation
+  periods, use the Compartmental Model with daily timesteps.
 * **Time resolution**: 14-day fixed time steps (26 ticks per year)
 * **High performance**: Uses Polars DataFrames for efficient data manipulation
 * **Stochastic sampling**: Binomial sampling for realistic variability
