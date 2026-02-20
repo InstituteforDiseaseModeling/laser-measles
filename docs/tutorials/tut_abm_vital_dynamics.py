@@ -10,9 +10,9 @@
 #
 # We start with some basic imports
 # %%
-from laser_measles.abm import ABMModel, ABMParams, components
-from laser_measles.scenarios import synthetic
-from laser_measles import create_component
+from laser.measles.abm import ABMModel, ABMParams, components
+from laser.measles.scenarios import synthetic
+from laser.measles import create_component
 import matplotlib.pyplot as plt
 import numpy as np
 
@@ -24,7 +24,7 @@ scenario = synthetic.two_patch_scenario()
 # people laserframe (the capacity), but rather the number of agents
 # who have entered the simulation.
 # %%
-from laser_measles.base import BasePhase
+from laser.measles.base import BasePhase
 class PeopleLengthTracker(BasePhase):
     def __init__(self, model, verbose):
         super().__init__(model, verbose=verbose)

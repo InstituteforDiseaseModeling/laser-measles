@@ -5,15 +5,15 @@ Tests for auto-wrapping functionality of polars DataFrames in model constructors
 import polars as pl
 import pytest
 
-from laser_measles.abm import ABMModel
-from laser_measles.abm import ABMParams
-from laser_measles.abm.base import BaseABMScenario
-from laser_measles.biweekly import BiweeklyModel
-from laser_measles.biweekly import BiweeklyParams
-from laser_measles.biweekly.base import BaseBiweeklyScenario
-from laser_measles.compartmental import CompartmentalModel
-from laser_measles.compartmental import CompartmentalParams
-from laser_measles.compartmental.base import BaseCompartmentalScenario
+from laser.measles.abm import ABMModel
+from laser.measles.abm import ABMParams
+from laser.measles.abm.base import BaseABMScenario
+from laser.measles.biweekly import BiweeklyModel
+from laser.measles.biweekly import BiweeklyParams
+from laser.measles.biweekly.base import BaseBiweeklyScenario
+from laser.measles.compartmental import CompartmentalModel
+from laser.measles.compartmental import CompartmentalParams
+from laser.measles.compartmental.base import BaseCompartmentalScenario
 
 
 @pytest.fixture

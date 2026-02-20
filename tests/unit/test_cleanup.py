@@ -6,11 +6,11 @@ import numpy as np
 import polars as pl
 import pytest
 
-from laser_measles.abm import Model as ABMModel
-from laser_measles.abm.params import ABMParams
-from laser_measles.biweekly import BiweeklyModel
-from laser_measles.biweekly import BiweeklyParams
-from laser_measles.biweekly.base import BaseScenario
+from laser.measles.abm import Model as ABMModel
+from laser.measles.abm.params import ABMParams
+from laser.measles.biweekly import BiweeklyModel
+from laser.measles.biweekly import BiweeklyParams
+from laser.measles.biweekly.base import BaseScenario
 
 
 def create_test_scenario():
@@ -85,7 +85,7 @@ class TestModelCleanup:
         model.cleanup()
 
         # Verify patches are cleared
-        assert model.patches is None, "Patches should be None after cleanup"
+        assert not hasattr(model, "patches"), "Patches should be deleted after cleanup"
 
     def test_generic_model_cleanup_clears_laserframes(self):
         """Test that cleanup properly clears LaserFrame objects in generic model."""
@@ -104,8 +104,8 @@ class TestModelCleanup:
         model.cleanup()
 
         # Verify LaserFrames are cleared
-        assert model.patches is None, "Patches should be None after cleanup"
-        assert model.people is None, "People should be None after cleanup"
+        assert not hasattr(model, "patches"), "Patches should be deleted after cleanup"
+        assert not hasattr(model, "people"), "People should be deleted after cleanup"
 
     def test_cleanup_clears_components(self):
         """Test that cleanup properly clears component instances."""

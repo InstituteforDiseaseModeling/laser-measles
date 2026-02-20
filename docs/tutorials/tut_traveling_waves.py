@@ -29,7 +29,7 @@ import numpy as np
 import polars as pl
 from scipy import stats
 
-import laser_measles as lm
+import laser.measles as lm
 
 # Set random seed for reproducibility
 np.random.seed(42)

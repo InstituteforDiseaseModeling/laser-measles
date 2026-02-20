@@ -1,10 +1,10 @@
 import polars as pl
-from laser_core import LaserFrame
-from laser_core import PropertySet
+from laser.core import LaserFrame
+from laser.core import PropertySet
 
-import laser_measles as lm
-from laser_measles.base import BaseLaserModel
-from laser_measles.base import BaseScenario
+import laser.measles as lm
+from laser.measles.base import BaseLaserModel
+from laser.measles.base import BaseScenario
 
 VERBOSE = False
 

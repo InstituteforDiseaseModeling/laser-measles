@@ -17,8 +17,8 @@ When `reporting a bug <https://github.com/InstituteforDiseaseModeling/laser-meas
 Documentation improvements
 ==========================
 
-laser_measles could always use more documentation, whether as part of the
-official laser_measles docs, in docstrings, or even on the web in blog posts,
+laser-measles could always use more documentation, whether as part of the
+official laser-measles docs, in docstrings, or even on the web in blog posts,
 articles, and such.
 
 Feature requests and feedback
@@ -214,7 +214,7 @@ The tool automatically updates version numbers in:
 * ``pyproject.toml``
 * ``setup.py``
 * ``docs/conf.py``
-* ``src/laser_measles/__init__.py``
+* ``src/laser/measles/__init__.py``
 * ``.cookiecutterrc``
 
 By default, bump-my-version will create a git commit and tag. The configuration supports semantic versioning with pre-release labels (dev, rc, final).

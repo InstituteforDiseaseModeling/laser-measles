@@ -2,14 +2,14 @@
 API reference
 =============
 
-.. currentmodule:: laser_measles
+.. currentmodule:: laser.measles
 
 This page lists laser-measles's API.
 
 Base Components
 ===============
 
-.. currentmodule:: laser_measles.components
+.. currentmodule:: laser.measles.components
 
 Components (e.g., infection, aging, vital dynamics, etc.) setup and affect the model, its structure and dynamics.
 Shared base classes that provide common interfaces and functionality across all model types.
@@ -20,8 +20,8 @@ Component Architecture
 
 The laser-measles framework follows a hierarchical component architecture:
 
-1. **Base Components** (``laser_measles.components``) define abstract interfaces and common functionality
-2. **Model-Specific Implementations** (``laser_measles.{model}.components``) inherit from base classes and implement model-specific behavior
+1. **Base Components** (``laser.measles.components``) define abstract interfaces and common functionality
+2. **Model-Specific Implementations** (``laser.measles.{model}.components``) inherit from base classes and implement model-specific behavior
 3. **Parameter Classes** use Pydantic for validation and are paired with their respective component classes
 4. **Numpy/Numba Pattern** - Components can provide both numpy and numba implementations for performance optimization
 
@@ -29,12 +29,12 @@ The laser-measles framework follows a hierarchical component architecture:
 
 .. code-block:: python
 
-   # Base class in laser_measles.components
+   # Base class in laser.measles.components
    class BaseInitializeEquilibriumStatesProcess(BasePhase):
        # Common interface and default behavior
        pass
 
-   # Model-specific implementation in laser_measles.abm.components
+   # Model-specific implementation in laser.measles.abm.components
    class InitializeEquilibriumStatesProcess(BaseInitializeEquilibriumStatesProcess):
        # ABM-specific implementation
        pass
@@ -92,7 +92,7 @@ Component creation and management utilities:
 ABM Model
 =========
 
-.. currentmodule:: laser_measles.abm
+.. currentmodule:: laser.measles.abm
 
 Core Model
 ----------
@@ -114,7 +114,7 @@ Process Components
 ------------------
 
 Components that modify population states and drive model dynamics.
-Most inherit from base classes in ``laser_measles.components``:
+Most inherit from base classes in ``laser.measles.components``:
 
 .. autosummary::
    :toctree: _autosummary
@@ -147,7 +147,7 @@ Tracker Components
 ------------------
 
 Components that monitor and record model state for analysis.
-All inherit from base classes in ``laser_measles.components``:
+All inherit from base classes in ``laser.measles.components``:
 
 .. autosummary::
    :toctree: _autosummary
@@ -164,7 +164,7 @@ All inherit from base classes in ``laser_measles.components``:
 Compartmental Model
 ===================
 
-.. currentmodule:: laser_measles.compartmental
+.. currentmodule:: laser.measles.compartmental
 
 Core Model
 ----------
@@ -184,7 +184,7 @@ Process Components
 ------------------
 
 Components that modify population states and drive model dynamics.
-All inherit from base classes in ``laser_measles.components``:
+All inherit from base classes in ``laser.measles.components``:
 
 .. autosummary::
    :toctree: _autosummary
@@ -203,7 +203,7 @@ Tracker Components
 ------------------
 
 Components that monitor and record model state for analysis.
-All inherit from base classes in ``laser_measles.components``:
+All inherit from base classes in ``laser.measles.components``:
 
 .. autosummary::
    :toctree: _autosummary
@@ -220,7 +220,7 @@ All inherit from base classes in ``laser_measles.components``:
 Biweekly Model
 ==============
 
-.. currentmodule:: laser_measles.biweekly
+.. currentmodule:: laser.measles.biweekly
 
 Core Model
 ----------
@@ -240,7 +240,7 @@ Process Components
 ------------------
 
 Components that modify population states and drive model dynamics.
-All inherit from base classes in ``laser_measles.components``:
+All inherit from base classes in ``laser.measles.components``:
 
 .. autosummary::
    :toctree: _autosummary
@@ -259,7 +259,7 @@ Tracker Components
 ------------------
 
 Components that monitor and record model state for analysis.
-Most inherit from base classes in ``laser_measles.components``:
+Most inherit from base classes in ``laser.measles.components``:
 
 .. autosummary::
    :toctree: _autosummary
@@ -289,7 +289,7 @@ Utilities
 Core Framework
 ==============
 
-.. currentmodule:: laser_measles
+.. currentmodule:: laser.measles
 
 Base Classes
 ------------
@@ -322,7 +322,7 @@ Core utilities and computation functions:
 Demographics Package
 ====================
 
-.. currentmodule:: laser_measles.demographics
+.. currentmodule:: laser.measles.demographics
 
 Geographic data handling for spatial epidemiological modeling:
 
@@ -358,10 +358,10 @@ Tools for handling raster data and patch generation:
 Mixing Models
 =============
 
-.. currentmodule:: laser_measles.mixing
+.. currentmodule:: laser.measles.mixing
 
 Spatial mixing models for population movement and disease transmission between geographic patches
-(see `laser-core <https://docs.idmod.org/projects/laser/en/latest>`_ for more details):
+(see `laser-core <https://laser.idmod.org/laser-generic/>`_ for more details):
 
 Base Classes
 ------------

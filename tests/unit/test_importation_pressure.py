@@ -3,8 +3,8 @@ import importlib
 import numpy as np
 import pytest
 
-import laser_measles as lm
-from laser_measles import MEASLES_MODULES
+import laser.measles as lm
+from laser.measles import MEASLES_MODULES
 
 VERBOSE = False
 SEED = 42
@@ -47,6 +47,35 @@ def test_importation_pressure_two_patch(measles_module):
     assert np.all(model.patches.states.R >= 1)
     assert model.patches.states.R.sum() > 1
     assert np.all(np.equal(model.patches.states.sum(axis=0), scenario["pop"].to_numpy()))
+
+
+@pytest.mark.parametrize("measles_module", ["laser.measles.abm"])
+def test_importation_with_vital_dynamics(measles_module):
+    """Regression test: ImportationPressureProcess should not infect inactive (unborn) agents.
+
+    Without filtering by `active`, phantom agents beyond people.count get infected,
+    causing S[0] to underflow (uint32 wrap) and VitalDynamicsProcess to compute
+    massive birth counts that exhaust array capacity around tick 32-50.
+
+    Uses beta=0.0 to disable community transmission and isolate the importation fix.
+    """
+    MeaslesModel = importlib.import_module(measles_module)
+    scenario = MeaslesModel.BaseScenario(lm.scenarios.synthetic.two_patch_scenario())
+    model = MeaslesModel.Model(scenario, MeaslesModel.Params(num_ticks=50, verbose=VERBOSE, seed=SEED))
+    model.components = [
+        MeaslesModel.components.VitalDynamicsProcess,
+        MeaslesModel.components.ImportationPressureProcess,
+        lm.create_component(MeaslesModel.components.InfectionProcess, MeaslesModel.components.InfectionParams(beta=0.0)),
+    ]
+    model.run()
+
+    # S values should remain reasonable (no uint32 underflow)
+    assert np.all(model.patches.states.S < 1_000_000), f"S values look like uint32 underflow: {model.patches.states.S}"
+
+    # Population conservation: state counts should equal active agent count
+    active_count = model.people.active[: model.people.count].sum()
+    state_total = np.sum(model.patches.states)
+    assert state_total == active_count, f"State total {state_total} != active count {active_count}"
 
 
 if __name__ == "__main__":

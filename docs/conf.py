@@ -14,7 +14,7 @@ project = "laser-measles"
 copyright = f"2024 - {sc.now().year}, Bill & Melinda Gates Foundation. All rights reserved."
 
 # The short X.Y version
-version = release = "0.7.2-dev3"
+version = release = "0.9.0-dev1"
 
 
 # -- General configuration ---------------------------------------------------
@@ -50,7 +50,7 @@ templates_path = ["_templates"]
 
 # Syntax highlighting style
 pygments_style = "sphinx"
-modindex_common_prefix = ["laser_measles."]
+modindex_common_prefix = ["laser.measles."]
 
 # List of patterns, relative to source directory, to exclude
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store", "**.ipynb_checkpoints", "tutorials/not_ready/**"]

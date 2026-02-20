@@ -9,21 +9,21 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
-from laser_core.propertyset import PropertySet
+from laser.core.propertyset import PropertySet
 
-from laser_measles.abm import Model
-from laser_measles.abm.components import BirthsConstantPopProcess
-from laser_measles.abm.components import BirthsParams
-from laser_measles.abm.components import ImportationParams
-from laser_measles.abm.components import InfectAgentsInPatchProcess
-from laser_measles.abm.components import InfectionParams
-from laser_measles.abm.components import InfectionProcess
-from laser_measles.abm.components import SusceptibilityParams
-from laser_measles.abm.components import SusceptibilityProcess
-from laser_measles.abm.components import TransmissionParams
-from laser_measles.abm.components import TransmissionProcess
-from laser_measles.abm.utils import set_initial_susceptibility_in_patch
-from laser_measles.components import create_component
+from laser.measles.abm import Model
+from laser.measles.abm.components import BirthsConstantPopProcess
+from laser.measles.abm.components import BirthsParams
+from laser.measles.abm.components import ImportationParams
+from laser.measles.abm.components import InfectAgentsInPatchProcess
+from laser.measles.abm.components import InfectionParams
+from laser.measles.abm.components import InfectionProcess
+from laser.measles.abm.components import SusceptibilityParams
+from laser.measles.abm.components import SusceptibilityProcess
+from laser.measles.abm.components import TransmissionParams
+from laser.measles.abm.components import TransmissionProcess
+from laser.measles.abm.utils import set_initial_susceptibility_in_patch
+from laser.measles.components import create_component
 
 # %load_ext line_profiler
 

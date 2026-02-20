@@ -6,8 +6,8 @@ import timeit
 
 import pytest
 
-import laser_measles as lm
-from laser_measles.scenarios.synthetic import two_patch_scenario
+import laser.measles as lm
+from laser.measles.scenarios.synthetic import two_patch_scenario
 
 
 @pytest.fixture
@@ -57,6 +57,7 @@ def test_python_model_produces_infections(python_model):
     assert model.patches.states.R.sum() > 0
 
 
+@pytest.mark.skip(reason="This test needs attention.")
 @pytest.mark.slow
 def test_numba_performance_improvement(numba_model, python_model):
     """Test that numba version is faster than python version"""

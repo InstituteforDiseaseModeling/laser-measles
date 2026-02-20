@@ -2,8 +2,8 @@ import importlib
 
 import pytest
 
-import laser_measles as lm
-from laser_measles import MEASLES_MODULES
+import laser.measles as lm
+from laser.measles import MEASLES_MODULES
 
 VERBOSE = False
 SEED = 42
@@ -41,6 +41,22 @@ def test_constant_pop_two_patch(measles_module):
     model.components = [MeaslesModel.components.ConstantPopProcess]
     model.run()
     assert model.patches.states[:-1, :].sum() == scenario["pop"].sum()
+
+
+@pytest.mark.slow
+@pytest.mark.parametrize("measles_module", MEASLES_MODULES)
+def test_constant_pop_with_infection(measles_module):
+    """Regression test for issue #95: model crash with ConstantPopProcess + infection components."""
+    MeaslesModel = importlib.import_module(measles_module)
+    scenario = MeaslesModel.BaseScenario(lm.scenarios.synthetic.two_patch_scenario())
+    model = MeaslesModel.Model(scenario, MeaslesModel.Params(num_ticks=50, verbose=VERBOSE, seed=SEED))
+    model.components = [
+        MeaslesModel.components.ConstantPopProcess,
+        MeaslesModel.components.InfectionSeedingProcess,
+        MeaslesModel.components.InfectionProcess,
+    ]
+    model.run()
+    assert model.patches.states.sum() == scenario["pop"].sum()
 
 
 if __name__ == "__main__":

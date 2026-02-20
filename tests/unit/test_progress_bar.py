@@ -7,10 +7,10 @@ import time
 
 import pytest
 
-from laser_measles.base import BaseComponent
-from laser_measles.scenarios import synthetic
+from laser.measles.base import BaseComponent
+from laser.measles.scenarios import synthetic
 
-MEASLES_MODULES = ["laser_measles.abm", "laser_measles.compartmental", "laser_measles.biweekly"]
+MEASLES_MODULES = ["laser.measles.abm", "laser.measles.compartmental", "laser.measles.biweekly"]
 
 
 @pytest.mark.parametrize("measles_module", MEASLES_MODULES)

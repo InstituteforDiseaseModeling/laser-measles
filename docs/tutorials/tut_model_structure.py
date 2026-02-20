@@ -20,11 +20,11 @@
 # the submodule directly from laser-measles:
 # %%
 # Importing all three models
-from laser_measles.abm import ABMModel, ABMParams
-from laser_measles.compartmental import CompartmentalModel, CompartmentalParams
-from laser_measles.biweekly import BiweeklyModel, BiweeklyParams
+from laser.measles.abm import ABMModel, ABMParams
+from laser.measles.compartmental import CompartmentalModel, CompartmentalParams
+from laser.measles.biweekly import BiweeklyModel, BiweeklyParams
 # or use the Model alias to allow for code that can be easily carried between models:
-from laser_measles.abm import Model
+from laser.measles.abm import Model
 
 # %% [markdown]
 # ## The BaseLaserModel and components
@@ -50,7 +50,7 @@ from laser_measles.abm import Model
 #
 # To see/access all components available for a model you use the associated `components` sub-module.
 # %%
-from laser_measles.abm import components
+from laser.measles.abm import components
 print("Available Process components:")
 for c in sorted([c for c in dir(components) if 'Process' in c]):
     print(f"  - {c}")
@@ -64,11 +64,11 @@ for c in sorted([c for c in dir(components) if 'Process' in c]):
 # %%
 import polars as pl
 
-from laser_measles import create_component
-from laser_measles.compartmental import CompartmentalModel
-from laser_measles.compartmental.components import CaseSurveillanceParams
-from laser_measles.compartmental.components import CaseSurveillanceTracker
-from laser_measles.compartmental.params import CompartmentalParams
+from laser.measles import create_component
+from laser.measles.compartmental import CompartmentalModel
+from laser.measles.compartmental.components import CaseSurveillanceParams
+from laser.measles.compartmental.components import CaseSurveillanceTracker
+from laser.measles.compartmental.params import CompartmentalParams
 
 # Create a simple scenario
 scenario = pl.DataFrame(
@@ -97,7 +97,7 @@ case_tracker = create_component(
 )
 
 # Add transmission and surveillance to the model
-from laser_measles.compartmental.components import InfectionProcess, InfectionSeedingProcess
+from laser.measles.compartmental.components import InfectionProcess, InfectionSeedingProcess
 
 comp_model.add_component(InfectionSeedingProcess)
 comp_model.add_component(InfectionProcess)
@@ -127,10 +127,10 @@ print(f"\nCompartmental model total infections: {comp_infections_df['cases'].sum
 # In addition to a `patch`, the ABM uses `people` (e.g., `BasePeopleLaserFrame`) for individual agents:
 
 # %%
-import laser_measles as lm
-from laser_measles.abm import ABMModel
-from laser_measles.abm.components import InfectionProcess, InfectionSeedingProcess
-from laser_measles.abm.params import ABMParams
+import laser.measles as lm
+from laser.measles.abm import ABMModel
+from laser.measles.abm.components import InfectionProcess, InfectionSeedingProcess
+from laser.measles.abm.params import ABMParams
 
 # Initialize ABM model
 abm_params = ABMParams(num_ticks=100)

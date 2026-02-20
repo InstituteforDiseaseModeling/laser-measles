@@ -9,8 +9,8 @@ import polars as pl
 from pydantic import BaseModel
 from pydantic import Field
 
-import laser_measles as lm
-from laser_measles.base import BasePhase
+import laser.measles as lm
+from laser.measles.base import BasePhase
 
 # %% [markdown]
 # ## Component architecture
