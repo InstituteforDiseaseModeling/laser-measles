@@ -31,6 +31,7 @@ from matplotlib.figure import Figure
 from pydantic import BaseModel
 from pydantic import ConfigDict
 from pydantic import Field
+from pydantic import field_validator
 
 from laser.measles.utils import StateArray
 from laser.measles.utils import get_laserframe_properties
@@ -56,10 +57,43 @@ class ParamsProtocol(Protocol):
 
 class BaseModelParams(BaseModel):
     """
-    Base parameters for all laser-measles models.
+    Base parameter schema for all laser-measles simulation models.
 
-    This class provides common parameters that are shared across all model types.
-    Model-specific parameter classes should inherit from this class.
+    This class defines configuration options that are common across all
+    model variants. Subclasses must extend this class and implement
+    model-specific properties.
+
+    Validation behavior:
+        - Extra/unknown fields are forbidden.
+        - `start_time` must be a string in "YYYY-MM" format (year and month only).
+        - `num_ticks` represents discrete simulation steps, not calendar days.
+          The duration of each tick is determined by the subclass implementation
+          of `time_step_days`.
+
+    Attributes:
+        seed (int):
+            Random seed used to initialize all stochastic processes.
+            Ensures reproducibility of simulation results.
+
+        start_time (str):
+            Simulation start time in "YYYY-MM" format (e.g., "2000-01").
+            Day values are not supported; the model assumes the first day
+            of the given month unless otherwise defined by subclasses.
+
+        num_ticks (int):
+            Total number of discrete time steps to simulate.
+            The total simulated duration equals:
+                num_ticks x time_step_days
+
+        verbose (bool):
+            If True, prints detailed logging output during execution.
+
+        show_progress (bool):
+            If True, displays a progress bar during simulation runs.
+
+        use_numba (bool):
+            If True, enables numba JIT acceleration when available.
+            Falls back to pure Python if numba is unavailable.
     """
 
     model_config = ConfigDict(extra="forbid")
@@ -70,6 +104,15 @@ class BaseModelParams(BaseModel):
     verbose: bool = Field(default=False, description="Whether to print verbose output")
     show_progress: bool = Field(default=True, description="Whether to show progress bar during simulation")
     use_numba: bool = Field(default=True, description="Whether to use numba acceleration when available")
+
+    @field_validator("start_time")
+    @classmethod
+    def validate_start_time(cls, v: str) -> str:
+        try:
+            datetime.strptime(v, "%Y-%m")  # noqa DTZ007
+        except ValueError as err:
+            raise ValueError(f"start_time must be in 'YYYY-MM' format, got '{v}'") from err
+        return v
 
     @property
     def time_step_days(self) -> int:
