@@ -31,6 +31,7 @@ from matplotlib.figure import Figure
 from pydantic import BaseModel
 from pydantic import ConfigDict
 from pydantic import Field
+from pydantic import field_validator
 
 from laser.measles.utils import StateArray
 from laser.measles.utils import get_laserframe_properties
@@ -103,6 +104,15 @@ class BaseModelParams(BaseModel):
     verbose: bool = Field(default=False, description="Whether to print verbose output")
     show_progress: bool = Field(default=True, description="Whether to show progress bar during simulation")
     use_numba: bool = Field(default=True, description="Whether to use numba acceleration when available")
+
+    @field_validator("start_time")
+    @classmethod
+    def validate_start_time(cls, v: str) -> str:
+        try:
+            datetime.strptime(v, "%Y-%m")  # noqa DTZ007
+        except ValueError as err:
+            raise ValueError(f"start_time must be in 'YYYY-MM' format, got '{v}'") from err
+        return v
 
     @property
     def time_step_days(self) -> int:
