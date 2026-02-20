@@ -24,6 +24,7 @@ Project Information
    :hidden:
 
    usage
+   hw
    tutorials
    api/index
 
