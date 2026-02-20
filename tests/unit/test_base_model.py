@@ -50,6 +50,7 @@ def test_laserframe():
         "2000",  # year only
         "01-2000",  # wrong order
         "not-a-date",  # garbage
+        "2000-1",  # non-zero-padded month
     ],
 )
 def test_invalid_start_time_raises(invalid):
