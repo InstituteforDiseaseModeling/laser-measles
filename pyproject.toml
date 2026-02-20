@@ -157,11 +157,6 @@ values = ["dev", "rc", "final"]
 optional_value = "final"
 
 [[tool.bumpversion.files]]
-filename = "setup.py"
-search = 'version="{current_version}"'
-replace = 'version="{new_version}"'
-
-[[tool.bumpversion.files]]
 filename = "docs/conf.py"
 search = 'version = release = "{current_version}"'
 replace = 'version = release = "{new_version}"'
