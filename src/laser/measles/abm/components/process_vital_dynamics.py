@@ -71,6 +71,18 @@ class VitalDynamicsProcess(BaseVitalDynamicsProcess):
             cnt = np.bincount(model.people.patch_id[idx][mask], minlength=model.patches.states.shape[-1])
             model.patches.states[state_idx] -= cast_type(cnt, model.patches.states.dtype)
 
+        # Reset dead agents' epidemic state to prevent ghost processing by downstream components.
+        # Without this, agents deactivated mid-epidemic retain non-zero exposure/infection timers
+        # and susceptible-state flags, causing DiseaseProcess to generate spurious E→I and I→R
+        # transitions that decrement patches.states below zero (uint32 underflow).
+        if len(idx) > 0:
+            r_state = np.uint8(model.params.states.index("R"))
+            model.people.state[idx] = r_state
+            if hasattr(model.people, "etimer"):
+                model.people.etimer[idx] = 0
+            if hasattr(model.people, "itimer"):
+                model.people.itimer[idx] = 0
+
         if self.lambda_birth > 0:
             # Births
             # ------
