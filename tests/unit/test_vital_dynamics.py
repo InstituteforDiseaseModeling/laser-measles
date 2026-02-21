@@ -80,16 +80,12 @@ def test_infection_with_vital_dynamics_no_underflow(measles_module):
     model.run()
 
     # S values must be physically meaningful (no uint32 wrap-around)
-    assert np.all(model.patches.states.S < 1_000_000), (
-        f"patches.states.S looks like uint32 underflow: {model.patches.states.S}"
-    )
+    assert np.all(model.patches.states.S < 1_000_000), f"patches.states.S looks like uint32 underflow: {model.patches.states.S}"
 
     # Population must be conserved: patch state counts == active agent count
     active_count = model.people.active[: model.people.count].sum()
     state_total = np.sum(model.patches.states)
-    assert state_total == active_count, (
-        f"State total {state_total} != active agent count {active_count}"
-    )
+    assert state_total == active_count, f"State total {state_total} != active agent count {active_count}"
 
 
 if __name__ == "__main__":
