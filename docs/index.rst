@@ -5,7 +5,7 @@ Getting Started
 
 * :doc:`installation` - Quick installation guide
 * :doc:`usage` - Learn the basics
-* :doc:`tutorials/tut_quickstart_hello_world` - Recommended first worked example
+* :doc:`tutorials/tut_quickstart_hello_world` - Recommended first example
 
 Documentation
 =============
