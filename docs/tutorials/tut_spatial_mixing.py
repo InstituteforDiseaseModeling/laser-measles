@@ -6,7 +6,7 @@
 #
 # ## Key pattern: mixer goes inside InfectionParams
 #
-# Regardless of model type, the mixer is always wired in through `InfectionParams`:
+# We are using a compartmental model where the mixer is wired in through `InfectionParams` (note the ABM uses a different approach):
 #
 # ```python
 # mixer = GravityMixing(params=GravityParams(a=1.0, b=1.0, c=2.0, k=0.01))
