@@ -105,7 +105,7 @@ from laser.measles.abm import components
 from laser.measles.components import create_component
 
 infection_params = components.InfectionParams(
-    beta=20.0,
+    beta=2.0,
     seasonality=0.0,
     distance_exponent=20.0,  # strongly local transmission
     mixing_scale=0.01,       # moderate cross-patch pressure
