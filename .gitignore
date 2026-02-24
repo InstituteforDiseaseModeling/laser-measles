@@ -94,6 +94,7 @@ tmp/
 docs/reference/
 docs/api/_autosummary/
 docs/tutorials/*.ipynb
+docs/models.rst
 
 # Temp
 examples/
