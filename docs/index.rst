@@ -24,9 +24,15 @@ Project Information
    :maxdepth: 2
    :hidden:
 
+   installation
    usage
    tutorials
+   building_docs
+   contributing
+   changelog
+   authors
    api/index
+
 
 ----
 
