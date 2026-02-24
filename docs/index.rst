@@ -14,7 +14,7 @@ Documentation
 * :doc:`api/index` - Reference for all classes, functions, and modules
 
 Project Information
-==================
+===================
 
 * :doc:`contributing` - Guidelines for contributing to the project
 * :doc:`authors` - Meet the team behind laser-measles

@@ -1,6 +1,6 @@
-========================================
+=========================================
 Installation and Development Instructions
-========================================
+=========================================
 
 At the command line:
 
@@ -16,7 +16,7 @@ You can also install the in-development version with:
     pip install git+https://github.com/InstituteforDiseaseModeling/laser-measles.git@main
 
 Optional Dependencies
-====================
+=====================
 
 The package supports several optional dependency groups that can be installed for additional functionality:
 
@@ -35,7 +35,7 @@ The package supports several optional dependency groups that can be installed fo
     pip install laser-measles[full]
 
 Dependency Groups
-----------------
+-----------------
 
 **dev**: Development tools for testing and code quality
     - pytest: Testing framework

@@ -53,44 +53,41 @@ class InfectionSeedingParams(BaseModel):
 
 
 class InfectionSeedingProcess(BaseComponent):
-    """
-    Component for seeding initial infections in the compartmental model.
+    """Component for seeding initial infections in the compartmental model.
 
     This component initializes infections by moving individuals from the Susceptible (S)
     compartment to the Infected (I) compartment. It can either:
+
     1. Automatically seed the patch with the largest population (default)
     2. Seed specific patches provided by the user
 
     The seeding occurs during initialize() before the simulation begins.
 
-    Parameters
-    ----------
-    model : BaseLaserModel
-        The compartmental model instance
-    verbose : bool, default=False
-        Whether to print verbose output during initialization
-    params : Optional[InfectionSeedingParams], default=None
-        Component-specific parameters. If None, will use default parameters
+    Args:
+        model: The compartmental model instance.
+        verbose: Whether to print verbose output during initialization.
+        params: Component-specific parameters. If None, uses default parameters.
 
-    Examples
-    --------
-    # Seed 1 infection in largest patch (default)
-    seeding_params = InfectionSeedingParams()
+    Example:
+        .. code-block:: python
 
-    # Seed 5 infections in largest patch
-    seeding_params = InfectionSeedingParams(num_infections=5)
+            # Seed 1 infection in largest patch (default)
+            seeding_params = InfectionSeedingParams()
 
-    # Seed specific patches with same number of infections
-    seeding_params = InfectionSeedingParams(
-        target_patches=["nigeria:kano:kano:A0001", "nigeria:kano:kano:A0002"],
-        infections_per_patch=3
-    )
+            # Seed 5 infections in largest patch
+            seeding_params = InfectionSeedingParams(num_infections=5)
 
-    # Seed specific patches with different numbers of infections
-    seeding_params = InfectionSeedingParams(
-        target_patches=["nigeria:kano:kano:A0001", "nigeria:kano:kano:A0002"],
-        infections_per_patch=[5, 2]
-    )
+            # Seed specific patches with same number of infections
+            seeding_params = InfectionSeedingParams(
+                target_patches=["nigeria:kano:kano:A0001", "nigeria:kano:kano:A0002"],
+                infections_per_patch=3,
+            )
+
+            # Seed specific patches with different numbers of infections
+            seeding_params = InfectionSeedingParams(
+                target_patches=["nigeria:kano:kano:A0001", "nigeria:kano:kano:A0002"],
+                infections_per_patch=[5, 2],
+            )
     """
 
     def __init__(self, model: BaseLaserModel, verbose: bool = False, params: InfectionSeedingParams | None = None) -> None:

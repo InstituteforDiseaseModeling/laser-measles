@@ -80,15 +80,20 @@ class InfectionProcess(BaseInfectionProcess):
     different population groups.
 
     The SEIR infection process follows these steps:
+
     1. Calculate force of infection based on:
+
        - Base transmission rate (beta)
        - Seasonal variation
        - Population mixing matrix
        - Current number of infectious individuals
+
     2. Stochastic transitions using binomial sampling:
+
        - S → E: New exposures based on force of infection
        - E → I: Progression from exposed to infectious
        - I → R: Recovery from infection
+
     3. Update population states for all compartments
 
     Parameters
