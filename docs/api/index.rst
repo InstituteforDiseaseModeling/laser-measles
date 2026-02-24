@@ -101,7 +101,7 @@ Agent based model:
 
 .. autosummary::
    :toctree: _autosummary
-   :template: custom-function-template.rst
+   :template: custom-module-template.rst
    :nosignatures:
 
    model
@@ -172,7 +172,7 @@ Compartmental model with daily timesteps:
 
 .. autosummary::
    :toctree: _autosummary
-   :template: custom-function-template.rst
+   :template: custom-module-template.rst
    :nosignatures:
 
    model
@@ -228,7 +228,7 @@ Compartmental model with 2-week timesteps
 
 .. autosummary::
    :toctree: _autosummary
-   :template: custom-function-template.rst
+   :template: custom-module-template.rst
    :nosignatures:
 
    model

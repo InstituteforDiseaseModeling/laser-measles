@@ -33,14 +33,18 @@ class InfectionProcess(BaseInfectionProcess):
     and accounts for mixing between different population groups.
 
     The infection process follows these steps:
+
     1. Calculates expected new infections based on:
+
        - Base transmission rate (beta)
        - Seasonal variation
        - Population mixing matrix
        - Current number of infected individuals
+
     2. Converts expected infections to probabilities
     3. Samples actual new infections from a binomial distribution
     4. Updates population states:
+
        - Moves current infected to recovered (configurable recovery period)
        - Adds new infections to infected population
        - Removes new infections from susceptible population
