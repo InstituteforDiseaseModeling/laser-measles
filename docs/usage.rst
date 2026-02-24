@@ -55,7 +55,7 @@ Model Types
 laser-measles provides three complementary modeling approaches, each optimized for different use cases:
 
 1. **ABM (Agent-Based Model)**: Individual-level simulation with stochastic agents
-2. **Biweekly Compartmental Model**: Population-level SEIR dynamics with 2-week timesteps
+2. **Biweekly Compartmental Model**: Population-level SIR dynamics with 2-week timesteps
 3. **Compartmental Model**: Population-level SEIR dynamics with daily timesteps
 
 Each model type offers different trade-offs between computational efficiency, temporal resolution, and modeling detail.

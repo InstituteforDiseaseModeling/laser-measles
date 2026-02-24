@@ -4,6 +4,21 @@
 # This tutorial demonstrates how to choose and configure different spatial mixing models
 # in the laser-measles framework and shows how they affect disease transmission patterns.
 #
+# ## Key pattern: mixer goes inside InfectionParams
+#
+# We are using a compartmental model where the mixer is wired in through `InfectionParams` (note the ABM uses a different approach):
+#
+# ```python
+# mixer = GravityMixing(params=GravityParams(a=1.0, b=1.0, c=2.0, k=0.01))
+# infection_params = InfectionParams(beta=0.8, mixer=mixer)
+# ```
+#
+# You do **not** need to pass `scenario=` to the mixer at construction — the model
+# sets it automatically before the first tick.
+#
+# This tutorial uses the **compartmental** model. For an ABM spatial mixing example,
+# see the *Quick Start: Spatial ABM "Hello World"* in the documentation.
+#
 # ## What are Spatial Mixing Models?
 #
 # Spatial mixing models determine how infectious individuals in one location can infect

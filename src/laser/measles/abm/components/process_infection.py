@@ -17,7 +17,35 @@ from .process_transmission import TransmissionProcess
 
 
 class InfectionParams(BaseInfectionParams):
-    """Combined parameters for transmission and disease processes."""
+    """Combined parameters for ABM transmission and disease processes.
+
+    Spatial mixing strength is controlled via ``distance_exponent`` and
+    ``mixing_scale``, which configure the default
+    :class:`~laser.measles.mixing.gravity.GravityMixing` model used
+    internally. The model sets the patch scenario on the mixer automatically
+    at initialisation.
+
+    .. note::
+
+        Unlike the compartmental :class:`InfectionParams
+        <laser.measles.compartmental.components.process_infection.InfectionParams>`,
+        this class does not currently accept a ``mixer=`` argument. To use
+        a custom mixing model or non-default gravity parameters, configure
+        ``distance_exponent`` and ``mixing_scale`` here, or construct a
+        :class:`~laser.measles.abm.components.process_transmission.TransmissionProcess`
+        directly with a custom
+        :class:`~laser.measles.abm.components.process_transmission.TransmissionParams`.
+
+    Example::
+
+        # Control gravity mixing decay and scale via InfectionParams
+        infection_params = InfectionParams(
+            beta=20.0,
+            seasonality=0.0,
+            distance_exponent=2.0,  # stronger distance decay
+            mixing_scale=0.005,     # lower overall mixing rate
+        )
+    """
 
     beta: float = Field(default=1.0, description="Base transmission rate", ge=0.0)
     seasonality: float = Field(default=0.0, description="Seasonality factor", ge=0.0, le=1.0)

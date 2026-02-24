@@ -215,9 +215,15 @@ class TransmissionProcess(BasePhase):
             np.float32(self.params.sigma_underlying),
             model.patches.incidence,  # flow
         )
-        # Update susceptible and exposed counters
-        patches.states.S -= model.patches.incidence
-        patches.states.E += model.patches.incidence
+        # Update susceptible and exposed counters.
+        # Clamp incidence to the available S count before decrementing to prevent
+        # uint32 underflow.  Dead agents (active=False) retain state==0 and can
+        # be counted by lognormal_update_func even though VitalDynamicsProcess has
+        # already removed them from patches.states.S, so the raw incidence can
+        # momentarily exceed the current S tally.
+        effective_incidence = np.minimum(model.patches.incidence, patches.states.S)
+        patches.states.S -= effective_incidence
+        patches.states.E += effective_incidence
 
         return
 

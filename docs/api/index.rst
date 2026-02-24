@@ -108,7 +108,6 @@ Agent based model:
    params
    base
    utils
-   cli
 
 Process Components
 ------------------
@@ -315,7 +314,6 @@ Core utilities and computation functions:
    :nosignatures:
 
    create_component
-   pretty_laserframe
 
 ----
 
