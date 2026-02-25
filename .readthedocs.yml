@@ -5,6 +5,8 @@ sphinx:
 formats:
   - htmlzip
   - epub
+  - pdf
+
 build:
   os: ubuntu-22.04
   tools:
@@ -17,8 +19,3 @@ python:
     - requirements: docs/requirements.txt
     - method: pip
       path: .
-
-# Optionally build your docs in additional formats such as PDF and ePub
-# formats:
-#    - pdf
-#    - epub
