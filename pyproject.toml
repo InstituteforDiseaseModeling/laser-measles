@@ -151,14 +151,9 @@ search = 'version = "{current_version}"'
 replace = 'version = "{new_version}"'
 
 [[tool.bumpversion.files]]
-filename = "README.md"
-search = "/v{current_version}.svg"
-replace = "/v{new_version}.svg"
-
-[[tool.bumpversion.files]]
-filename = "README.md"
-search = "/v{current_version}...main"
-replace = "/v{new_version}...main"
+filename = "docs/conf.py"
+search = 'version = release = "{current_version}"'
+replace = 'version = release = "{new_version}"'
 
 [[tool.bumpversion.files]]
 filename = "src/laser/measles/__init__.py"
