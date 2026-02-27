@@ -8,7 +8,7 @@
    usage
    tutorials
    api/index
-   
+
 ----
 
 **Indices and tables**
