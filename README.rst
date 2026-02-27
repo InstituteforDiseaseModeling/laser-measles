@@ -43,9 +43,10 @@ New users should install the v0.9 release, which is the current stable version:
 
 Version 0.9 is the recommended starting point for all new projects. Development continues on the ``main`` branch, but v0.9 is the version that has been validated and is supported for most use cases.
 
+Our recommended first example is here: :doc:`tutorials/tut_quickstart_hello_world`
 
 AI-Powered On-Ramp: JENNER-MEASLES
-------------------------------------
+==================================
 
 The fastest way to get started with laser-measles is through `JENNER-MEASLES <https://chatgpt.com/g/g-678ae681f5b48191b3e91619e649e598-jenner-measles>`_, a chat-based AI assistant purpose-built for this framework.
 
@@ -64,7 +65,7 @@ Access requires a ChatGPT account. If you have access, this is the recommended o
 
 
 MCP Server for Claude Code Users
-----------------------------------
+================================
 
 If you use Claude Code (or any MCP-compatible AI assistant), you can connect it directly to laser-measles and laser-core documentation and source via a local MCP server.
 
