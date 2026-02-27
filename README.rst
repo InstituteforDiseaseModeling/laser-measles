@@ -43,7 +43,7 @@ New users should install the v0.9 release, which is the current stable version:
 
 Version 0.9 is the recommended starting point for all new projects. Development continues on the ``main`` branch, but v0.9 is the version that has been validated and is supported for most use cases.
 
-Our recommended first example is here: :doc:`tutorials/tut_quickstart_hello_world`
+Our recommended first example is here: `Quick Start Tutorial <https://laser-measles.readthedocs.io/en/latest/tutorials/tut_quickstart_hello_world.html>`_
 
 AI-Powered On-Ramp: JENNER-MEASLES
 ==================================
